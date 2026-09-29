@@ -1,6 +1,6 @@
-# AmropaliNet — Streamlit Community Cloud dependencies
+# AmropaliNet - Streamlit Community Cloud dependencies (streamlit_app.py)
 #
-# IMPORTANT (Cloud): In App settings → Advanced settings, set Python to 3.11 or 3.12.
+# IMPORTANT (Cloud): In Advanced settings, set Python to 3.11 or 3.12.
 # Default Cloud Python (3.13) often cannot install torch and will fail dependency install.
 #
 # CPU wheels first (avoids huge CUDA downloads on Cloud)
@@ -13,6 +13,7 @@ streamlit==1.41.1
 timm==1.0.15
 Pillow==11.1.0
 fpdf2==2.8.2
+uharfbuzz==0.56.2      # Bangla PDF
 numpy==1.26.4
 opencv-python-headless==4.10.0.84
 scipy==1.14.1

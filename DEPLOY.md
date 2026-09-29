@@ -8,6 +8,7 @@
 
 | Option | Cost | Card? | Online 24/7? |
 |---|---|---|---|
+| **S. Streamlit Community Cloud (steps below)** | **Free** | **No** | **Yes (sleeps when unused)** |
 | A. Your laptop + Cloudflare Tunnel (below) | Free | No | Only while the laptop runs |
 | B. GitHub Codespaces | Free (monthly hours) | No | Only while running |
 | C. Oracle Cloud Always Free VM (24 GB RAM) | Free | Yes (verification) | Yes |
@@ -16,9 +17,32 @@
 
 Render / Vercel / Netlify / Koyeb free plans do not work: about 512 MB RAM, the AI needs about 2 GB.
 
-**Streamlit Community Cloud** (free) can only run the old `streamlit_app.py`, not the new
-website (HTML + FastAPI). Its free apps get about 1 GB RAM, and PyTorch + AA-ENet + the CLIP
-mango checker need more, so the app is likely to stop with "over its resource limits".
+## Option S - Streamlit Community Cloud (free, recommended)
+
+`streamlit_app.py` is a Streamlit version of the website built on the same `mango_disease_ai`
+library: Bangla / English, camera or upload, mango check, Grad-CAM + marked area, advice,
+Bangla and English PDF, encyclopedia, developer section and footer. It runs the mango checker
+in a low-memory mode (`MANGO_LOW_MEMORY=1`) so it fits in Streamlit's free ~1 GB RAM.
+
+1. The GitHub repository must be **public** (or connect your GitHub account and allow private repos).
+2. Go to https://share.streamlit.io and sign in with GitHub.
+3. Click **Create app** → **Deploy a public app from GitHub**.
+4. Fill in:
+   - **Repository:** `Arpon-30/UI-Changes-Mango`
+   - **Branch:** `main`
+   - **Main file path:** `streamlit_app.py`
+   - **App URL:** choose a name, for example `amropalinet` → `https://amropalinet.streamlit.app`
+5. Open **Advanced settings** → **Python version: 3.11** (or 3.12). Click **Deploy**.
+6. The first build takes about **5-10 minutes** (it installs PyTorch from `requirements.txt`).
+   The first scan takes about 1 minute more because the mango checker (CLIP) downloads once.
+
+Good to know:
+- The app **sleeps after a few days without visitors**. The next visitor sees a
+  "wake up" button; it takes about 1 minute. Open it yourself before a demo.
+- If it ever says "over its resource limits", click **Reboot app** in the menu
+  (bottom right → Manage app).
+- To update: push to `main` on GitHub. Streamlit redeploys by itself.
+- The HTML website (`python run.py`) is still the main version for local use and the options below.
 
 ## Option A - free public link from your laptop (best for demos)
 
