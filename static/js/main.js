@@ -49,6 +49,8 @@
         renderGardenTabs();
         renderGardenInfo();
         if (lastResult) renderResult(lastResult, false);
+        if (lastNoMango) renderNotMango(lastNoMango.conf, false);
+        if (statusState) setStatus(statusState.kind, statusState.titleKey, statusState.detail, statusState.detailKey);
         if (sheet.open && sheetKey) fillSheet(sheetKey);
     }
 
@@ -130,13 +132,15 @@
     /* ---------------- Toast ---------------- */
     const toast = $("#toast");
     const toastMsg = $("#toast-msg");
+    const toastDetail = $("#toast-detail");
     let toastTimer = null;
-    function showError(key) {
+    // detail: optional technical reason from the server (shown small, untranslated)
+    function showError(key, detail) {
         toastMsg.textContent = t(key);
-        toastMsg.dataset.key = key;
+        toastDetail.textContent = detail || "";
         show(toast);
         clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => hide(toast), 7000);
+        toastTimer = setTimeout(() => hide(toast), detail ? 15000 : 7000);
     }
     $("#toast-close").addEventListener("click", () => hide(toast));
 
@@ -150,6 +154,7 @@
     const btnCheck = $("#btn-check");
     const loading = $("#loading");
     const results = $("#results");
+    const nomango = $("#nomango");
 
     const MAX_SIZE = 10 * 1024 * 1024;
     const SERVER_TYPES = ["image/jpeg", "image/png", "image/webp", "image/bmp", "image/tiff"];
@@ -158,6 +163,7 @@
     let currentFile = null;
     let previewUrl = null;
     let lastResult = null;
+    let lastNoMango = null;
 
     function openPicker(kind) {
         const input = kind === "camera" ? inputCamera : inputGallery;
@@ -232,7 +238,9 @@
         previewUrl = URL.createObjectURL(currentFile);
         previewImg.src = previewUrl;
         lastResult = null;
+        lastNoMango = null;
         hide(results);
+        hide(nomango);
         hide(drop);
         show(preview);
         btnCheck.disabled = false;
@@ -242,14 +250,21 @@
     function resetScanner() {
         currentFile = null;
         lastResult = null;
+        lastNoMango = null;
         if (previewUrl) URL.revokeObjectURL(previewUrl);
         previewUrl = null;
         previewImg.removeAttribute("src");
         hide(preview);
         hide(results);
+        hide(nomango);
         show(drop);
     }
     $("#btn-change").addEventListener("click", () => { resetScanner(); openPicker("gallery"); });
+    $("#btn-nomango-again").addEventListener("click", () => {
+        resetScanner();
+        openPicker("camera");
+        scanner.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "center" });
+    });
     $("#btn-again").addEventListener("click", () => {
         resetScanner();
         scanner.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "center" });
@@ -288,14 +303,13 @@
             } else {
                 const form = new FormData();
                 form.append("image", currentFile);
-                form.append("include_gradcam", "true");
                 const res = await fetch("/api/analyze", { method: "POST", body: form });
                 if (!res.ok) {
                     setBusy(false);
-                    return showError(res.status === 422 ? "err.notmango" : res.status === 400 ? "err.bad" : "err.server");
+                    return handleApiError(await readError(res), false);
                 }
                 data = await res.json();
-                if (!data.is_mango) { setBusy(false); return showError("err.notmango"); }
+                if (!data.is_mango) { setBusy(false); return renderNotMango(data.mango_confidence); }
             }
             setBusy(false);
             lastResult = data;
@@ -305,6 +319,74 @@
             showError(navigator.onLine === false ? "err.network" : (e instanceof TypeError ? "err.network" : "err.server"));
         }
     });
+
+    /* ---------------- API errors ---------------- */
+    async function readError(res) {
+        let detail = null;
+        try { detail = (await res.json()).detail; } catch (e) { /* not JSON */ }
+        if (detail && typeof detail === "object") return { status: res.status, ...detail };
+        return { status: res.status, code: null, message: typeof detail === "string" ? detail : "" };
+    }
+
+    function handleApiError(err, fromReport) {
+        switch (err.code) {
+            case "not_mango":
+                return fromReport ? showError("err.notmango") : renderNotMango(err.mango_confidence);
+            case "model_missing":
+                setStatus("error", "st.model", err.message);
+                return showError("err.model", err.message);
+            case "mango_check_unavailable":
+                setStatus("error", "st.clip", err.message);
+                return showError("err.clip", err.message);
+            case "bad_type": return showError("err.type");
+            case "too_large": return showError("err.size");
+            default:
+                if (err.status === 422) return fromReport ? showError("err.notmango") : renderNotMango(null);
+                if (err.status === 400) return showError("err.bad", err.message);
+                return showError("err.server", err.message);
+        }
+    }
+
+    function renderNotMango(conf, animate = true) {
+        lastNoMango = { conf };
+        lastResult = null;
+        hide(results);
+        $("#nomango-img").src = previewUrl || "";
+        const p = conf == null ? "-" : pct(conf, 0);
+        $("#nomango-sub").textContent = t("nm.sub").replace("{pct}", p);
+        show(nomango);
+        if (animate) {
+            nomango.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "center" });
+            nomango.focus({ preventScroll: true });
+        }
+    }
+
+    /* ---------------- Model status (from /api/health) ---------------- */
+    const statusBar = $("#model-status");
+    let statusState = null;
+    function setStatus(kind, titleKey, detail, detailKey) {
+        statusState = kind ? { kind, titleKey, detail, detailKey } : null;
+        if (!kind) return hide(statusBar);
+        statusBar.className = "status status--" + kind;
+        $("#status-icon").textContent = kind === "loading" ? "⏳" : "⚠️";
+        $("#status-title").textContent = t(titleKey);
+        $("#status-detail").textContent = detailKey ? t(detailKey) : (detail || "");
+    }
+    async function checkHealth(attempt = 0) {
+        if (DEMO) return;
+        try {
+            const h = await (await fetch("/api/health", { cache: "no-store" })).json();
+            if (h.model === "error") return setStatus("error", "st.model", h.model_error);
+            if (h.mango_check === "error") return setStatus("error", "st.clip", h.mango_check_error);
+            if ((h.model === "loading" || h.mango_check === "loading") && attempt < 200) {
+                setStatus("loading", "st.loading", null, "st.loadingd");
+                return setTimeout(() => checkHealth(attempt + 1), 3000);
+            }
+            setStatus(null);
+        } catch (e) {
+            setStatus("error", "st.offline", null, "st.offlined");
+        }
+    }
 
     function renderResult(data, animate) {
         const d = BY_KEY[data.predicted_class] || BY_KEY.Healthy;
@@ -356,13 +438,15 @@
         $("#img-original").src = orig || "";
         if (cam) $("#img-heat").src = cam;
         $("#img-heat").closest("figure").classList.toggle("hidden", !cam);
-        $(".heat__note", heat).classList.toggle("hidden", !cam);
+        $(".heat__note", $("#heat-card")).classList.toggle("hidden", !cam);
+        $("#heat-legend").classList.toggle("hidden", !cam);
         heat.classList.toggle("hidden", !orig && !cam);
         $("#img-original").alt = t("res.photo");
         $("#img-heat").alt = t("res.heat");
 
         $("#btn-to-garden").onclick = () => selectGarden(d.key, true);
 
+        hide(nomango);
         show(results);
         if (animate) {
             results.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
@@ -376,6 +460,12 @@
     const reportErr = $("#report-err");
     const reportBusy = $("#report-busy");
     const btnReport = $("#btn-report");
+
+    $("#btn-to-report").addEventListener("click", (e) => {
+        e.preventDefault();
+        $("#report").scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "center" });
+        setTimeout(() => reportName.focus({ preventScroll: true }), reducedMotion ? 0 : 450);
+    });
 
     reportName.addEventListener("input", () => {
         if (reportName.value.trim()) { reportForm.classList.remove("has-error"); hide(reportErr); }
@@ -401,7 +491,7 @@
             form.append("user_name", name);
             const res = await fetch("/api/report", { method: "POST", body: form });
             if (!res.ok) {
-                showError(res.status === 422 ? "err.notmango" : res.status === 400 ? "err.bad" : "err.server");
+                handleApiError(await readError(res), true);
             } else {
                 const blob = await res.blob();
                 const url = URL.createObjectURL(blob);
@@ -637,4 +727,5 @@
 
     /* ---------------- Init ---------------- */
     applyI18n();
+    checkHealth();
 })();

@@ -50,6 +50,12 @@ class _ReportPDF(FPDF):
         self.cell(0, 8, f"Page {self.page_no()}/{{nb}}", align="C")
 
 
+def _pdf_name(name: str) -> str:
+    """Core PDF fonts are Latin-1 only; drop other scripts (e.g. Bangla) instead of crashing."""
+    safe = "".join(ch for ch in str(name) if ch.encode("latin-1", "ignore")).strip()
+    return " ".join(safe.split()) or "Farmer"
+
+
 def _b64_to_tempfile(b64str: str, suffix=".png") -> str:
     """Write a base64 image to a temporary file and return the path."""
     data = base64.b64decode(b64str)
@@ -327,7 +333,7 @@ def generate_report(
     pdf.set_font("Helvetica", "", 10)
     pdf.set_text_color(50, 50, 50)
     now = datetime.now().strftime("%B %d, %Y  %I:%M %p")
-    pdf.cell(0, 6, f"Prepared for:  {user_name}", new_x="LMARGIN", new_y="NEXT")
+    pdf.cell(0, 6, f"Prepared for:  {_pdf_name(user_name)}", new_x="LMARGIN", new_y="NEXT")
     pdf.cell(0, 6, f"Date:  {now}", new_x="LMARGIN", new_y="NEXT")
     pdf.ln(2)
 
