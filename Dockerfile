@@ -1,4 +1,4 @@
-# mango-disease-ai — FastAPI Docker image
+# AmropaliNet - Docker image (website + mango-disease-ai REST API)
 # Builds a CPU-only image suitable for Hugging Face Spaces (free tier)
 #
 # Build:  docker build -t mango-disease-ai:latest .
@@ -25,8 +25,19 @@ COPY api/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
+# ── Hugging Face cache (CLIP mango checker lives here) ───────────────────
+ENV HF_HOME=/app/.cache/huggingface
+ENV TRANSFORMERS_CACHE=/app/.cache/huggingface
+ENV USE_TF=0
+ENV TRANSFORMERS_NO_TF=1
+
+# Download the CLIP mango checker (~600 MB) at build time, so the live site
+# does not download it again after every restart / wake-up.
+RUN python -c "from transformers import CLIPModel, CLIPProcessor; \
+CLIPModel.from_pretrained('openai/clip-vit-base-patch32'); \
+CLIPProcessor.from_pretrained('openai/clip-vit-base-patch32')"
+
 # ── Copy application code ─────────────────────────────────────────────────
-COPY model.py inference.py report.py ./
 COPY mango_disease_ai/ ./mango_disease_ai/
 COPY api/ ./api/
 COPY templates/ ./templates/
@@ -35,10 +46,6 @@ COPY static/ ./static/
 # ── Ownership ──────────────────────────────────────────────────────────────
 RUN chown -R appuser:appuser /app
 USER appuser
-
-# ── Hugging Face Spaces cache directory ───────────────────────────────────
-ENV HF_HOME=/app/.cache/huggingface
-ENV TRANSFORMERS_CACHE=/app/.cache/huggingface
 
 # ── Expose port 7860 (Hugging Face Spaces default) ────────────────────────
 EXPOSE 7860
