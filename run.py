@@ -3,8 +3,13 @@ Start AmropaliNet with one click (VS Code ▶ Run) or: python run.py
 Opens http://localhost:8000 in your browser.
 """
 
+import os
 import threading
 import webbrowser
+
+# PyTorch only: keep transformers from importing TensorFlow/Keras if installed
+os.environ.setdefault("USE_TF", "0")
+os.environ.setdefault("TRANSFORMERS_NO_TF", "1")
 
 import uvicorn
 
