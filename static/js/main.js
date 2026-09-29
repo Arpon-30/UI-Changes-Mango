@@ -345,6 +345,7 @@
                 setStatus("error", "st.clip", err.message);
                 return showError("err.clip", err.message);
             case "bad_type": return showError("err.type");
+            case "bn_pdf_unavailable": return showError("err.bnpdf", err.message);
             case "too_large": return showError("err.size");
             default:
                 if (err.status === 422) return fromReport ? showError("err.notmango") : renderNotMango(null);
@@ -475,7 +476,7 @@
     const reportName = $("#report-name");
     const reportErr = $("#report-err");
     const reportBusy = $("#report-busy");
-    const btnReport = $("#btn-report");
+    const pdfButtons = $$("[data-pdf-lang]");
 
     $("#btn-to-report").addEventListener("click", (e) => {
         e.preventDefault();
@@ -489,6 +490,8 @@
 
     reportForm.addEventListener("submit", async (e) => {
         e.preventDefault();
+        // Which button was pressed: Bangla or English PDF (Enter key -> current page language)
+        const pdfLang = (e.submitter && e.submitter.dataset.pdfLang) || lang;
         const name = reportName.value.trim();
         if (!name) {
             reportForm.classList.add("has-error");
@@ -500,11 +503,12 @@
         if (lastResult && lastResult.demo) return showError("rep.demo");
 
         show(reportBusy);
-        btnReport.disabled = true;
+        pdfButtons.forEach((b) => { b.disabled = true; });
         try {
             const form = new FormData();
             form.append("image", currentFile);
             form.append("user_name", name);
+            form.append("lang", pdfLang);
             const res = await fetch("/api/report", { method: "POST", body: form });
             if (!res.ok) {
                 handleApiError(await readError(res), true);
@@ -513,7 +517,9 @@
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement("a");
                 a.href = url;
-                a.download = "AmropaliNet_Report_" + name.replace(/[^\p{L}\p{N}_-]+/gu, "_") + ".pdf";
+                // ASCII file name: some browsers refuse non-Latin download names
+                const safeName = name.replace(/[^A-Za-z0-9_-]+/g, "_").replace(/^_+|_+$/g, "") || "report";
+                a.download = "AmropaliNet_Report_" + safeName + (pdfLang === "bn" ? "_BN" : "_EN") + ".pdf";
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
@@ -523,7 +529,7 @@
             showError("err.network");
         } finally {
             hide(reportBusy);
-            btnReport.disabled = false;
+            pdfButtons.forEach((b) => { b.disabled = false; });
         }
     });
 

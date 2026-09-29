@@ -21,6 +21,7 @@ joblib==1.4.2
 
 # ── PDF generation ─────────────────────────────────────────────────────────
 fpdf2==2.8.2
+uharfbuzz==0.56.2      # correct Bangla letter joining in the Bangla PDF
 
 # ── API server ─────────────────────────────────────────────────────────────
 fastapi==0.115.0

@@ -86,5 +86,5 @@ include = ["mango_disease_ai*"]
 
 [tool.setuptools.package-data]
 # Include model weights AND the docs website HTML bundled inside the package
-mango_disease_ai = ["*.pt", "*.pth", "*.py", "*.html"]
+mango_disease_ai = ["*.pt", "*.pth", "*.py", "*.html", "*.json", "fonts/*.ttf", "fonts/*.txt"]
 
