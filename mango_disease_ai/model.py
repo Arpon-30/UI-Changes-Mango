@@ -96,7 +96,7 @@ DISEASE_INFO = {
             "Apply copper-based fungicides (Bordeaux mixture)",
             "Use systemic fungicides like Carbendazim or Mancozeb",
             "Prune and destroy infected branches and leaves to improve ventilation",
-            "Post-harvest: Hot water treatment (50–55°C for 5–10 minutes) to reduce decay",
+            "Post-harvest: Hot water treatment (50-55°C for 5-10 minutes) to reduce decay",
             "Maintain good orchard hygiene and spacing",
         ],
     },
