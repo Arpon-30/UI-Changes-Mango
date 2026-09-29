@@ -323,16 +323,65 @@ def load_model(device="cpu"):
     return model
 
 
+# Low-memory mode (e.g. Streamlit Community Cloud, ~1 GB RAM): set MANGO_LOW_MEMORY=1.
+# The CLIP text encoder runs once for the fixed labels and is then freed, and the
+# vision encoder is kept in bfloat16 - about 175 MB instead of about 600 MB.
+LOW_MEMORY = os.environ.get("MANGO_LOW_MEMORY", "0") == "1"
+CLIP_LOGIT_SCALE = 100.0  # exp(logit_scale) of the trained openai/clip-vit-base-patch32
+
+
+class LightClip:
+    """Zero-shot CLIP with precomputed label embeddings and a bfloat16 vision encoder."""
+
+    def __init__(self, processor, labels, model_id=None, device="cpu"):
+        import gc
+
+        from transformers import CLIPTextModelWithProjection, CLIPVisionModelWithProjection
+
+        model_id = model_id or MANGO_DETECTOR_MODEL_ID
+        self.processor = processor
+        self.device = device
+
+        # 1) Text side once: embeddings for the fixed labels, then free the text model.
+        text_model = CLIPTextModelWithProjection.from_pretrained(model_id, torch_dtype=torch.bfloat16).eval()
+        tokens = processor.tokenizer(list(labels), padding=True, return_tensors="pt")
+        with torch.no_grad():
+            text = text_model(**tokens).text_embeds.float()
+        self.text_embeds = text / text.norm(dim=-1, keepdim=True)
+        del text_model
+        gc.collect()
+
+        # 2) Vision side stays loaded, in bfloat16.
+        self.vision = CLIPVisionModelWithProjection.from_pretrained(model_id, torch_dtype=torch.bfloat16)
+        self.vision.to(device).eval()
+
+    def probs(self, pil_img):
+        pixels = self.processor(images=pil_img, return_tensors="pt")["pixel_values"].to(torch.bfloat16)
+        with torch.no_grad():
+            image = self.vision(pixel_values=pixels.to(self.device)).image_embeds.float()
+        image = image / image.norm(dim=-1, keepdim=True)
+        return torch.softmax(CLIP_LOGIT_SCALE * image @ self.text_embeds.T, dim=-1).squeeze(0)
+
+
 def load_mango_detector(device="cpu"):
     """Load CLIP (openai/clip-vit-base-patch32) for zero-shot mango detection."""
     global _cached_mango_detector
     if _cached_mango_detector is not None:
         return _cached_mango_detector
 
-    from transformers import CLIPProcessor, CLIPModel
+    from transformers import CLIPProcessor
 
     processor = CLIPProcessor.from_pretrained(MANGO_DETECTOR_MODEL_ID)
-    model = CLIPModel.from_pretrained(MANGO_DETECTOR_MODEL_ID)
-    model.to(device).eval()
+    if LOW_MEMORY:
+        try:
+            from mango_disease_ai.inference import MANGO_LABELS
+        except ImportError:  # running from the project root copy
+            from inference import MANGO_LABELS
+        model = LightClip(processor, MANGO_LABELS, device=device)
+    else:
+        from transformers import CLIPModel
+
+        model = CLIPModel.from_pretrained(MANGO_DETECTOR_MODEL_ID)
+        model.to(device).eval()
     _cached_mango_detector = (model, processor)
     return _cached_mango_detector
