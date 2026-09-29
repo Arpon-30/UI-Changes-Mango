@@ -1,488 +1,380 @@
 """
-AmropaliNet — Streamlit Community Cloud entrypoint.
+AmropaliNet - Streamlit version (for free hosting on Streamlit Community Cloud).
 
-Modern green-themed dashboard: analyze first, Grad-CAM only on demand.
-Supports both dark and light themes via CSS custom properties.
+Same AI and features as the website, from the same library (mango_disease_ai):
+mango check, 7-class diagnosis, Grad-CAM + marked affected area, advice, Bangla or
+English PDF, Bangla / English interface, phone camera.
+
+Runs in low-memory mode (MANGO_LOW_MEMORY=1) so it fits the ~1 GB free tier.
+
+    streamlit run streamlit_app.py
 """
 
 from __future__ import annotations
 
+import os
+
+# Must be set before the library is imported
+os.environ.setdefault("MANGO_LOW_MEMORY", "1")
+os.environ.setdefault("USE_TF", "0")
+os.environ.setdefault("TRANSFORMERS_NO_TF", "1")
+
 import base64
-import logging
-import sys
-import traceback
+import hashlib
+import html
+import io
+import json
 from pathlib import Path
 
 import streamlit as st
-import streamlit.components.v1 as components
 from PIL import Image
 
-from inference import classify_image, generate_gradcam, is_mango
-from model import CLASSES, DISEASE_INFO, load_model, load_mango_detector
-from report import generate_report
-from ui_render import (
-    brand_html,
-    classification_result_html,
-    empty_result_html,
-    encyclopedia_html,
-    error_banner_html,
-    file_chip_html,
-    footer_html,
-    gradcam_panel_html,
-    probabilities_html,
-    remedies_panel_html,
-    side_title,
-    upload_requirements_html,
-)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.StreamHandler(sys.stdout)],
-)
-logger = logging.getLogger(__name__)
-
 ROOT = Path(__file__).resolve().parent
-DASH_CSS = (ROOT / "static" / "css" / "dashboard.css").read_text(encoding="utf-8")
+TEXT = json.loads((ROOT / "static" / "data" / "ui_text.json").read_text(encoding="utf-8"))
+DISEASES = json.loads((ROOT / "static" / "data" / "diseases.json").read_text(encoding="utf-8"))
+BY_KEY = {d["key"]: d for d in DISEASES}
+BN_DIGITS = str.maketrans("0123456789", "০১২৩৪৫৬৭৮৯")
 
-ALLOWED_TYPES = ["png", "jpg", "jpeg", "webp", "bmp", "tiff", "tif"]
-MAX_UPLOAD_MB = 10
-
-# Light-theme variable overrides applied on :root so they always take effect
-LIGHT_THEME_OVERRIDE = """
-:root, html, body, .stApp, .main, [data-testid="stAppViewContainer"] {
-    --bg-base: #f4f9f5;
-    --bg-surface: #ffffff;
-    --bg-card: rgba(255, 255, 255, 0.8);
-    --bg-card-hover: rgba(255, 255, 255, 0.95);
-    --bg-card-solid: #ffffff;
-    --bg-input: #ffffff;
-    --bg-overlay: rgba(244, 249, 245, 0.9);
-    --border-subtle: rgba(34, 130, 70, 0.12);
-    --border-medium: rgba(34, 130, 70, 0.22);
-    --border-accent: rgba(34, 160, 80, 0.4);
-    --border-error: rgba(220, 38, 38, 0.3);
-    --text-primary: #1a2e22;
-    --text-secondary: #4a6b55;
-    --text-muted: #7a9985;
-    --text-accent: #15803d;
-    --text-error: #dc2626;
-    --green-400: #22c55e;
-    --green-500: #16a34a;
-    --green-600: #15803d;
-    --green-700: #166534;
-    --green-800: #14532d;
-    --green-900: #052e16;
-    --gradient-brand: linear-gradient(135deg, #15803d, #16a34a, #22c55e);
-    --gradient-brand-btn: linear-gradient(135deg, #16a34a, #15803d);
-    --gradient-bar: linear-gradient(90deg, #15803d, #16a34a, #22c55e);
-    --gradient-bar-dim: linear-gradient(90deg, rgba(22,163,74,0.3), rgba(34,197,94,0.12));
-    --gradient-glow: 0 4px 20px rgba(22, 163, 74, 0.12);
-    --gradient-glow-strong: 0 4px 28px rgba(22, 163, 74, 0.2);
-    --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
-    --shadow-card-hover: 0 8px 28px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(22,163,74,0.18);
-    --shadow-btn: 0 4px 16px rgba(22, 163, 74, 0.2);
-    --glass-bg: rgba(255, 255, 255, 0.65);
-    --glass-blur: 12px;
-    --glass-border: rgba(34, 130, 70, 0.12);
-    --toggle-bg: rgba(34, 197, 94, 0.15);
-    --toggle-knob: #16a34a;
-    /* Override Streamlit config.toml dark theme tokens */
-    --background-color: #f4f9f5 !important;
-    --secondary-background-color: #ffffff !important;
-    --text-color: #1a2e22 !important;
-    --primary-color: #16a34a !important;
-    color-scheme: light !important;
+EXTRA = {
+    "en": {"lang": "Language", "tab_cam": "📷 Take photo", "tab_up": "🖼️ Upload a photo",
+           "no_photo": "Take or upload a photo first.", "loading": "Getting the AI ready (first time can take a minute)...",
+           "encyclopedia": "Disease Encyclopedia", "sdg": "UN Sustainable Development Goals"},
+    "bn": {"lang": "ভাষা", "tab_cam": "📷 ছবি তুলুন", "tab_up": "🖼️ ছবি আপলোড",
+           "no_photo": "আগে একটি ছবি তুলুন বা আপলোড করুন।", "loading": "এআই প্রস্তুত হচ্ছে (প্রথমবার এক মিনিট লাগতে পারে)...",
+           "encyclopedia": "রোগ বিশ্বকোষ", "sdg": "জাতিসংঘের টেকসই উন্নয়ন লক্ষ্য"},
 }
 
-/* Native Streamlit widgets: kill residual dark surfaces in light mode */
-.stApp [data-testid="stTextInput"] [data-baseweb="input"] {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
-    border: 1px solid rgba(34, 130, 70, 0.28) !important;
-    box-shadow: none !important;
-}
-.stApp [data-testid="stTextInput"] [data-baseweb="base-input"],
-.stApp [data-testid="stTextInput"] [data-baseweb="input"] > div,
-.stApp [data-testid="stTextInput"] div[data-baseweb="base-input"] > div,
-.stApp [data-testid="stTextInput"] input,
-.stApp [data-testid="stTextInput"] textarea {
-    background: transparent !important;
-    background-color: transparent !important;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
-    color: #1a2e22 !important;
-    caret-color: #1a2e22 !important;
-}
-.stApp [data-testid="stTextInput"] input::placeholder {
-    color: #7a9985 !important;
-    opacity: 1 !important;
-}
+st.set_page_config(page_title="AmropaliNet - Mango Disease Doctor", page_icon="🥭", layout="centered")
 
-/* Uploaded-file chip: force light surfaces over Streamlit base=dark */
-.stApp [data-testid="stFileUploader"] section,
-.stApp [data-testid="stFileUploader"] section > div,
-.stApp [data-testid="stFileUploader"] [data-testid="stUploadedFile"],
-.stApp [data-testid="stFileUploaderFile"],
-.stApp [data-testid="stFileUploader"] [data-testid="stFileUploaderFileName"],
-.stApp [data-testid="stFileUploader"] [data-testid="stFileUploaderFileData"],
-.stApp [data-testid="stFileUploader"] [class*="uploadedFile"],
-.stApp [data-testid="stFileUploader"] [class*="UploadedFile"],
-.stApp [data-testid="stFileUploader"] li,
-.stApp [data-testid="stFileUploaderDropzone"] {
-    background: #eef7f1 !important;
-    background-color: #eef7f1 !important;
-    color: #1a2e22 !important;
-    border-color: rgba(34, 130, 70, 0.25) !important;
-}
-.stApp [data-testid="stFileUploader"] [data-testid="stUploadedFile"] *,
-.stApp [data-testid="stFileUploader"] [data-testid="stFileUploaderFileName"],
-.stApp [data-testid="stFileUploader"] [data-testid="stFileUploaderFileData"] *,
-.stApp [data-testid="stFileUploader"] span,
-.stApp [data-testid="stFileUploader"] small,
-.stApp [data-testid="stFileUploader"] p,
-.stApp [data-testid="stFileUploader"] button {
-    color: #1a2e22 !important;
-}
-.stApp [data-testid="stFileUploader"] [data-testid="stUploadedFile"],
-.stApp [data-testid="stFileUploaderFile"] {
-    border: 1px solid rgba(34, 130, 70, 0.28) !important;
-    border-radius: 10px !important;
-}
-.stApp .dash-toast,
-.stApp .dash-toast.dash-error {
-    background: #ffffff !important;
-    border-color: rgba(220, 38, 38, 0.35) !important;
-}
-"""
+# ── Language ─────────────────────────────────────────────────────────────────
+if "lang" not in st.session_state:
+    st.session_state.lang = "bn"
 
-st.set_page_config(
-    page_title="AmropaliNet — Mango Disease Dashboard",
-    page_icon="🥭",
-    layout="wide",
-    initial_sidebar_state="collapsed",
+
+def lang() -> str:
+    return st.session_state.lang
+
+
+def t(key: str) -> str:
+    return EXTRA[lang()].get(key) or TEXT[lang()].get(key) or TEXT["en"].get(key) or key
+
+
+def L(obj):
+    """Pick the current language from {"en": ..., "bn": ...}."""
+    if isinstance(obj, dict):
+        return obj.get(lang()) or obj.get("en")
+    return obj
+
+
+def num(x) -> str:
+    return str(x).translate(BN_DIGITS) if lang() == "bn" else str(x)
+
+
+def pct(x: float, dp: int = 1) -> str:
+    return num(f"{x * 100:.{dp}f}") + "%"
+
+
+def esc(s) -> str:
+    return html.escape(str(s))
+
+
+# ── Style (orchard palette, Bangla font) ─────────────────────────────────────
+st.markdown(
+    """
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600;700&family=Poppins:wght@400;600;800&display=swap');
+html, body, [class*="css"], .stApp, .stMarkdown, button, input, label { font-family: "Hind Siliguri", "Poppins", sans-serif !important; }
+.stApp { background: linear-gradient(180deg, #F8FBF1 0%, #EEF6E3 100%); }
+.block-container { padding-top: 3.6rem; max-width: 820px; }  /* keep content below Streamlit's top bar */
+.ticker { background: linear-gradient(90deg,#1B5E20,#2E7D32); color:#F1FAE6; padding:8px 14px; border-radius:12px; font-size:.9rem; margin-bottom:12px; }
+.brand { font-family:"Poppins",sans-serif; font-weight:800; font-size:1.7rem; color:#1D3A1F; margin:0; }
+.brand span { color:#FB8C00; }
+.badge { display:inline-block; padding:6px 12px; border-radius:999px; background:#fff; border:1px solid #DCEBCD; color:#2E7D32; font-weight:600; font-size:.85rem; }
+.hero-title { font-size:2.2rem; font-weight:800; line-height:1.15; color:#1D3A1F; margin:.4rem 0 .2rem; }
+.hero-title b { background:linear-gradient(90deg,#2E7D32,#FB8C00); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.muted { color:#4E6B4A; }
+.card { background:#fff; border:1px solid #DCEBCD; border-radius:18px; padding:18px 20px; box-shadow:0 4px 14px rgba(29,58,31,.07); margin:10px 0; }
+.verdict { border-left:8px solid var(--tone,#2E7D32); }
+.verdict h3 { margin:.1rem 0; font-size:1.6rem; color:#1D3A1F; }
+.verdict h3 em { font-style:normal; color:var(--tone,#2E7D32); }
+.sci { font-style:italic; color:#6B8466; }
+.pill { display:inline-block; padding:3px 10px; border-radius:999px; font-size:.8rem; font-weight:600; margin:2px 4px 2px 0; background:#F1F7E8; color:#4E6B4A; }
+.pill.high { background:#FDECEA; color:#C62828; } .pill.medium { background:#FFF4DB; color:#7A4A00; } .pill.none { background:#E3F2D3; color:#1B5E20; }
+.big { font-size:2rem; font-weight:800; color:#1D3A1F; }
+.warn { background:#FFF4DB; color:#7A4A00; border-radius:12px; padding:10px 14px; }
+.bad { background:#FDECEA; color:#C62828; border-radius:12px; padding:10px 14px; font-weight:600; }
+.good { background:#E3F2D3; color:#1B5E20; border-radius:12px; padding:10px 14px; font-weight:600; }
+.bar { height:9px; border-radius:9px; background:#F1F7E8; overflow:hidden; margin:2px 0 8px; }
+.bar i { display:block; height:100%; border-radius:9px; background:#9CCC65; }
+.bar.top i { background:linear-gradient(90deg,#388E3C,#FFB300); }
+.sdg { display:inline-block; color:#fff; font-weight:700; border-radius:10px; padding:4px 10px; margin-right:8px; }
+.foot { background:#1F4D24; color:#E8F5E0; border-radius:18px; padding:18px 20px; margin-top:24px; font-size:.92rem; }
+.foot a { color:#FFD54F; }
+div.stButton > button, div.stDownloadButton > button { border-radius:999px; font-weight:700; min-height:48px; }
+div.stButton > button[kind="primary"] { background:linear-gradient(135deg,#2E7D32,#43A047); border:0; }
+</style>
+""",
+    unsafe_allow_html=True,
 )
 
-if "theme" not in st.session_state:
-    st.session_state.theme = "dark"
+
+# ── AI (cached) ──────────────────────────────────────────────────────────────
+@st.cache_resource(show_spinner=False)
+def warm_up() -> bool:
+    from mango_disease_ai.model import load_mango_detector, load_model
+
+    load_model()
+    load_mango_detector()
+    return True
 
 
-def inject_styles() -> None:
-    theme = st.session_state.get("theme", "dark")
-    extra = LIGHT_THEME_OVERRIDE if theme == "light" else ""
-    scheme = "light" if theme == "light" else "dark"
+@st.cache_data(show_spinner=False, max_entries=6)
+def run_analysis(image_bytes: bytes) -> dict:
+    from mango_disease_ai import analyze
+
+    return analyze(image_bytes, include_gradcam=True)
+
+
+@st.cache_data(show_spinner=False, max_entries=12)
+def make_pdf(digest: str, image_bytes: bytes, name: str, pdf_lang: str) -> bytes:
+    from mango_disease_ai import generate_pdf
+
+    return generate_pdf(run_analysis(image_bytes), user_name=name, lang=pdf_lang)
+
+
+def b64_image(b64: str) -> Image.Image:
+    return Image.open(io.BytesIO(base64.b64decode(b64)))
+
+
+# ── Header ───────────────────────────────────────────────────────────────────
+top_l, top_r = st.columns([3, 2])
+with top_l:
+    st.markdown('<p class="brand">🥭 Amropali<span>Net</span></p>', unsafe_allow_html=True)
+with top_r:
+    # A callback (not st.rerun mid-script) so the photo widgets below keep their value
+    def _set_lang():
+        st.session_state.lang = "bn" if st.session_state.lang_choice == "বাংলা" else "en"
+
+    if "lang_choice" not in st.session_state:
+        st.session_state.lang_choice = "বাংলা" if lang() == "bn" else "English"
+    st.radio("Language / ভাষা", ["বাংলা", "English"], horizontal=True,
+             label_visibility="collapsed", key="lang_choice", on_change=_set_lang)
+
+st.markdown(f'<div class="ticker">{esc(t("ticker.1"))}<br>{esc(t("ticker.2"))}</div>', unsafe_allow_html=True)
+st.markdown(
+    f'<span class="badge">{esc(t("hero.badge"))}</span>'
+    f'<div class="hero-title">{esc(t("hero.title1"))} <b>{esc(t("hero.title2"))}</b></div>'
+    f'<p class="muted">{esc(t("hero.sub"))}</p>',
+    unsafe_allow_html=True,
+)
+
+# ── Scan ─────────────────────────────────────────────────────────────────────
+st.subheader(t("detect.title"))
+st.caption(t("detect.sub"))
+
+
+def _photo_changed():
+    # The farmer took or removed a photo: forget the previous result
+    st.session_state.pop("checked", None)
+    st.session_state.pop("checked_bytes", None)
+
+
+tab_cam, tab_up = st.tabs([t("tab_cam"), t("tab_up")])
+with tab_cam:
+    # Fixed (language-independent) labels + keys: a changing label would reset the widget
+    cam = st.camera_input("Camera / ক্যামেরা", label_visibility="collapsed", key="camera", on_change=_photo_changed)
+with tab_up:
+    up = st.file_uploader("Photo / ছবি", type=["jpg", "jpeg", "png", "webp", "bmp", "tif", "tiff"],
+                          label_visibility="collapsed", key="upload",
+                          on_change=_photo_changed)
+    st.caption(t("detect.hint"))
+
+photo = cam or up
+image_bytes = None
+if photo is not None:
+    raw = photo.getvalue()
+    try:
+        img = Image.open(io.BytesIO(raw)).convert("RGB")
+        img.thumbnail((1600, 1600))
+        buf = io.BytesIO()
+        img.save(buf, "JPEG", quality=90)
+        image_bytes = buf.getvalue()
+    except Exception:
+        st.markdown(f'<div class="bad">{esc(t("err.bad"))}</div>', unsafe_allow_html=True)
+
+if st.button(t("detect.check"), type="primary", use_container_width=True, disabled=image_bytes is None):
+    st.session_state.checked = hashlib.sha1(image_bytes).hexdigest()
+    st.session_state.checked_bytes = image_bytes
+
+# Keep the checked photo across reruns (for example a language switch), even if a
+# photo widget is re-created and briefly reports no file.
+if image_bytes is None and st.session_state.get("checked_bytes"):
+    image_bytes = st.session_state.checked_bytes
+
+digest = hashlib.sha1(image_bytes).hexdigest() if image_bytes else None
+show = digest is not None and st.session_state.get("checked") == digest
+
+# ── Result ───────────────────────────────────────────────────────────────────
+if show:
+    try:
+        with st.spinner(t("loading")):
+            warm_up()
+        with st.spinner(t("detect.loading1")):
+            result = run_analysis(image_bytes)
+    except Exception as exc:  # model file / CLIP download problems
+        st.error(f"{t('err.server')}\n\n{exc}")
+        st.stop()
+
+    if not result["is_mango"]:
+        c1, c2 = st.columns([1, 2])
+        with c1:
+            st.image(image_bytes, use_container_width=True)
+        with c2:
+            st.markdown(
+                f'<div class="card" style="border-left:8px solid #C62828"><h3 style="color:#C62828;margin:0">{esc(t("nm.title"))}</h3>'
+                f'<p class="muted">{esc(t("nm.sub").replace("{pct}", pct(result["mango_confidence"], 0)))}</p>'
+                f'<ul><li>{esc(t("nm.t1"))}</li><li>{esc(t("nm.t2"))}</li><li>{esc(t("nm.t3"))}</li></ul></div>',
+                unsafe_allow_html=True,
+            )
+        st.stop()
+
+    d = BY_KEY.get(result["predicted_class"], BY_KEY["Healthy"])
+    healthy = d["key"] == "Healthy"
+    conf = float(result["confidence"])
+    tone = "#2E7D32" if healthy else "#E65100"
+    title = f'{esc(t("res.healthy"))} 🌿' if healthy else f'{esc(t("res.sick"))} <em>{esc(L(d["name"]))}</em>'
+    parts = "".join(f'<span class="pill">{esc(t("part." + p))}</span>' for p in d["parts"])
     st.markdown(
-        f"<style>\n{DASH_CSS}\n{extra}\n"
-        f"html {{ color-scheme: {scheme}; }}\n"
-        f"</style>",
+        f'<div class="card verdict" style="--tone:{tone}">'
+        f'<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">'
+        f'<div><span class="muted" style="font-size:.8rem;font-weight:700;color:#FB8C00">{esc(t("res.kicker"))}</span>'
+        f'<h3>{title}</h3><div class="sci">{esc(d["sci"])}</div>'
+        f'<span class="pill {d["risk"]}">{esc(t("res.risk"))}: {esc(t("risk." + d["risk"]))}</span>{parts}</div>'
+        f'<div style="text-align:right"><div class="big">{pct(conf, 0)}</div><div class="muted">{esc(t("res.sure"))}</div></div>'
+        f"</div></div>",
         unsafe_allow_html=True,
     )
-    if theme == "light":
-        # Emotion-styled Streamlit chips ignore many CSS vars; force light paints in-DOM
-        components.html(
-            """
-            <script>
-            (function () {
-              const doc = window.parent.document;
-              function isDarkBg(el) {
-                const bg = window.parent.getComputedStyle(el).backgroundColor || "";
-                const m = bg.match(/rgba?\\((\\d+),\\s*(\\d+),\\s*(\\d+)/i);
-                if (!m) return false;
-                return (+m[1] + +m[2] + +m[3]) < 140;
-              }
-              function paint() {
-                const roots = doc.querySelectorAll('[data-testid="stFileUploader"]');
-                roots.forEach((root) => {
-                  root.querySelectorAll("*").forEach((el) => {
-                    if (isDarkBg(el)) {
-                      el.style.setProperty("background", "#eef7f1", "important");
-                      el.style.setProperty("background-color", "#eef7f1", "important");
-                    }
-                  });
-                  root.querySelectorAll(
-                    '[data-testid="stUploadedFile"], [data-testid="stFileUploaderFile"], [data-testid="stFileUploaderFileName"], span, small, p'
-                  ).forEach((el) => {
-                    el.style.setProperty("color", "#1a2e22", "important");
-                  });
-                });
-              }
-              paint();
-              const obs = new MutationObserver(paint);
-              obs.observe(doc.body, { childList: true, subtree: true });
-            })();
-            </script>
-            """,
-            height=0,
-            width=0,
-        )
+    if conf < 0.7:
+        st.markdown(f'<div class="warn">{esc(t("res.lowconf"))}</div>', unsafe_allow_html=True)
 
+    # Heatmap + marked area
+    st.markdown(f"#### 🔥 {t('res.heattitle')}")
+    cols = st.columns(3 if (result.get("marked_base64") and not healthy) else 2)
+    cols[0].image(b64_image(result["original_base64"]), caption=t("res.photo"), use_container_width=True)
+    cols[1].image(b64_image(result["gradcam_base64"]), caption=t("res.heat"), use_container_width=True)
+    if len(cols) == 3:
+        cols[2].image(b64_image(result["marked_base64"]), caption=t("res.marked"), use_container_width=True)
+    if healthy:
+        st.markdown(f'<div class="good">{esc(t("res.noaffected"))}</div>', unsafe_allow_html=True)
+    elif result.get("affected_percent") is not None:
+        msg = t("res.affected").replace("{pct}", num(round(result["affected_percent"])) + "%")
+        st.markdown(f'<div class="bad">{esc(msg)}</div>', unsafe_allow_html=True)
+    st.caption(t("res.heatnote"))
 
-def html(fragment: str) -> None:
-    if fragment:
-        st.html(fragment)
+    # Advice
+    a1, a2 = st.columns(2)
+    with a1:
+        st.markdown(f"#### ✅ {t('res.todo')}")
+        st.markdown("\n".join(f"{num(i)}. {r}" for i, r in enumerate(L(d["remedies"]), 1)))
+    with a2:
+        st.markdown(f"#### 👀 {t('res.signs')}")
+        st.markdown("\n".join(f"- {s}" for s in L(d["symptoms"])))
 
+    # All scores
+    with st.expander(f"📊 {t('res.scores')}"):
+        rows = []
+        for i, s in enumerate(result["all_scores"]):
+            name = L(BY_KEY[s["class"]]["name"]) if s["class"] in BY_KEY else s["class"]
+            rows.append(f'<div style="display:flex;justify-content:space-between"><span>{esc(name)}</span><b>{pct(s["score"])}</b></div>'
+                        f'<div class="bar {"top" if i == 0 else ""}"><i style="width:{s["score"] * 100:.1f}%"></i></div>')
+        st.markdown("".join(rows), unsafe_allow_html=True)
 
-def trigger_pdf_download(pdf_bytes: bytes, filename: str) -> None:
-    """Start a browser download immediately (no extra UI button)."""
-    b64 = base64.b64encode(pdf_bytes).decode("ascii")
-    safe_name = (
-        "".join(ch if ch.isalnum() or ch in "-_." else "_" for ch in filename)
-        or "AmropaliNet_Report.pdf"
-    )
-    components.html(
-        f"""
-        <html><body>
-        <a id="amropali-pdf-dl" href="data:application/pdf;base64,{b64}" download="{safe_name}"></a>
-        <script>
-          const link = document.getElementById("amropali-pdf-dl");
-          if (link) {{ link.click(); }}
-        </script>
-        </body></html>
-        """,
-        height=0,
-        width=0,
-    )
+    # Garden impact
+    with st.expander(f"🌳 {t('garden.title')}"):
+        st.markdown(f"**{t('garden.spread')}:** {L(d['spread'])}")
+        st.markdown(f"**{t('garden.season')}:** {num(L(d['season']))}")
+        st.markdown(f"**{t('dis.prevent')}:**\n" + "\n".join(f"- {p}" for p in L(d["prevent"])))
 
-
-def render_header() -> None:
-    """Brand bar + working light/dark theme toggle."""
-    brand_col, toggle_col = st.columns([18, 1], gap="small", vertical_alignment="center")
-    with brand_col:
-        html(brand_html(st.session_state.theme))
-    with toggle_col:
-        is_light = st.session_state.theme == "light"
-        label = "☀️" if is_light else "🌙"
-        help_text = "Switch to dark theme" if is_light else "Switch to light theme"
-        if st.button(
-            label,
-            key="theme_toggle",
-            help=help_text,
-            use_container_width=True,
-        ):
-            st.session_state.theme = "dark" if is_light else "light"
-            st.rerun()
-
-
-@st.cache_resource(show_spinner=False)
-def get_aa_enet():
-    return load_model()
-
-
-@st.cache_resource(show_spinner=False)
-def get_clip():
-    return load_mango_detector()
-
-
-def ensure_models_loaded() -> None:
-    get_aa_enet()
-    get_clip()
-
-
-def run_classify(pil_img: Image.Image) -> tuple[dict | None, str | None]:
-    """CLIP validation + AA-ENet classification only (no Grad-CAM)."""
-    try:
-        is_mango_pred, mango_conf = is_mango(pil_img)
-        if not is_mango_pred:
-            return None, (
-                "This does not appear to be a mango. "
-                "Please upload a clear photo of a mango fruit or mango leaf. "
-                f"(mango confidence: {mango_conf * 100:.1f}%)"
-            )
-
-        classification = classify_image(pil_img)
-        predicted = classification["predicted_class"]
-        return {
-            "classification": classification,
-            "disease_info": DISEASE_INFO.get(predicted, {}),
-            "gradcam": None,
-        }, None
-    except Exception:
-        logger.error("Classify failed:\n%s", traceback.format_exc())
-        return None, "Classification failed. Please try another image."
-
-
-def run_gradcam_for_result(pil_img: Image.Image, predicted_class: str) -> dict:
-    pred_idx = CLASSES.index(predicted_class)
-    return generate_gradcam(pil_img, class_idx=pred_idx)
-
-
-def open_uploaded_image(uploaded) -> Image.Image | None:
-    try:
-        return Image.open(uploaded).convert("RGB")
-    except Exception:
-        return None
-
-
-# ── Shell ────────────────────────────────────────────────────────────────────
-inject_styles()
-render_header()
-
-models_ok = True
-try:
-    with st.spinner("Loading models (first visit may take a minute)…"):
-        ensure_models_loaded()
-except Exception as exc:
-    models_ok = False
-    logger.error("Model load failed:\n%s", traceback.format_exc())
-    html(error_banner_html(f"Failed to load models: {type(exc).__name__}: {exc}"))
-
-left, right = st.columns([1, 2.5], gap="large")
-
-# ── Left column ──────────────────────────────────────────────────────────────
-with left:
-    with st.container(border=True):
-        html(side_title("📁", "Upload Mango Image"))
-        uploaded = st.file_uploader(
-            "Upload mango image",
-            type=ALLOWED_TYPES,
-            label_visibility="collapsed",
-            key="mango_uploader",
-        )
-        if uploaded is not None:
-            html(file_chip_html(uploaded.name, uploaded.size / (1024 * 1024)))
-        html(upload_requirements_html())
-
-    with st.container(border=True):
-        html(side_title("⚙️", "Analysis Controls"))
-        analyze = st.button(
-            "🔬  Analyze & Classify",
-            type="primary",
-            use_container_width=True,
-            disabled=not (models_ok and uploaded is not None),
-            key="btn_analyze",
-        )
-        show_cam = st.button(
-            "👁  GradCAM Visualization",
-            type="secondary",
-            use_container_width=True,
-            disabled="result" not in st.session_state,
-            key="btn_gradcam",
-        )
-        st.text_input(
-            "Your name (for PDF report)",
-            placeholder="Enter full name",
-            max_chars=100,
-            key="report_name",
-        )
-        gen_pdf = st.button(
-            "📄  Download Report",
-            use_container_width=True,
-            disabled="result" not in st.session_state,
-            key="btn_report",
-        )
-
-# ── File change resets ───────────────────────────────────────────────────────
-if uploaded is not None:
-    if uploaded.size > MAX_UPLOAD_MB * 1024 * 1024:
-        html(error_banner_html(f"File too large. Maximum size is {MAX_UPLOAD_MB} MB."))
+    # PDF report
+    st.markdown(f"#### 📄 {t('rep.title')}")
+    st.caption(t("rep.sub"))
+    st.markdown(f"**{t('rep.name')}**")
+    name = st.text_input("Name / নাম", placeholder="Name / নাম", label_visibility="collapsed", key="report_name").strip()
+    if name:
+        st.caption(t("rep.choose"))
+        p1, p2 = st.columns(2)
+        safe = "".join(c if c.isascii() and c.isalnum() else "_" for c in name).strip("_") or "report"
+        for col, pdf_lang, label in ((p1, "bn", t("rep.bn")), (p2, "en", t("rep.en"))):
+            try:
+                data = make_pdf(digest, image_bytes, name, pdf_lang)
+                col.download_button(f"⬇️ {label}", data=data, file_name=f"AmropaliNet_Report_{safe}_{pdf_lang.upper()}.pdf",
+                                    mime="application/pdf", use_container_width=True)
+            except Exception as exc:
+                col.error(f"{t('err.bnpdf') if pdf_lang == 'bn' else t('err.server')}\n\n{exc}")
     else:
-        file_key = f"{uploaded.name}:{uploaded.size}:{uploaded.type}"
-        if st.session_state.get("upload_key") != file_key:
-            st.session_state["upload_key"] = file_key
-            st.session_state.pop("result", None)
-            st.session_state.pop("pdf_bytes", None)
-            st.session_state["show_gradcam"] = False
+        st.caption(t("rep.err"))
 
-# ── Analyze only ─────────────────────────────────────────────────────────────
-if analyze and models_ok and uploaded is not None:
-    pil_img = open_uploaded_image(uploaded)
-    if pil_img is None:
-        html(error_banner_html("Could not read the image. Please upload a valid file."))
-    else:
-        with st.spinner("Validating mango → classifying with AA-ENet…"):
-            result, err = run_classify(pil_img)
-        if err:
-            st.session_state.pop("result", None)
-            st.session_state.pop("pdf_bytes", None)
-            st.session_state["show_gradcam"] = False
-            html(error_banner_html(err))
-        else:
-            st.session_state["result"] = result
-            st.session_state["show_gradcam"] = False
-            st.session_state.pop("pdf_bytes", None)
-            logger.info(
-                "Classification: %s (%.4f)",
-                result["classification"]["predicted_class"],
-                result["classification"]["confidence"],
-            )
-            st.rerun()
+# ── Encyclopedia ─────────────────────────────────────────────────────────────
+st.divider()
+st.subheader(f"📚 {t('encyclopedia')}")
+st.caption(t("dis.sub"))
+for d in DISEASES:
+    with st.expander(f"{d['emoji']}  {L(d['name'])}  ·  {t('risk.' + d['risk'])}"):
+        c1, c2 = st.columns([1, 2])
+        photo_path = ROOT / "static" / "img" / "diseases" / (d["key"].lower().replace(" ", "-") + ".jpg")
+        if photo_path.exists():
+            c1.image(str(photo_path), use_container_width=True)
+        c2.markdown(f"*{d['sci']}*\n\n{L(d['desc'])}")
+        st.markdown(f"**👀 {t('dis.symptoms')}**\n" + "\n".join(f"- {s}" for s in L(d["symptoms"])))
+        st.markdown(f"**✅ {t('dis.treatment')}**\n" + "\n".join(f"{num(i)}. {r}" for i, r in enumerate(L(d["remedies"]), 1)))
+        st.markdown(f"**🌬️ {t('dis.spread')}:** {L(d['spread'])}")
 
-# ── Grad-CAM on demand ───────────────────────────────────────────────────────
-if show_cam and "result" in st.session_state and uploaded is not None:
-    pil_img = open_uploaded_image(uploaded)
-    if pil_img is None:
-        html(error_banner_html("Could not read the image for Grad-CAM."))
-    else:
-        result = st.session_state["result"]
-        if not result.get("gradcam"):
-            with st.spinner("Generating Grad-CAM visualization…"):
-                result["gradcam"] = run_gradcam_for_result(
-                    pil_img,
-                    result["classification"]["predicted_class"],
-                )
-                st.session_state["result"] = result
-        st.session_state["show_gradcam"] = True
-        st.rerun()
+# ── Environment + SDGs ───────────────────────────────────────────────────────
+st.divider()
+st.subheader(f"🌱 {t('env.title')}")
+st.caption(t("env.sub"))
+e1, e2 = st.columns(2)
+for i, (icon, key) in enumerate((("🎯", "c1"), ("🥭", "c2"), ("🐝", "c3"), ("👨‍🌾", "c4"))):
+    (e1 if i % 2 == 0 else e2).markdown(
+        f'<div class="card"><b>{icon} {esc(t("env." + key + "t"))}</b><br><span class="muted">{esc(t("env." + key + "d"))}</span></div>',
+        unsafe_allow_html=True)
+st.markdown(f"**{t('sdg')}**")
+for n, color in ((1, "#E5243B"), (2, "#DDA63A"), (12, "#BF8B2E"), (13, "#3F7E44"), (15, "#56C02B")):
+    st.markdown(f'<div style="margin:6px 0"><span class="sdg" style="background:{color}">SDG {num(n)}</span>'
+                f'<b>{esc(t(f"env.sdg{n}"))}</b> - <span class="muted">{esc(t(f"env.sdg{n}d"))}</span></div>',
+                unsafe_allow_html=True)
 
-# ── PDF generation + automatic download ──────────────────────────────────────
-if gen_pdf and "result" in st.session_state:
-    name = (st.session_state.get("report_name") or "").strip()
-    if not name:
-        html(error_banner_html("Please enter your name before generating the PDF report."))
-    elif uploaded is None:
-        html(error_banner_html("Please re-upload the image to generate the report."))
-    else:
-        result = st.session_state["result"]
-        pil_img = open_uploaded_image(uploaded)
-        try:
-            with st.spinner("Preparing PDF report…"):
-                if not result.get("gradcam") and pil_img is not None:
-                    result["gradcam"] = run_gradcam_for_result(
-                        pil_img,
-                        result["classification"]["predicted_class"],
-                    )
-                    st.session_state["result"] = result
-                if not result.get("gradcam"):
-                    raise RuntimeError("Grad-CAM images unavailable")
-                pdf_bytes = bytes(
-                    generate_report(
-                        user_name=name,
-                        original_b64=result["gradcam"]["original_b64"],
-                        heatmap_b64=result["gradcam"]["heatmap_b64"],
-                        classification=result["classification"],
-                        disease_info=result["disease_info"],
-                    )
-                )
-            safe = "".join(
-                ch if ch.isalnum() or ch in "-_ " else "_" for ch in name
-            ).strip().replace(" ", "_")
-            filename = f"AmropaliNet_Report_{safe}.pdf"
-            st.session_state["pdf_bytes"] = pdf_bytes
-            st.session_state["pdf_name"] = filename
-            trigger_pdf_download(pdf_bytes, filename)
-        except Exception:
-            logger.error("Report failed:\n%s", traceback.format_exc())
-            html(error_banner_html("Report generation failed. Please try again."))
+# ── Developers ───────────────────────────────────────────────────────────────
+st.divider()
+st.subheader(f"👩‍💻 {t('dev.title')}")
+st.caption(t("dev.sub"))
+d1, d2, d3 = st.tabs(["Python", "REST API", "JavaScript"])
+d1.code('''pip install mango-disease-ai
 
-# ── Right column ─────────────────────────────────────────────────────────────
-with right:
-    if "result" not in st.session_state:
-        html(empty_result_html())
-    else:
-        result = st.session_state["result"]
-        clf = result["classification"]
-        info = result["disease_info"]
+from mango_disease_ai import analyze, generate_pdf
 
-        html(classification_result_html(clf["predicted_class"], clf["confidence"], info))
-        html(probabilities_html(clf["all_scores"]))
+result = analyze("mango.jpg")
+if result["is_mango"]:
+    print(result["predicted_class"], result["confidence"])
+    pdf = generate_pdf(result, user_name="Arpon", lang="bn")
+    open("report.pdf", "wb").write(pdf)''', language="python")
+d2.code('''pip install "mango-disease-ai[api]"
+mango-api            # http://localhost:8000/docs
 
-        # Grad-CAM appears before Diagnosis & Treatment when requested
-        if st.session_state.get("show_gradcam") and result.get("gradcam"):
-            gcam = result["gradcam"]
-            html(gradcam_panel_html(gcam["original_b64"], gcam["heatmap_b64"]))
+curl -F "image=@mango.jpg" http://localhost:8000/api/analyze''', language="bash")
+d3.code('''const form = new FormData();
+form.append("image", fileInput.files[0]);
+const res = await fetch("http://localhost:8000/api/analyze", { method: "POST", body: form });
+const data = await res.json();''', language="javascript")
+st.markdown("[📦 PyPI: mango-disease-ai](https://pypi.org/project/mango-disease-ai/)")
 
-        html(remedies_panel_html(clf["predicted_class"], info))
-
-html(encyclopedia_html())
-html(footer_html())
+# ── Footer ───────────────────────────────────────────────────────────────────
+st.markdown(
+    f'<div class="foot"><b style="font-size:1.1rem">AmropaliNet</b> - {esc(t("foot.tag"))}<br><br>'
+    f'<b>{esc(t("foot.group"))}</b>: Arpon, Oni, Md. Ibtihazzaman<br>'
+    f'{esc(t("foot.sup"))} Dr. Md. Saef Ullah Miah<br>'
+    f'✉️ <a href="mailto:arponamit.55@gmail.com">arponamit.55@gmail.com</a> · '
+    f'<a href="https://github.com/Arpon-30" target="_blank">github.com/Arpon-30</a><br><br>'
+    f'<span style="opacity:.85">{esc(t("foot.disc"))}</span></div>',
+    unsafe_allow_html=True,
+)

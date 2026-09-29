@@ -31,7 +31,7 @@ python run.py                                     # opens http://localhost:8000
 
 ## Deploy
 
-See [`DEPLOY.md`](DEPLOY.md) - free public link from your laptop (Cloudflare Tunnel), or Hugging Face Spaces (PRO).
+See [`DEPLOY.md`](DEPLOY.md) - free 24/7 on **Streamlit Community Cloud** (`streamlit_app.py`), a free public link from your laptop (Cloudflare Tunnel), or Hugging Face Spaces (PRO).
 
 ## Team
 
