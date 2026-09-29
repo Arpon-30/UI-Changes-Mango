@@ -82,18 +82,20 @@ def is_mango(pil_img: Image.Image) -> tuple[bool, float]:
     """
     model, processor = load_mango_detector()
 
-    inputs = processor(
-        text=MANGO_LABELS,
-        images=pil_img,
-        return_tensors="pt",
-        padding=True,
-    )
-
-    with torch.no_grad():
-        outputs = model(**inputs)
-        # logits_per_image shape: [1, num_labels]
-        logits = outputs.logits_per_image
-        probs = torch.softmax(logits, dim=-1).squeeze(0)
+    if hasattr(model, "probs"):  # low-memory LightClip (labels are precomputed)
+        probs = model.probs(pil_img)
+    else:
+        inputs = processor(
+            text=MANGO_LABELS,
+            images=pil_img,
+            return_tensors="pt",
+            padding=True,
+        )
+        with torch.no_grad():
+            outputs = model(**inputs)
+            # logits_per_image shape: [1, num_labels]
+            logits = outputs.logits_per_image
+            probs = torch.softmax(logits, dim=-1).squeeze(0)
 
     # Sum probabilities for mango-positive labels
     mango_conf = sum(float(probs[i]) for i in MANGO_POSITIVE_INDICES)
