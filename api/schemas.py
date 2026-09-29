@@ -71,11 +71,19 @@ class AnalyzeResponse(BaseModel):
     )
     gradcam_base64: Optional[str] = Field(
         None,
-        description="Base64-encoded PNG of the Grad-CAM heatmap overlay. Decode and display as an image.",
+        description="Base64-encoded JPEG of the Grad-CAM heatmap overlay. Decode and display as an image.",
     )
     original_base64: Optional[str] = Field(
         None,
-        description="Base64-encoded PNG of the original (resized to 224×224) input image.",
+        description="Base64-encoded JPEG of the input photo (448x448).",
+    )
+    marked_base64: Optional[str] = Field(
+        None,
+        description="Base64-encoded JPEG with the likely affected area outlined (null for Healthy).",
+    )
+    affected_percent: Optional[float] = Field(
+        None,
+        description="Share of the image inside the marked area, in percent (AI estimate).",
     )
 
 

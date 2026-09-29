@@ -128,6 +128,8 @@ def analyze(
             "disease_info": {},
             "gradcam_base64": None,
             "original_base64": None,
+            "marked_base64": None,
+            "affected_percent": None,
         }
 
     # ── Step 2: Disease classification ───────────────────────────────────────
@@ -138,11 +140,17 @@ def analyze(
     # ── Step 3: Grad-CAM heatmap ─────────────────────────────────────────────
     gradcam_b64 = None
     original_b64 = None
+    marked_b64 = None
+    affected_percent = None
 
     if include_gradcam:
         gradcam_result = generate_gradcam(pil_img)
         gradcam_b64 = gradcam_result["heatmap_b64"]
         original_b64 = gradcam_result["original_b64"]
+        # A healthy mango has no diseased area to outline.
+        if pred_class != "Healthy":
+            marked_b64 = gradcam_result["marked_b64"]
+            affected_percent = gradcam_result["affected_percent"]
 
     return {
         "is_mango": True,
@@ -153,4 +161,6 @@ def analyze(
         "disease_info": disease_info,
         "gradcam_base64": gradcam_b64,
         "original_base64": original_b64,
+        "marked_base64": marked_b64,
+        "affected_percent": affected_percent,
     }
