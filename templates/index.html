@@ -7,8 +7,9 @@
     <meta name="description" content="Take one photo of an Amrapali mango. AmropaliNet finds 7 diseases in seconds, shows how they spread in the garden and tells farmers exactly what to do - in Bangla and English." />
     <meta name="theme-color" content="#2E7D32" />
     <meta property="og:title" content="AmropaliNet - Healthy mangoes, greener gardens" />
-    <meta property="og:description" content="AI mango disease detection for Bangladeshi farmers. Built for Hack for Humanity - Hack to Protect the Environment." />
+    <meta property="og:description" content="AI mango disease detection for the mango farmers of Bangladesh - in Bangla and English." />
     <link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" as="image" href="/static/img/photos/hero.jpg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -56,10 +57,10 @@
             <nav class="nav" id="nav" aria-label="Main">
                 <a class="nav__link" href="#home" data-i18n="nav.home"></a>
                 <a class="nav__link" href="#detect" data-i18n="nav.detect"></a>
+                <a class="nav__link" href="#how" data-i18n="nav.how"></a>
                 <a class="nav__link" href="#garden" data-i18n="nav.garden"></a>
                 <a class="nav__link" href="#diseases" data-i18n="nav.diseases"></a>
                 <a class="nav__link" href="#impact" data-i18n="nav.impact"></a>
-                <a class="nav__link" href="#how" data-i18n="nav.how"></a>
             </nav>
 
             <div class="controls">
@@ -81,9 +82,7 @@
     <main>
         <!-- ============ HERO ============ -->
         <section class="hero" id="home">
-            <div class="leaves" aria-hidden="true">
-                <i></i><i></i><i></i><i></i><i></i><i></i>
-            </div>
+            <div class="hero__bg" aria-hidden="true"></div>
             <div class="container hero__grid">
                 <div class="hero__text">
                     <span class="badge-eco" data-i18n="hero.badge"></span>
@@ -108,107 +107,23 @@
                     </ul>
                 </div>
 
-                <!-- Animated orchard scene -->
-                <div class="hero__art" aria-hidden="true">
-                    <svg class="scene" viewBox="0 0 520 440">
-                        <defs>
-                            <radialGradient id="g-sky" cx="50%" cy="40%" r="60%">
-                                <stop offset="0" stop-color="var(--sky-1)"/>
-                                <stop offset="1" stop-color="var(--sky-2)"/>
-                            </radialGradient>
-                            <linearGradient id="g-mango" x1="0" y1="0" x2="1" y2="1">
-                                <stop offset="0" stop-color="#FFE082"/>
-                                <stop offset=".55" stop-color="#FFB300"/>
-                                <stop offset="1" stop-color="#F57C00"/>
-                            </linearGradient>
-                            <clipPath id="clip-land"><circle cx="260" cy="220" r="210"/></clipPath>
-                        </defs>
-                        <circle cx="260" cy="220" r="210" fill="url(#g-sky)"/>
-
-                        <g class="sun">
-                            <circle cx="410" cy="95" r="30" fill="#FFCA28"/>
-                            <g class="sun__rays" stroke="#FFCA28" stroke-width="5" stroke-linecap="round">
-                                <line x1="410" y1="45" x2="410" y2="30"/><line x1="410" y1="145" x2="410" y2="160"/>
-                                <line x1="360" y1="95" x2="345" y2="95"/><line x1="460" y1="95" x2="475" y2="95"/>
-                                <line x1="375" y1="60" x2="364" y2="49"/><line x1="445" y1="130" x2="456" y2="141"/>
-                                <line x1="445" y1="60" x2="456" y2="49"/><line x1="375" y1="130" x2="364" y2="141"/>
-                            </g>
-                        </g>
-
-                        <g class="cloud cloud--a" fill="var(--cloud)">
-                            <ellipse cx="120" cy="90" rx="38" ry="16"/><ellipse cx="146" cy="80" rx="26" ry="18"/><ellipse cx="96" cy="84" rx="20" ry="13"/>
-                        </g>
-                        <g class="cloud cloud--b" fill="var(--cloud)">
-                            <ellipse cx="300" cy="60" rx="30" ry="12"/><ellipse cx="320" cy="52" rx="20" ry="14"/>
-                        </g>
-
-                        <g class="birds" stroke="var(--ink-soft)" stroke-width="2.4" fill="none" stroke-linecap="round">
-                            <path d="M200 120q6-6 12 0q6-6 12 0"/><path d="M232 104q5-5 10 0q5-5 10 0"/>
-                        </g>
-
-                        <!-- hills -->
-                        <g clip-path="url(#clip-land)">
-                            <path d="M40 360 Q150 300 270 340 T500 330 L500 440 L40 440Z" fill="var(--hill-2)"/>
-                            <path d="M20 380 Q140 340 260 368 T510 360 L510 440 L20 440Z" fill="var(--hill-1)"/>
-                            <path d="M20 392 h490" stroke="var(--hill-3)" stroke-width="3" stroke-dasharray="2 10" stroke-linecap="round"/>
-                        </g>
-
-                        <!-- mango tree -->
-                        <g class="tree">
-                            <path d="M262 368 C258 320 262 285 252 250 L270 250 C272 285 276 320 280 368Z" fill="#7B5237"/>
-                            <path d="M262 290 C245 275 232 262 222 240" stroke="#7B5237" stroke-width="8" fill="none" stroke-linecap="round"/>
-                            <path d="M272 285 C290 270 300 258 308 238" stroke="#7B5237" stroke-width="8" fill="none" stroke-linecap="round"/>
-                            <g class="tree__crown">
-                                <circle cx="262" cy="190" r="78" fill="var(--leaf-3)"/>
-                                <circle cx="205" cy="215" r="52" fill="var(--leaf-2)"/>
-                                <circle cx="320" cy="212" r="54" fill="var(--leaf-2)"/>
-                                <circle cx="240" cy="150" r="46" fill="var(--leaf-1)"/>
-                                <circle cx="295" cy="160" r="42" fill="var(--leaf-1)"/>
-                                <circle cx="262" cy="235" r="48" fill="var(--leaf-3)"/>
-                            </g>
-                            <g class="fruits">
-                                <ellipse class="fruit" cx="215" cy="235" rx="11" ry="15" fill="url(#g-mango)"/>
-                                <ellipse class="fruit" cx="252" cy="205" rx="11" ry="15" fill="url(#g-mango)"/>
-                                <ellipse class="fruit" cx="300" cy="238" rx="11" ry="15" fill="url(#g-mango)"/>
-                                <ellipse class="fruit" cx="330" cy="200" rx="10" ry="14" fill="url(#g-mango)"/>
-                                <ellipse class="fruit" cx="275" cy="165" rx="10" ry="14" fill="url(#g-mango)"/>
-                                <ellipse class="fruit" cx="195" cy="190" rx="10" ry="14" fill="url(#g-mango)"/>
-                            </g>
-                        </g>
-
-                        <!-- farmer -->
-                        <g class="farmer">
-                            <ellipse cx="118" cy="392" rx="34" ry="6" fill="#000" opacity=".12"/>
-                            <rect x="104" y="340" width="11" height="50" rx="5" fill="#8D5B3F"/>
-                            <rect x="122" y="340" width="11" height="50" rx="5" fill="#8D5B3F"/>
-                            <path d="M98 318 h42 l6 46 h-54z" fill="#2E7D32"/>
-                            <path d="M98 330 h48 M96 344 h52 M94 356 h56" stroke="#1B5E20" stroke-width="2"/>
-                            <path d="M100 270 q18-8 38 0 l4 52 h-46z" fill="#F5F5F0"/>
-                            <path d="M118 272 v48" stroke="#D7D7CF" stroke-width="2"/>
-                            <g class="farmer__arm">
-                                <path d="M137 276 q18 -8 26 -30" stroke="#F5F5F0" stroke-width="11" stroke-linecap="round" fill="none"/>
-                                <circle cx="164" cy="243" r="7" fill="#A86E4C"/>
-                            </g>
-                            <path d="M101 278 q-12 18 -6 40" stroke="#F5F5F0" stroke-width="11" stroke-linecap="round" fill="none"/>
-                            <circle cx="96" cy="322" r="6.5" fill="#A86E4C"/>
-                            <path d="M78 322 h38 l-5 22 h-28z" fill="#C8A165"/>
-                            <path d="M80 330 h34 M82 337 h30" stroke="#A7803F" stroke-width="2"/>
-                            <circle cx="88" cy="319" r="7" fill="url(#g-mango)"/><circle cx="101" cy="317" r="7" fill="url(#g-mango)"/><circle cx="111" cy="320" r="6" fill="url(#g-mango)"/>
-                            <rect x="113" y="252" width="12" height="14" rx="4" fill="#A86E4C"/>
-                            <circle cx="119" cy="243" r="16" fill="#A86E4C"/>
-                            <circle cx="113" cy="243" r="1.8" fill="#3E2723"/><circle cx="125" cy="243" r="1.8" fill="#3E2723"/>
-                            <path d="M113 250 q6 4 12 0" stroke="#3E2723" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-                            <path d="M84 232 L119 208 L154 232 Q119 240 84 232Z" fill="#D4A94F"/>
-                            <path d="M96 228 L119 212 L142 228" stroke="#B08434" stroke-width="2" fill="none"/>
-                        </g>
-
-                        <!-- sprout -->
-                        <g class="sprout">
-                            <path d="M430 388 v-26" stroke="#388E3C" stroke-width="4" stroke-linecap="round"/>
-                            <path d="M430 372 q-16 -2 -20 -16 q16 0 20 16z" fill="#66BB6A"/>
-                            <path d="M430 366 q14 -4 20 -18 q-16 2 -20 18z" fill="#81C784"/>
-                        </g>
-                    </svg>
+                <!-- Real scan preview (real photo + real model output) -->
+                <div class="hero__preview" aria-hidden="true">
+                    <div class="preview-card">
+                        <div class="preview-card__img">
+                            <img src="/static/img/demo/hero-photo.jpg" alt="" width="448" height="448" />
+                            <img class="preview-card__marked" src="/static/img/demo/hero-marked.jpg" alt="" width="448" height="448" />
+                            <span class="preview-card__beam"></span>
+                        </div>
+                        <div class="preview-card__result">
+                            <span class="preview-card__dot"></span>
+                            <div>
+                                <strong id="hero-result-name"></strong>
+                                <small data-i18n="hero.found"></small>
+                            </div>
+                            <b id="hero-result-pct"></b>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -331,7 +246,9 @@
                             <div class="heat" id="heat">
                                 <figure><img id="img-original" alt="" /><figcaption data-i18n="res.photo"></figcaption></figure>
                                 <figure><img id="img-heat" alt="" /><figcaption data-i18n="res.heat"></figcaption></figure>
+                                <figure id="fig-marked"><img id="img-marked" alt="" /><figcaption data-i18n="res.marked"></figcaption></figure>
                             </div>
+                            <p class="heat__affected" id="heat-affected"></p>
                             <div class="heat__legend" id="heat-legend">
                                 <span data-i18n="res.low"></span><i aria-hidden="true"></i><span data-i18n="res.high"></span>
                             </div>
@@ -381,6 +298,41 @@
             </div>
         </section>
 
+        <!-- ============ HOW IT WORKS ============ -->
+        <section class="section" id="how">
+            <div class="container">
+                <div class="section__head reveal">
+                    <span class="kicker" data-i18n="how.kicker"></span>
+                    <h2 data-i18n="how.title"></h2>
+                </div>
+                <div class="workflow reveal" id="workflow">
+                    <ol class="workflow__steps">
+                        <li data-step="0"><span class="workflow__num">1</span><span data-i18n="how.s1"></span></li>
+                        <li data-step="1"><span class="workflow__num">2</span><span data-i18n="how.s2"></span></li>
+                        <li data-step="2"><span class="workflow__num">3</span><span data-i18n="how.s3"></span></li>
+                        <li data-step="3"><span class="workflow__num">4</span><span data-i18n="how.s4"></span></li>
+                        <li data-step="4"><span class="workflow__num">5</span><span data-i18n="how.s5"></span></li>
+                    </ol>
+                    <div class="workflow__stage" aria-hidden="true">
+                        <div class="workflow__frame">
+                            <img class="wf-layer wf-photo" src="/static/img/demo/photo.jpg" alt="" width="448" height="448" loading="lazy" />
+                            <img class="wf-layer wf-heat" src="/static/img/demo/heat.jpg" alt="" width="448" height="448" loading="lazy" />
+                            <img class="wf-layer wf-marked" src="/static/img/demo/marked.jpg" alt="" width="448" height="448" loading="lazy" />
+                            <span class="wf-flash"></span>
+                            <span class="wf-beam"></span>
+                            <span class="wf-check">✓ <span data-i18n="how.mango"></span></span>
+                            <div class="wf-result">
+                                <strong id="wf-name"></strong>
+                                <span id="wf-pct"></span>
+                                <span class="wf-result__pdf">📄 PDF</span>
+                            </div>
+                        </div>
+                        <div class="workflow__bar"><i></i></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- ============ GARDEN IMPACT ============ -->
         <section class="section section--tint" id="garden">
             <div class="container">
@@ -394,11 +346,29 @@
 
                 <div class="garden reveal">
                     <div class="garden__stage">
-                        <svg class="orchard" id="orchard" viewBox="0 0 600 230" role="img">
-                            <path d="M0 196 Q150 176 300 190 T600 184 V230 H0Z" fill="var(--hill-1)"/>
-                            <g id="orchard-trees"></g>
-                            <g id="orchard-particles"></g>
-                        </svg>
+                        <div class="orchard-wrap">
+                            <svg class="orchard" id="orchard" viewBox="0 0 600 330" role="img">
+                                <defs>
+                                    <radialGradient id="g-canopy" cx="38%" cy="35%" r="70%">
+                                        <stop offset="0" stop-color="#8BC34A"/>
+                                        <stop offset=".55" stop-color="#4E8F2E"/>
+                                        <stop offset="1" stop-color="#2F5E1C"/>
+                                    </radialGradient>
+                                    <radialGradient id="g-sick" cx="38%" cy="35%" r="70%">
+                                        <stop offset="0" stop-color="var(--tone-light, #C9A227)"/>
+                                        <stop offset="1" stop-color="var(--tone, #6D4C41)"/>
+                                    </radialGradient>
+                                    <pattern id="p-rows" width="100" height="110" patternUnits="userSpaceOnUse">
+                                        <rect width="100" height="110" fill="var(--soil-1)"/>
+                                        <path d="M0 55 H100" stroke="var(--soil-2)" stroke-width="16" opacity=".55"/>
+                                    </pattern>
+                                </defs>
+                                <rect width="600" height="330" fill="url(#p-rows)"/>
+                                <g id="orchard-waves"></g>
+                                <g id="orchard-trees"></g>
+                            </svg>
+                            <span class="orchard-caption" data-i18n="garden.map"></span>
+                        </div>
                         <ol class="stages" id="stages">
                             <li data-stage="1"><span class="stages__dot"></span><span data-i18n="garden.stage1"></span></li>
                             <li data-stage="2"><span class="stages__dot"></span><span data-i18n="garden.stage2"></span></li>
@@ -431,6 +401,14 @@
             </div>
         </section>
 
+        <!-- Photo band -->
+        <section class="band" aria-label="Mango harvest">
+            <div class="band__bg" aria-hidden="true"></div>
+            <div class="container band__inner reveal">
+                <p class="band__quote" data-i18n="band.quote"></p>
+            </div>
+        </section>
+
         <!-- ============ ENVIRONMENT ============ -->
         <section class="section section--tint" id="impact">
             <div class="container">
@@ -439,60 +417,45 @@
                     <h2 data-i18n="env.title"></h2>
                     <p data-i18n="env.sub"></p>
                 </div>
-                <div class="eco">
-                    <article class="eco__card reveal">
-                        <div class="eco__icon eco__icon--spray" aria-hidden="true">🎯</div>
-                        <h3 data-i18n="env.c1t"></h3><p data-i18n="env.c1d"></p>
-                    </article>
-                    <article class="eco__card reveal">
-                        <div class="eco__icon eco__icon--fruit" aria-hidden="true">🥭</div>
-                        <h3 data-i18n="env.c2t"></h3><p data-i18n="env.c2d"></p>
-                    </article>
-                    <article class="eco__card reveal">
-                        <div class="eco__icon eco__icon--bee" aria-hidden="true">🐝</div>
-                        <h3 data-i18n="env.c3t"></h3><p data-i18n="env.c3d"></p>
-                    </article>
-                    <article class="eco__card reveal">
-                        <div class="eco__icon eco__icon--farmer" aria-hidden="true">👨‍🌾</div>
-                        <h3 data-i18n="env.c4t"></h3><p data-i18n="env.c4d"></p>
-                    </article>
+                <div class="impact">
+                    <figure class="impact__photo reveal">
+                        <div class="impact__img" role="img" data-i18n-attr="aria-label:env.photo"></div>
+                        <figcaption data-i18n="env.photo"></figcaption>
+                    </figure>
+                    <div class="eco">
+                        <article class="eco__card reveal">
+                            <div class="eco__icon" aria-hidden="true">🎯</div>
+                            <h3 data-i18n="env.c1t"></h3><p data-i18n="env.c1d"></p>
+                            <div class="eco__sdgs"><span style="--c:#BF8B2E" data-n="12">SDG 12</span><span style="--c:#56C02B" data-n="15">SDG 15</span></div>
+                        </article>
+                        <article class="eco__card reveal">
+                            <div class="eco__icon eco__icon--fruit" aria-hidden="true">🥭</div>
+                            <h3 data-i18n="env.c2t"></h3><p data-i18n="env.c2d"></p>
+                            <div class="eco__sdgs"><span style="--c:#DDA63A" data-n="2">SDG 2</span><span style="--c:#BF8B2E" data-n="12">SDG 12</span></div>
+                        </article>
+                        <article class="eco__card reveal">
+                            <div class="eco__icon eco__icon--bee" aria-hidden="true">🐝</div>
+                            <h3 data-i18n="env.c3t"></h3><p data-i18n="env.c3d"></p>
+                            <div class="eco__sdgs"><span style="--c:#56C02B" data-n="15">SDG 15</span><span style="--c:#3F7E44" data-n="13">SDG 13</span></div>
+                        </article>
+                        <article class="eco__card reveal">
+                            <div class="eco__icon eco__icon--farmer" aria-hidden="true">👨‍🌾</div>
+                            <h3 data-i18n="env.c4t"></h3><p data-i18n="env.c4d"></p>
+                            <div class="eco__sdgs"><span style="--c:#E5243B" data-n="1">SDG 1</span><span style="--c:#DDA63A" data-n="2">SDG 2</span></div>
+                        </article>
+                    </div>
                 </div>
-                <div class="sdg reveal">
-                    <p class="sdg__title" data-i18n="env.sdg"></p>
-                    <ul class="sdg__list">
-                        <li class="sdg__item" style="--c:#DDA63A"><b>2</b><span data-i18n="env.sdg2"></span></li>
-                        <li class="sdg__item" style="--c:#BF8B2E"><b>12</b><span data-i18n="env.sdg12"></span></li>
-                        <li class="sdg__item" style="--c:#3F7E44"><b>13</b><span data-i18n="env.sdg13"></span></li>
-                        <li class="sdg__item" style="--c:#56C02B"><b>15</b><span data-i18n="env.sdg15"></span></li>
-                    </ul>
-                </div>
-            </div>
-        </section>
 
-        <!-- ============ HOW IT WORKS ============ -->
-        <section class="section" id="how">
-            <div class="container">
-                <div class="section__head reveal">
-                    <span class="kicker" data-i18n="how.kicker"></span>
-                    <h2 data-i18n="how.title"></h2>
+                <div class="sdg reveal">
+                    <h3 class="sdg__title" data-i18n="env.sdg"></h3>
+                    <ul class="sdg__grid" id="sdg-grid"></ul>
                 </div>
-                <ol class="flow reveal">
-                    <li class="flow__step"><span class="flow__icon">📷</span><h3 data-i18n="how.s1t"></h3><p data-i18n="how.s1d"></p></li>
-                    <li class="flow__step"><span class="flow__icon">🥭</span><h3 data-i18n="how.s2t"></h3><p data-i18n="how.s2d"></p></li>
-                    <li class="flow__step"><span class="flow__icon">🧠</span><h3 data-i18n="how.s3t"></h3><p data-i18n="how.s3d"></p></li>
-                    <li class="flow__step"><span class="flow__icon">🔥</span><h3 data-i18n="how.s4t"></h3><p data-i18n="how.s4d"></p></li>
-                    <li class="flow__step"><span class="flow__icon">📄</span><h3 data-i18n="how.s5t"></h3><p data-i18n="how.s5d"></p></li>
-                </ol>
-                <p class="flow__data reveal" data-i18n="how.data"></p>
             </div>
         </section>
     </main>
 
     <!-- Footer -->
     <footer class="footer">
-        <svg class="footer__wave" viewBox="0 0 1440 60" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M0 30 Q360 0 720 30 T1440 30 V60 H0Z" fill="var(--footer-bg)"/>
-        </svg>
         <div class="footer__body">
             <div class="container footer__grid">
                 <div>
@@ -500,22 +463,31 @@
                         <span class="brand__name">Amropali<span>Net</span></span>
                     </a>
                     <p data-i18n="foot.tag"></p>
-                    <p class="footer__hack" data-i18n="foot.hack"></p>
                 </div>
                 <div>
                     <h4 data-i18n="foot.links"></h4>
                     <ul class="footer__links">
                         <li><a href="#detect" data-i18n="nav.detect"></a></li>
+                        <li><a href="#how" data-i18n="nav.how"></a></li>
                         <li><a href="#garden" data-i18n="nav.garden"></a></li>
                         <li><a href="#diseases" data-i18n="nav.diseases"></a></li>
                         <li><a href="#impact" data-i18n="nav.impact"></a></li>
-                        <li><a href="#how" data-i18n="nav.how"></a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 data-i18n="foot.team"></h4>
-                    <p data-i18n="foot.teamname"></p>
-                    <p class="footer__model">AA-ENet · EfficientNet-B0 + CBAM + Transformer</p>
+                    <p class="footer__team">
+                        <strong data-i18n="foot.group"></strong>
+                        <span>Arpon, Oni, Md. Ibtihazzaman</span>
+                        <span><span data-i18n="foot.sup"></span> Dr. Md. Saef Ullah Miah</span>
+                    </p>
+                </div>
+                <div>
+                    <h4 data-i18n="foot.contact"></h4>
+                    <ul class="footer__links footer__contact">
+                        <li><a href="mailto:arponamit.55@gmail.com"><span aria-hidden="true">✉️</span> arponamit.55@gmail.com</a></li>
+                        <li><a href="https://github.com/Arpon-30" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> github.com/Arpon-30</a></li>
+                    </ul>
                 </div>
             </div>
             <div class="container footer__bottom">

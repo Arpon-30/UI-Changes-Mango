@@ -202,13 +202,19 @@ def _normalize_cam(cam: np.ndarray) -> np.ndarray:
     return cam
 
 
+DISPLAY_SIZE = 448          # output image size (2x the 224 model input)
+AFFECTED_THRESHOLD = 0.55   # Grad-CAM level treated as "likely affected"
+
+
 def generate_gradcam(pil_img: Image.Image, class_idx: int | None = None) -> dict:
     """
     Generate a Grad-CAM++ heatmap overlay aligned with the model input.
 
     Returns dict with:
-        original_b64  — base64 PNG of the original (resized) image
-        heatmap_b64   — base64 PNG of the heatmap overlay
+        original_b64      - base64 JPEG of the photo (DISPLAY_SIZE square)
+        heatmap_b64       - base64 JPEG of the Grad-CAM heatmap overlay
+        marked_b64        - base64 JPEG with the likely affected area outlined
+        affected_percent  - share of the image inside the outline (%)
     """
     model = load_model()
     was_training = model.training
@@ -233,19 +239,21 @@ def generate_gradcam(pil_img: Image.Image, class_idx: int | None = None) -> dict
 
     cam = cam[0]
 
+    # Work at 2x the model resolution so the web page and PDF look sharp.
+    size = DISPLAY_SIZE
     cam_tensor = torch.from_numpy(cam).unsqueeze(0).unsqueeze(0)
     cam_upscaled = F.interpolate(
         cam_tensor,
-        size=(IMG_SIZE, IMG_SIZE),
+        size=(size, size),
         mode="bilinear",
         align_corners=False,
     ).squeeze().numpy()
 
-    cam_upscaled = gaussian_filter(cam_upscaled, sigma=1.2)
+    cam_upscaled = gaussian_filter(cam_upscaled, sigma=2.4)
     cam_upscaled = _normalize_cam(cam_upscaled)
 
-    base = _denorm(eval_tf(img_rgb)).permute(1, 2, 0).numpy()
-    base = np.clip(base * 255, 0, 255).astype(np.uint8)
+    # Same squash-to-square as the model input, so heatmap and photo line up.
+    base = np.asarray(img_rgb.resize((size, size), Image.BICUBIC), dtype=np.uint8)
 
     cam_uint8 = (cam_upscaled * 255).astype(np.uint8)
     heatmap_color = cv2.applyColorMap(cam_uint8, cv2.COLORMAP_JET)
@@ -258,15 +266,54 @@ def generate_gradcam(pil_img: Image.Image, class_idx: int | None = None) -> dict
         255,
     ).astype(np.uint8)
 
+    marked, affected = _mark_affected(base, cam_upscaled)
+
     return {
         "original_b64": _to_b64(base),
         "heatmap_b64": _to_b64(overlay),
+        "marked_b64": _to_b64(marked),
+        "affected_percent": affected,
     }
 
 
+def _mark_affected(base: np.ndarray, cam: np.ndarray) -> tuple[np.ndarray, float]:
+    """
+    Outline the regions the model relied on most (Grad-CAM >= AFFECTED_THRESHOLD)
+    on the photo. Returns (marked image, share of the image covered in %).
+    This is an AI estimate of the affected area, not a measurement.
+    """
+    h, w = cam.shape
+    mask = (cam >= AFFECTED_THRESHOLD).astype(np.uint8)
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9, 9))
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    min_area = 0.004 * h * w
+    contours = [c for c in contours if cv2.contourArea(c) >= min_area]
+
+    keep = np.zeros_like(mask)
+    if contours:
+        cv2.drawContours(keep, contours, -1, 1, thickness=cv2.FILLED)
+
+    marked = base.copy()
+    if contours:
+        # Dim everything outside the marked area slightly, tint inside red.
+        region = keep.astype(bool)
+        marked[~region] = (marked[~region].astype(np.float32) * 0.72).astype(np.uint8)
+        tint = np.array([220, 38, 38], dtype=np.float32)
+        marked[region] = (marked[region].astype(np.float32) * 0.7 + tint * 0.3).astype(np.uint8)
+        smooth = [cv2.approxPolyDP(c, 1.5, True) for c in contours]
+        cv2.drawContours(marked, smooth, -1, (255, 255, 255), thickness=6, lineType=cv2.LINE_AA)
+        cv2.drawContours(marked, smooth, -1, (220, 38, 38), thickness=3, lineType=cv2.LINE_AA)
+
+    affected = round(float(keep.mean()) * 100, 1)
+    return marked, affected
+
+
 def _to_b64(arr: np.ndarray) -> str:
-    """Convert a uint8 numpy RGB array to a base64-encoded PNG string."""
+    """Convert a uint8 numpy RGB array to a base64-encoded JPEG string (small, fast)."""
     img = Image.fromarray(arr)
     buf = io.BytesIO()
-    img.save(buf, format="PNG")
+    img.save(buf, format="JPEG", quality=90)
     return base64.b64encode(buf.getvalue()).decode("utf-8")
