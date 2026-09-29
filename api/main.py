@@ -84,10 +84,7 @@ def _warm_up():
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    from api.photos import ensure_photos
-
     threading.Thread(target=_warm_up, daemon=True).start()
-    threading.Thread(target=ensure_photos, daemon=True).start()
     yield
 
 

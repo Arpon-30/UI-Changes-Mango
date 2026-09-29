@@ -29,7 +29,8 @@
 - **Calls**: `POST /api/analyze`, `POST /api/report`
 - **Features**: camera capture, in-browser resize, EN/BN toggle (`mangoai-lang`), light/dark toggle (`mangoai-theme`), garden spread animation, encyclopedia detail sheet, `?demo=1` sample result
 - **Writing rule**: never use long dashes in UI text; use a single hyphen
-- **Photos**: `static/img/diseases/*.jpg` are real dataset photos; `static/img/demo/*.jpg` are real AA-ENet outputs; `static/img/photos/*.jpg` (hero, farmer, harvest, branch) are free Unsplash photos downloaded at startup by `api/photos.py` (gitignored; drop in your own with the same names)
+- **Photos**: `static/img/diseases/*.jpg` are real dataset photos (encyclopedia cards); `static/img/demo/*.jpg` are real AA-ENet outputs (used by `?demo=1`)
+- **Model file**: `AA-ENet_proposed.pt` is committed as a normal file (not Git LFS) so GitHub ZIP downloads include the real 18 MB weights
 - **Grad-CAM marking**: `analyze()` also returns `marked_base64` (likely affected area outlined, Grad-CAM >= 0.55) and `affected_percent`; not produced for Healthy
 - **PDF**: `mango_disease_ai/report_engine.py` - one A4 page, Latin-1 fonts (non-Latin names are dropped from the PDF)
 - **Team**: AIUB Student Group (Arpon, Oni, Md. Ibtihazzaman), supervised by Dr. Md. Saef Ullah Miah - arponamit.55@gmail.com
