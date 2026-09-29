@@ -21,11 +21,15 @@
 - **Reporting**: FPDF2 for PDF generation
 - **Deployment**: Docker (CPU-only for HF Spaces)
 
-### Frontend Stack
-- **Templates**: Jinja2 (Flask)
-- **Styling**: CSS3 (glassmorphism, dark/light themes)
-- **Interactivity**: Vanilla JavaScript (no frameworks)
-- **Features**: Drag-drop upload, flipcards, smooth animations, responsive
+### Frontend Stack (hackathon version)
+- **Served by**: FastAPI (`api/main.py`) - `/` returns `templates/index.html`, `/static` serves assets
+- **Markup**: plain HTML (no Jinja), inline SVG illustrations
+- **Styling**: `static/css/style.css` - light orchard theme by default, forest-green dark mode, reduced-motion support
+- **Scripts**: `static/js/i18n.js` (English/Bangla strings), `static/js/diseases.js` (bilingual disease data), `static/js/main.js` (logic)
+- **Calls**: `POST /api/analyze`, `POST /api/report`
+- **Features**: camera capture, in-browser resize, EN/BN toggle (`mangoai-lang`), light/dark toggle (`mangoai-theme`), garden spread animation, encyclopedia detail sheet, `?demo=1` sample result
+- **Writing rule**: never use long dashes in UI text; use a single hyphen
+- **Docs**: `docs/HACKATHON_BUILD_PROMPT.md`, `docs/HACKATHON_PLAN.md`
 
 ### Key Files
 ```

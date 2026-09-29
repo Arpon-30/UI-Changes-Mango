@@ -29,6 +29,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY model.py inference.py report.py ./
 COPY mango_disease_ai/ ./mango_disease_ai/
 COPY api/ ./api/
+COPY templates/ ./templates/
+COPY static/ ./static/
 COPY AA-ENet_proposed.pt ./
 
 # ── Ownership ──────────────────────────────────────────────────────────────
