@@ -12,3 +12,8 @@ fruit_classifier.pth
 .DS_Store
 .vscode/
 *.log
+
+# Secrets - never commit
+*Recovery-Codes*
+*.pypirc
+.pypirc

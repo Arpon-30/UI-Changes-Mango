@@ -57,6 +57,7 @@ def resolve_model_path() -> str:
     candidates = [
         os.environ.get("MANGO_MODEL_PATH"),
         os.path.join(here, MODEL_FILENAME),
+        os.path.join(here, "mango_disease_ai", MODEL_FILENAME),
         os.path.join(os.path.dirname(here), MODEL_FILENAME),
         os.path.join(os.getcwd(), MODEL_FILENAME),
     ]
@@ -75,8 +76,8 @@ def resolve_model_path() -> str:
             "put it in the project folder, then restart."
         )
     raise ModelNotReadyError(
-        f"{MODEL_FILENAME} was not found. Put the 18 MB model file in the project folder "
-        "(next to run.py) and restart."
+        f"{MODEL_FILENAME} was not found. Put the 18 MB model file in the mango_disease_ai "
+        "folder (or next to run.py) and restart."
     )
 MANGO_DETECTOR_MODEL_ID = "openai/clip-vit-base-patch32"
 

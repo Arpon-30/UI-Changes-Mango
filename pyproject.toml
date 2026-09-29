@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mango-disease-ai"
-version = "0.1.3"
-description = "AI-powered Amropali mango disease detection: classify 7 diseases, generate Grad-CAM heatmaps, and produce PDF reports."
+version = "0.2.0"
+description = "AI-powered Amrapali mango disease detection: reject non-mango photos, classify 7 diseases, mark the affected area with Grad-CAM and produce PDF reports in English or Bangla."
 readme = "README_PACKAGE.md"
 license = "MIT"
 requires-python = ">=3.10"
 
 authors = [
-    { name = "AIUB R&D ICCA Research Group" }
+    { name = "AIUB Student Group (Arpon, Oni, Md. Ibtihazzaman)", email = "arponamit.55@gmail.com" }
 ]
 
 keywords = [
@@ -51,6 +51,7 @@ dependencies = [
     "huggingface-hub>=0.20.0",
     "safetensors>=0.4.0",
     "fpdf2>=2.7.0",
+    "uharfbuzz>=0.40.0",   # correct Bangla letter joining in the Bangla PDF
 ]
 
 [project.optional-dependencies]
@@ -76,9 +77,9 @@ dev = [
 mango-api = "mango_disease_ai.server:main"
 
 [project.urls]
-"Homepage" = "https://github.com/aiub-rd-icca/mango-disease-ai"
-"Bug Tracker" = "https://github.com/aiub-rd-icca/mango-disease-ai/issues"
-"Research Group" = "https://aiub.edu"
+"Homepage" = "https://github.com/Arpon-30/UI-Changes-Mango"
+"Bug Tracker" = "https://github.com/Arpon-30/UI-Changes-Mango/issues"
+"Author" = "https://github.com/Arpon-30"
 
 [tool.setuptools.packages.find]
 where = ["."]
