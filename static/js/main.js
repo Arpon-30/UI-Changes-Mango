@@ -766,6 +766,34 @@
         }, { threshold: 0.4 }).observe($("#flow"));
     }
 
+    /* ---------------- Developers: code tabs + copy ---------------- */
+    const codeTabs = $$(".code__tab");
+    const codePanels = $$(".code__panel");
+    codeTabs.forEach((tab) => tab.addEventListener("click", () => {
+        codeTabs.forEach((x) => x.setAttribute("aria-selected", String(x === tab)));
+        codePanels.forEach((p) => { p.hidden = p.dataset.panel !== tab.dataset.code; });
+    }));
+    const copyBtn = $("#code-copy");
+    copyBtn.addEventListener("click", async () => {
+        const panel = codePanels.find((p) => !p.hidden);
+        const text = panel ? panel.innerText : "";
+        try {
+            await navigator.clipboard.writeText(text);
+        } catch (e) {
+            // Fallback for http:// pages where the clipboard API is blocked
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand("copy"); } catch (err) { /* ignore */ }
+            ta.remove();
+        }
+        const label = $("[data-i18n]", copyBtn);
+        label.textContent = t("dev.copied");
+        copyBtn.classList.add("is-done");
+        setTimeout(() => { label.textContent = t("dev.copy"); copyBtn.classList.remove("is-done"); }, 1600);
+    });
+
     /* ---------------- Init ---------------- */
     applyI18n();
     checkHealth();

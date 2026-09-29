@@ -22,7 +22,8 @@
 - **Deployment**: Docker (CPU-only for HF Spaces)
 
 ### Frontend Stack (hackathon version)
-- **Served by**: FastAPI (`api/main.py`) - `/` returns `templates/index.html`, `/static` serves assets
+- **Served by**: the library's own API - `api/main.py` is just `mango_disease_ai.server.create_app(web_root=...)`, which adds `/` (templates/index.html) and `/static` to the library REST API (`/api/*`, `/docs`, `/guide`)
+- **Library**: `mango_disease_ai/` is the PyPI package `mango-disease-ai` (v0.2.0 in `pyproject.toml` + `__init__.py`); see `PUBLISH_GUIDE.md`. `mango-api` / `python -m mango_disease_ai.server` start the plain API
 - **Markup**: plain HTML (no Jinja), inline SVG illustrations
 - **Styling**: `static/css/style.css` - light orchard theme by default, forest-green dark mode, reduced-motion support
 - **Scripts**: `static/js/i18n.js` (English/Bangla strings), `static/js/diseases.js` (bilingual disease data), `static/js/main.js` (logic)
@@ -30,7 +31,9 @@
 - **Features**: camera capture, in-browser resize, EN/BN toggle (`mangoai-lang`), light/dark toggle (`mangoai-theme`), garden spread animation, encyclopedia detail sheet, `?demo=1` sample result
 - **Writing rule**: never use long dashes in UI text; use a single hyphen
 - **Photos**: `static/img/diseases/*.jpg` are real dataset photos (encyclopedia cards); `static/img/demo/*.jpg` are real AA-ENet outputs (used by `?demo=1`)
-- **Model file**: `AA-ENet_proposed.pt` is committed as a normal file (not Git LFS) so GitHub ZIP downloads include the real 18 MB weights
+- **Model file**: `mango_disease_ai/AA-ENet_proposed.pt` is committed as a normal file (not Git LFS) so GitHub ZIP downloads and the PyPI wheel include the real 18 MB weights
+- **run.py**: auto-installs small missing packages (uharfbuzz, fastapi, uvicorn, python-multipart, fpdf2) before starting
+- **Developers section**: `#developers` on the page - pip install, Python / REST / JavaScript examples with copy button
 - **Grad-CAM marking**: `analyze()` also returns `marked_base64` (likely affected area outlined, Grad-CAM >= 0.55) and `affected_percent`; not produced for Healthy
 - **PDF**: `mango_disease_ai/report_engine.py` - one A4 page in English or Bangla (`/api/report` form field `lang=en|bn`). Bangla uses the bundled Hind Siliguri font (`mango_disease_ai/fonts`, OFL) and needs `uharfbuzz`; Bangla disease text comes from `mango_disease_ai/disease_info_bn.json` (exported from `static/js/diseases.js`). Lines are wrapped manually - fpdf2's multi_cell mis-shapes wrapped Bangla lines
 - **Browser translation**: `<html translate="no">` + `<meta name="google" content="notranslate">` - Chrome/Edge auto-translate otherwise turns the Bangla UI back into machine English

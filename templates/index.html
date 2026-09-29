@@ -61,6 +61,7 @@
                 <a class="nav__link" href="#diseases" data-i18n="nav.diseases"></a>
                 <a class="nav__link" href="#impact" data-i18n="nav.impact"></a>
                 <a class="nav__link" href="#how" data-i18n="nav.how"></a>
+                <a class="nav__link" href="#developers" data-i18n="nav.dev"></a>
             </nav>
 
             <div class="controls">
@@ -588,6 +589,85 @@
                 </ol>
             </div>
         </section>
+        <!-- ============ DEVELOPERS ============ -->
+        <section class="section section--tint" id="developers">
+            <div class="container">
+                <div class="section__head reveal">
+                    <span class="kicker" data-i18n="dev.kicker"></span>
+                    <h2 data-i18n="dev.title"></h2>
+                    <p data-i18n="dev.sub"></p>
+                </div>
+                <div class="dev reveal">
+                    <div class="dev__side">
+                        <ol class="dev__steps">
+                            <li><b>1</b><span data-i18n="dev.s1"></span></li>
+                            <li><b>2</b><span data-i18n="dev.s2"></span></li>
+                            <li><b>3</b><span data-i18n="dev.s3"></span></li>
+                            <li><b>4</b><span data-i18n="dev.s4"></span></li>
+                        </ol>
+                        <ul class="dev__features">
+                            <li>✅ <span data-i18n="dev.f1"></span></li>
+                            <li>✅ <span data-i18n="dev.f2"></span></li>
+                            <li>✅ <span data-i18n="dev.f3"></span></li>
+                            <li>✅ <span data-i18n="dev.f4"></span></li>
+                        </ul>
+                        <div class="dev__links">
+                            <a class="btn btn--primary" href="https://pypi.org/project/mango-disease-ai/" target="_blank" rel="noopener"><span aria-hidden="true">📦</span><span data-i18n="dev.pypi"></span></a>
+                            <a class="btn btn--outline" href="/docs" target="_blank" rel="noopener"><span aria-hidden="true">🧪</span><span data-i18n="dev.docs"></span></a>
+                            <a class="btn btn--ghost" href="https://github.com/Arpon-30" target="_blank" rel="noopener"><span aria-hidden="true">🐙</span>GitHub</a>
+                        </div>
+                    </div>
+                    <div class="code">
+                        <div class="code__tabs" role="tablist">
+                            <button class="code__tab" type="button" role="tab" data-code="py" aria-selected="true">Python</button>
+                            <button class="code__tab" type="button" role="tab" data-code="api" aria-selected="false">REST API</button>
+                            <button class="code__tab" type="button" role="tab" data-code="js" aria-selected="false">JavaScript</button>
+                            <button class="code__copy" type="button" id="code-copy"><span aria-hidden="true">📋</span> <span data-i18n="dev.copy"></span></button>
+                        </div>
+<pre class="code__panel" data-panel="py"><code><span class="c-cm"># 1. Install</span>
+pip install mango-disease-ai
+
+<span class="c-cm"># 2. Analyze a mango photo</span>
+<span class="c-kw">from</span> mango_disease_ai <span class="c-kw">import</span> analyze, generate_pdf
+
+result = analyze(<span class="c-st">"mango.jpg"</span>)
+
+<span class="c-kw">if</span> result[<span class="c-st">"is_mango"</span>]:
+    print(result[<span class="c-st">"predicted_class"</span>], result[<span class="c-st">"confidence"</span>])
+    print(result[<span class="c-st">"affected_percent"</span>], <span class="c-st">"% of the photo affected"</span>)
+
+    <span class="c-cm"># PDF report: lang="en" or lang="bn"</span>
+    pdf = generate_pdf(result, user_name=<span class="c-st">"Arpon"</span>, lang=<span class="c-st">"bn"</span>)
+    open(<span class="c-st">"report.pdf"</span>, <span class="c-st">"wb"</span>).write(pdf)
+<span class="c-kw">else</span>:
+    print(<span class="c-st">"Not a mango photo"</span>)</code></pre>
+<pre class="code__panel" data-panel="api" hidden><code><span class="c-cm"># 1. Install and start the REST API</span>
+pip install <span class="c-st">"mango-disease-ai[api]"</span>
+mango-api
+<span class="c-cm"># Swagger docs: http://localhost:8000/docs</span>
+
+<span class="c-cm"># 2. Analyze a photo</span>
+curl -F <span class="c-st">"image=@mango.jpg"</span> http://localhost:8000/api/analyze
+
+<span class="c-cm"># 3. Download a Bangla PDF report</span>
+curl -F <span class="c-st">"image=@mango.jpg"</span> -F <span class="c-st">"user_name=Arpon"</span> -F <span class="c-st">"lang=bn"</span> \
+     http://localhost:8000/api/report -o report.pdf</code></pre>
+<pre class="code__panel" data-panel="js" hidden><code><span class="c-cm">// Call the REST API from any web or mobile app</span>
+<span class="c-kw">const</span> form = <span class="c-kw">new</span> FormData();
+form.append(<span class="c-st">"image"</span>, fileInput.files[0]);
+
+<span class="c-kw">const</span> res = <span class="c-kw">await</span> fetch(<span class="c-st">"http://localhost:8000/api/analyze"</span>, {
+  method: <span class="c-st">"POST"</span>,
+  body: form
+});
+<span class="c-kw">const</span> data = <span class="c-kw">await</span> res.json();
+
+<span class="c-kw">if</span> (res.ok) console.log(data.predicted_class, data.confidence);
+<span class="c-kw">else</span> console.log(data.detail.code);   <span class="c-cm">// e.g. "not_mango"</span></code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Footer -->
@@ -611,6 +691,7 @@
                         <li><a href="#diseases" data-i18n="nav.diseases"></a></li>
                         <li><a href="#impact" data-i18n="nav.impact"></a></li>
                         <li><a href="#how" data-i18n="nav.how"></a></li>
+                        <li><a href="#developers" data-i18n="nav.dev"></a></li>
                     </ul>
                 </div>
                 <div>
