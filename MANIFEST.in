@@ -1,0 +1,4 @@
+include AA-ENet_proposed.pt
+include README_PACKAGE.md
+include LICENSE
+recursive-include mango_disease_ai *.py *.pt *.pth
