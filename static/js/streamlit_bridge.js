@@ -17,6 +17,21 @@
         window.MANGO_DEMO = false;
     }
 
+    // Streamlit creates the component frame with scrolling="no", which blocks mouse wheel,
+    // touch and keyboard scrolling of the website. Remove it (and again if it comes back).
+    try {
+        const frame = window.frameElement;
+        if (frame) {
+            const allowScroll = () => {
+                if (frame.getAttribute("scrolling") === "no") frame.removeAttribute("scrolling");
+            };
+            allowScroll();
+            new MutationObserver(allowScroll).observe(frame, { attributes: true, attributeFilter: ["scrolling"] });
+        }
+    } catch (e) {
+        /* frame not reachable: nothing to do */
+    }
+
     // One request at a time: Streamlit keeps only the latest component value.
     const queue = [];
     let current = null;
