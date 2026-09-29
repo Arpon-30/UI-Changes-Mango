@@ -728,6 +728,12 @@ button { cursor: pointer; }
     .footer__grid { grid-template-columns: 1fr; }
 }
 
+/* Report: choose Bangla or English PDF */
+.report__choose { margin: 12px 0 8px !important; font-weight: 600; color: var(--ink) !important; }
+.report__langs { display: flex; gap: 10px; flex-wrap: wrap; }
+.report__langs .btn { flex: 1 1 160px; }
+.report__langs .btn[lang="bn"] { font-family: "Hind Siliguri", var(--font); }
+
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }

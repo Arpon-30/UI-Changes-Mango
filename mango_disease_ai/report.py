@@ -8,7 +8,7 @@ Uses the bundled report_engine module.
 from __future__ import annotations
 
 
-def generate_pdf(result: dict, user_name: str = "User") -> bytes:
+def generate_pdf(result: dict, user_name: str = "User", lang: str = "en") -> bytes:
     """
     Generate a professional A4 PDF diagnosis report.
 
@@ -20,6 +20,8 @@ def generate_pdf(result: dict, user_name: str = "User") -> bytes:
         ``original_base64``, ``gradcam_base64``, ``disease_info``.
     user_name : str
         Name printed on the report (e.g. researcher / farmer name).
+    lang : str
+        "en" (English, default) or "bn" (Bangla; needs the uharfbuzz package).
 
     Returns
     -------
@@ -68,4 +70,5 @@ def generate_pdf(result: dict, user_name: str = "User") -> bytes:
         disease_info=result.get("disease_info", {}),
         marked_b64=result.get("marked_base64"),
         affected_percent=result.get("affected_percent"),
+        lang=lang,
     )

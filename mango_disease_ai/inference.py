@@ -40,23 +40,39 @@ def _denorm(t: torch.Tensor) -> torch.Tensor:
 # ── Mango detection via CLIP zero-shot (openai/clip-vit-base-patch32) ────────
 MANGO_CONFIDENCE_THRESHOLD = 0.50  # reject when combined mango score < 50%
 
-# Candidate labels for CLIP zero-shot classification
+# Candidate labels for CLIP zero-shot classification.
+# Many specific "not mango" labels make it much harder for an unrelated photo
+# (another fruit, a ball, a face, a screenshot...) to land on "mango" by default.
 MANGO_LABELS = [
+    # mango (positive)
     "a photo of a mango fruit",
     "a photo of a mango leaf",
-    "a photo of another type of fruit",
-    "a photo of a non-mango plant leaf",
-    "a photo of a vegetable",
-    "a photo of an animal or person",
-    "a photo of an indoor scene or man-made object",
+    "a close-up photo of a diseased mango with spots",
+    "a photo of mangoes hanging on a mango tree",
+    # not mango (negative)
+    "a photo of an apple",
+    "a photo of an orange, lemon or other citrus fruit",
+    "a photo of a banana, papaya or other tropical fruit",
+    "a photo of a potato, tomato or other vegetable",
+    "a photo of a leaf of a different plant",
+    "a photo of a flower",
+    "a photo of cooked food on a plate",
+    "a photo of a person or a face",
+    "a photo of an animal",
+    "a photo of a ball, toy or other object",
+    "a photo of a phone, computer or car",
+    "a photo of a room, building or street",
+    "a photo of a landscape, field or sky",
+    "a screenshot, drawing, document or text",
 ]
 
-# Indices in MANGO_LABELS that count as "mango"
-# Index 0 = "a photo of a mango fruit"
-# Index 1 = "a photo of a mango leaf"
-# BUG FIX v0.1.1: previously only index 0 was counted, causing mango leaf
-# images to be incorrectly rejected as "not a mango".
-MANGO_POSITIVE_INDICES = {0, 1}  # both mango fruit AND mango leaf are valid
+# Indices in MANGO_LABELS that count as "mango" (fruit, leaf, diseased close-up, tree)
+MANGO_POSITIVE_INDICES = {0, 1, 2, 3}
+
+# Second safety check used in core.analyze(): when CLIP is only moderately sure it
+# is a mango AND the disease model is also unsure, treat the photo as "not a mango".
+UNSURE_MODEL_CONFIDENCE = 0.60
+UNSURE_MANGO_CONFIDENCE = 0.80
 
 
 def is_mango(pil_img: Image.Image) -> tuple[bool, float]:
