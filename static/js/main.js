@@ -41,6 +41,7 @@
                 if (attr && key) el.setAttribute(attr.trim(), t(key.trim()));
             });
         });
+        $$("[data-num]").forEach((el) => { el.textContent = num(el.dataset.num); });
         $$("[data-lang]").forEach((b) => {
             const on = b.dataset.lang === lang;
             b.classList.toggle("is-on", on);
@@ -48,8 +49,6 @@
         });
         // Dynamic parts re-render in the new language
         renderCards();
-        renderSdgs();
-        renderDemoLabels();
         renderGardenTabs();
         renderGardenInfo();
         if (lastResult) renderResult(lastResult, false);
@@ -528,78 +527,79 @@
         }
     });
 
-    /* ---------------- Garden impact (top view of an orchard) ---------------- */
+    /* ---------------- Garden impact ---------------- */
     const orchard = $("#orchard");
     const treesG = $("#orchard-trees");
-    const wavesG = $("#orchard-waves");
+    const particlesG = $("#orchard-particles");
     const stages = $("#stages");
-    const COLS = 6, ROWS = 3, SOURCE = { c: 2, r: 1 };
-    const TREES = [];
-    for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLS; c++) {
-            TREES.push({ x: 60 + c * 96, y: 60 + r * 105, d: Math.hypot(c - SOURCE.c, r - SOURCE.r) });
-        }
-    }
+    const TREE_X = [60, 180, 300, 420, 540];
     let gardenKey = "Anthracnose";
     let gardenTimers = [];
     let gardenPlayed = false;
 
-    treesG.innerHTML = TREES.map(({ x, y }, i) => `
-        <g class="g-tree" style="--i:${i}">
-            <ellipse cx="${x + 7}" cy="${y + 9}" rx="37" ry="34" fill="#000" opacity=".22"/>
-            <circle class="g-canopy" cx="${x}" cy="${y}" r="38" fill="url(#g-canopy)"/>
-            <circle cx="${x - 12}" cy="${y - 10}" r="14" fill="#fff" opacity=".07"/>
-            <circle cx="${x + 13}" cy="${y + 6}" r="16" fill="#000" opacity=".06"/>
-            <circle cx="${x - 6}" cy="${y + 16}" r="11" fill="#fff" opacity=".05"/>
-            <circle class="g-sick" cx="${x}" cy="${y}" r="38" fill="url(#g-sick)"/>
-            <g class="g-spots">
-                <circle cx="${x - 10}" cy="${y - 6}" r="5"/><circle cx="${x + 12}" cy="${y + 4}" r="4"/><circle cx="${x - 2}" cy="${y + 15}" r="3.5"/>
+    const SVGNS = "http://www.w3.org/2000/svg";
+    treesG.innerHTML = TREE_X.map((x) => `
+        <g class="g-tree">
+            <rect x="${x - 6}" y="150" width="12" height="46" rx="4" fill="#7B5237"/>
+            <circle class="halo" cx="${x}" cy="118" r="46"/>
+            <circle class="crown" cx="${x}" cy="120" r="40"/>
+            <circle class="crown crown--b" cx="${x - 16}" cy="104" r="22"/>
+            <circle class="crown crown--b" cx="${x + 18}" cy="108" r="20"/>
+            <circle cx="${x}" cy="114" r="44" fill="url(#g-shade)" pointer-events="none"/>
+            <ellipse cx="${x - 14}" cy="138" rx="6" ry="8" fill="#FFB300"/>
+            <ellipse cx="${x + 16}" cy="132" rx="6" ry="8" fill="#FFB300"/>
+            <g class="spots">
+                <circle cx="${x - 8}" cy="112" r="6"/><circle cx="${x + 14}" cy="122" r="5"/><circle cx="${x - 20}" cy="126" r="4.5"/>
             </g>
-            <circle class="g-ring" cx="${x}" cy="${y}" r="42"/>
+            <path class="shine" d="M${x + 30} 82 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z" fill="#FFD54F"/>
         </g>`).join("");
     const treeEls = $$(".g-tree", treesG);
-
-    function lighten(hex, amt) {
-        const n = parseInt(hex.slice(1), 16);
-        const mix = (v) => Math.round(v + (255 - v) * amt);
-        return `rgb(${mix(n >> 16)}, ${mix((n >> 8) & 255)}, ${mix(n & 255)})`;
-    }
+    orchard.insertAdjacentHTML("afterbegin", `<defs><radialGradient id="g-shade" cx="35%" cy="30%" r="75%">
+        <stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/>
+        <stop offset="1" stop-color="#000" stop-opacity=".28"/></radialGradient></defs>`);
 
     function clearGarden() {
         gardenTimers.forEach(clearTimeout);
         gardenTimers = [];
-        wavesG.innerHTML = "";
+        particlesG.innerHTML = "";
         treeEls.forEach((el) => el.classList.remove("is-sick", "is-safe"));
         $$("li", stages).forEach((li) => li.classList.remove("is-on"));
     }
 
-    function at(ms, fn) { gardenTimers.push(setTimeout(fn, reducedMotion ? 0 : ms)); }
-
-    function wave() {
-        if (reducedMotion) return;
-        const src = TREES[SOURCE.r * COLS + SOURCE.c];
-        wavesG.insertAdjacentHTML("beforeend", `<circle class="g-wave" cx="${src.x}" cy="${src.y}" r="40"/>`);
-        const w = wavesG.lastElementChild;
-        w.addEventListener("animationend", () => w.remove());
+    function hop(from, to, delay) {
+        for (let k = 0; k < 3; k++) {
+            gardenTimers.push(setTimeout(() => {
+                const c = document.createElementNS(SVGNS, "circle");
+                c.setAttribute("class", "particle");
+                c.setAttribute("cx", TREE_X[from]);
+                c.setAttribute("cy", 110 + k * 8);
+                c.setAttribute("r", 3.2);
+                c.style.setProperty("--dx", (TREE_X[to] - TREE_X[from]) + "px");
+                particlesG.appendChild(c);
+                c.addEventListener("animationend", () => c.remove());
+            }, delay + k * 220));
+        }
     }
+
+    function at(ms, fn) { gardenTimers.push(setTimeout(fn, reducedMotion ? 0 : ms)); }
 
     function playGarden() {
         clearGarden();
         const d = BY_KEY[gardenKey];
         orchard.style.setProperty("--tone", d.tone);
-        orchard.style.setProperty("--tone-light", lighten(d.tone, 0.45));
-        orchard.setAttribute("aria-label", t("garden.map") + ": " + L(d.name) + " - " + L(d.spread));
+        orchard.setAttribute("aria-label", L(d.name) + " - " + L(d.spread));
         const healthy = d.key === "Healthy";
         stages.classList.toggle("is-healthy", healthy);
         if (healthy) {
-            treeEls.forEach((el, i) => at(150 + i * 60, () => el.classList.add("is-safe")));
+            treeEls.forEach((el, i) => at(200 + i * 180, () => el.classList.add("is-safe")));
             return;
         }
         const stageLi = $$("li", stages);
-        const sick = (pred) => TREES.forEach((tr, i) => { if (pred(tr.d)) at(tr.d * 260, () => treeEls[i].classList.add("is-sick")); });
-        at(200, () => { stageLi[0].classList.add("is-on"); sick((dd) => dd === 0); wave(); });
-        at(2000, () => { stageLi[1].classList.add("is-on"); wave(); gardenTimers.push(setTimeout(() => sick((dd) => dd > 0 && dd < 1.5), 0)); });
-        at(4000, () => { stageLi[2].classList.add("is-on"); wave(); gardenTimers.push(setTimeout(() => sick((dd) => dd >= 1.5), 0)); });
+        at(250, () => { treeEls[2].classList.add("is-sick"); stageLi[0].classList.add("is-on"); });
+        if (!reducedMotion) { hop(2, 1, 1000); hop(2, 3, 1000); }
+        at(2300, () => { treeEls[1].classList.add("is-sick"); treeEls[3].classList.add("is-sick"); stageLi[1].classList.add("is-on"); });
+        if (!reducedMotion) { hop(1, 0, 3000); hop(3, 4, 3000); }
+        at(4300, () => { treeEls[0].classList.add("is-sick"); treeEls[4].classList.add("is-sick"); stageLi[2].classList.add("is-on"); });
     }
 
     function renderGardenTabs() {
@@ -653,7 +653,7 @@
     function renderCards() {
         cards.innerHTML = DISEASES.map((d) => `
             <button class="card" type="button" data-key="${esc(d.key)}" style="--tone:${d.tone}">
-                <span class="card__photo"><img src="${photoOf(d.key)}" alt="" loading="lazy" width="253" height="253" /></span>
+                <span class="card__emoji card__emoji--photo" aria-hidden="true"><img src="${photoOf(d.key)}" alt="" loading="lazy" width="56" height="56" /></span>
                 <span class="card__name">${esc(L(d.name))}</span>
                 <span class="card__sci">${esc(d.sci)}</span>
                 <span class="card__short">${esc(L(d.short))}</span>
@@ -701,7 +701,7 @@
         sheetBody.innerHTML = `
             <div class="sheet__hero" style="--tone:${d.tone}">
                 <button class="sheet__close" type="button" aria-label="${esc(t("dis.close"))}">✕</button>
-                <img class="sheet__photo" src="${photoOf(d.key)}" alt="" width="253" height="253" />
+                <div class="card__emoji card__emoji--photo" style="--tone:${d.tone}" aria-hidden="true"><img src="${photoOf(d.key)}" alt="" width="64" height="64" /></div>
                 <h3 id="sheet-title">${esc(L(d.name))}</h3>
                 <p class="card__sci">${esc(d.sci)}</p>
                 <div class="verdict__meta" style="margin-top:10px">
@@ -745,47 +745,19 @@
     });
     sheet.addEventListener("click", (e) => { if (e.target === sheet) sheet.close(); });
 
-    /* ---------------- Hero preview + How it works (real model output) ---------------- */
-    function renderDemoLabels() {
-        $("#hero-result-name").textContent = L(BY_KEY.Anthracnose.name);
-        $("#hero-result-pct").textContent = pct(0.954, 0);
-        $("#wf-name").textContent = L(BY_KEY["Bacterial Canker"].name);
-        $("#wf-pct").textContent = pct(0.954, 0) + " " + t("res.sure");
+    /* ---------------- How it works: steps light up in turn ---------------- */
+    const flowSteps = $$("#flow .flow__step");
+    let flowIdx = 0, flowTimer = null;
+    function flowTick() {
+        flowSteps.forEach((el, i) => { el.classList.toggle("is-on", i === flowIdx); el.classList.toggle("is-done", i < flowIdx); });
+        flowIdx = (flowIdx + 1) % (flowSteps.length + 1);
+        flowTimer = setTimeout(flowTick, flowIdx === 0 ? 2200 : 1300);
     }
-
-    const workflow = $("#workflow");
-    const WF_TIMES = [1500, 2000, 1900, 1900, 2800];
-    let wfStep = 0, wfTimer = null, wfVisible = false;
-    function setStep(n) {
-        wfStep = n;
-        workflow.dataset.step = String(n);
-        $$(".workflow__steps li", workflow).forEach((li) => {
-            const i = Number(li.dataset.step);
-            li.classList.toggle("is-on", i === n);
-            li.classList.toggle("is-done", i < n);
-        });
-    }
-    function runWorkflow() {
-        clearTimeout(wfTimer);
-        if (!wfVisible || reducedMotion) return;
-        wfTimer = setTimeout(() => { setStep((wfStep + 1) % 5); runWorkflow(); }, WF_TIMES[wfStep]);
-    }
-    $$(".workflow__steps li", workflow).forEach((li) => li.addEventListener("click", () => { setStep(Number(li.dataset.step)); runWorkflow(); }));
-    setStep(reducedMotion ? 4 : 0);
-    new IntersectionObserver((entries) => {
-        wfVisible = entries[0].isIntersecting;
-        if (wfVisible) runWorkflow(); else clearTimeout(wfTimer);
-    }, { threshold: 0.3 }).observe(workflow);
-
-    /* ---------------- SDG goals ---------------- */
-    const SDGS = [[1, "#E5243B"], [2, "#DDA63A"], [12, "#BF8B2E"], [13, "#3F7E44"], [15, "#56C02B"]];
-    function renderSdgs() {
-        $("#sdg-grid").innerHTML = SDGS.map(([n, c]) => `
-            <li class="sdg__card" style="--c:${c}">
-                <b>${num(n)}</b>
-                <div><strong>${esc(t("sdg." + n + "t"))}</strong><span>${esc(t("sdg." + n + "d"))}</span></div>
-            </li>`).join("");
-        $$(".eco__sdgs span").forEach((sp) => { sp.textContent = "SDG " + num(sp.dataset.n); });
+    if (!reducedMotion) {
+        new IntersectionObserver((entries) => {
+            clearTimeout(flowTimer);
+            if (entries[0].isIntersecting) { flowIdx = 0; flowTick(); }
+        }, { threshold: 0.4 }).observe($("#flow"));
     }
 
     /* ---------------- Init ---------------- */

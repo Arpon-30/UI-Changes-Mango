@@ -12,4 +12,3 @@ fruit_classifier.pth
 .DS_Store
 .vscode/
 *.log
-static/img/photos/*.jpg
