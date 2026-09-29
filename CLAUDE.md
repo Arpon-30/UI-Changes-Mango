@@ -32,7 +32,9 @@
 - **Photos**: `static/img/diseases/*.jpg` are real dataset photos (encyclopedia cards); `static/img/demo/*.jpg` are real AA-ENet outputs (used by `?demo=1`)
 - **Model file**: `AA-ENet_proposed.pt` is committed as a normal file (not Git LFS) so GitHub ZIP downloads include the real 18 MB weights
 - **Grad-CAM marking**: `analyze()` also returns `marked_base64` (likely affected area outlined, Grad-CAM >= 0.55) and `affected_percent`; not produced for Healthy
-- **PDF**: `mango_disease_ai/report_engine.py` - one A4 page, Latin-1 fonts (non-Latin names are dropped from the PDF)
+- **PDF**: `mango_disease_ai/report_engine.py` - one A4 page in English or Bangla (`/api/report` form field `lang=en|bn`). Bangla uses the bundled Hind Siliguri font (`mango_disease_ai/fonts`, OFL) and needs `uharfbuzz`; Bangla disease text comes from `mango_disease_ai/disease_info_bn.json` (exported from `static/js/diseases.js`). Lines are wrapped manually - fpdf2's multi_cell mis-shapes wrapped Bangla lines
+- **Browser translation**: `<html translate="no">` + `<meta name="google" content="notranslate">` - Chrome/Edge auto-translate otherwise turns the Bangla UI back into machine English
+- **Mango check**: 18 CLIP labels (4 mango, 14 not-mango, threshold 50%) plus a second gate in `core.analyze()`: CLIP < 80% and AA-ENet < 60% -> not a mango
 - **Team**: AIUB Student Group (Arpon, Oni, Md. Ibtihazzaman), supervised by Dr. Md. Saef Ullah Miah - arponamit.55@gmail.com
 - **Docs**: `docs/HACKATHON_BUILD_PROMPT.md`, `docs/HACKATHON_PLAN.md`
 

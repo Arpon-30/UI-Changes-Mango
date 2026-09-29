@@ -237,17 +237,24 @@ def analyze_image(
 def generate_report(
     image: UploadFile = File(..., description="Mango leaf or fruit image (JPEG/PNG/WebP, max 10 MB)"),
     user_name: str = Form(..., description="Name printed on the PDF report"),
+    lang: str = Form("en", description="Report language: 'en' (English) or 'bn' (Bangla)"),
 ):
     """Analyze the image and return a PDF report (result, scores, Grad-CAM, symptoms, treatment)."""
     if not user_name or not user_name.strip():
         _fail(400, "no_name", "user_name is required and cannot be empty.")
+    lang = (lang or "en").strip().lower()
+    if lang not in ("en", "bn"):
+        _fail(400, "bad_lang", "lang must be 'en' or 'bn'.")
 
     result = _run_analysis(_read_upload(image))
 
     try:
         from mango_disease_ai import generate_pdf
+        from mango_disease_ai.report_engine import BanglaPdfUnavailable
 
-        pdf_bytes = generate_pdf(result, user_name=user_name.strip())
+        pdf_bytes = generate_pdf(result, user_name=user_name.strip(), lang=lang)
+    except BanglaPdfUnavailable as exc:
+        _fail(503, "bn_pdf_unavailable", str(exc))
     except Exception as exc:
         log.exception("PDF generation failed")
         _fail(500, "report_failed", f"PDF generation failed: {exc}")
@@ -255,8 +262,9 @@ def generate_report(
     # HTTP headers must be ASCII: plain fallback name + UTF-8 name (e.g. Bangla) per RFC 5987
     name = user_name.strip()
     ascii_name = re.sub(r"[^A-Za-z0-9_-]+", "_", name).strip("_") or "report"
+    suffix = "_BN" if lang == "bn" else ""
     disposition = (
-        f'attachment; filename="AmropaliNet_Report_{ascii_name}.pdf"; '
-        f"filename*=UTF-8''{quote('AmropaliNet_Report_' + name + '.pdf')}"
+        f'attachment; filename="AmropaliNet_Report_{ascii_name}{suffix}.pdf"; '
+        f"filename*=UTF-8''{quote('AmropaliNet_Report_' + name + suffix + '.pdf')}"
     )
     return Response(content=pdf_bytes, media_type="application/pdf", headers={"Content-Disposition": disposition})
