@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MangoAI — Amrapali Mango Disease Detection</title>
+    <meta name="description" content="AI-powered Amrapali mango disease detection using the AA-ENet deep learning model. Upload a mango image to classify 7 disease types with Grad-CAM visualization and PDF report generation." />
+    <meta name="author" content="AIUB R&D ICCA Research Group" />
+    <meta name="keywords" content="mango disease, AI detection, leaf disease, Grad-CAM, deep learning, Amrapali mango, AA-ENet" />
+    <meta property="og:title" content="MangoAI — Amrapali Mango Disease Detection" />
+    <meta property="og:description" content="Detect mango diseases instantly with our AA-ENet deep learning model." />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+
+    <!-- ══════════════════════  NAVBAR  ══════════════════════ -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar__inner">
+            <a class="navbar__logo" href="#hero">
+                <span class="navbar__logo-icon">🥭</span>
+                <span>Mango<span class="text-gradient">AI</span></span>
+            </a>
+            <ul class="navbar__nav">
+                <li><a class="navbar__link" href="#upload-section">Detect</a></li>
+                <li><a class="navbar__link" href="#encyclopedia-section">Diseases</a></li>
+                <li><a class="navbar__link" href="#about-section">About</a></li>
+                <li>
+                    <div class="theme-toggle" id="theme-toggle" role="button" aria-label="Toggle dark/light theme" tabindex="0">
+                        <div class="theme-toggle__knob">
+                            <span id="theme-icon">🌙</span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ══════════════════════  HERO  ══════════════════════ -->
+    <header class="hero" id="hero">
+        <div class="hero__grid-overlay"></div>
+        <div class="hero__glow"></div>
+        <div class="hero__content">
+            <div class="hero__badge">🧬 AI-Powered Analysis</div>
+            <h1 class="hero__title">
+                Amrapali Mango<br>
+                <span class="text-gradient">Disease Detection</span>
+            </h1>
+            <p class="hero__subtitle">
+                Upload a mango disease image and our <strong>AA-ENet</strong> model will identify the disease class,
+                generate Grad-CAM visualizations showing affected regions, and produce a detailed PDF diagnostic report
+                — all in under a second.
+            </p>
+            <div class="hero__tags">
+                <span class="hero__tag">Anthracnose</span>
+                <span class="hero__tag">Bacterial Canker</span>
+                <span class="hero__tag">Healthy</span>
+                <span class="hero__tag">Powdery Mildew</span>
+                <span class="hero__tag">Scab</span>
+                <span class="hero__tag">Sooty Mould</span>
+                <span class="hero__tag">Stem End Rot</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+
+        <!-- ══════════════  UPLOAD SECTION  ══════════════ -->
+        <section class="section-card upload-section fade-in" id="upload-section">
+            <div class="section-header">
+                <div class="section-header__icon">📤</div>
+                <div class="section-header__text">
+                    <h2>Upload & Detect Disease Instantly</h2>
+                    <p>Upload a clear photo of an Amrapali mango showing disease symptoms</p>
+                </div>
+            </div>
+
+            <div class="dropzone" id="dropzone">
+                <div class="dropzone__inner" id="dropzone-inner">
+                    <svg class="dropzone__icon" viewBox="0 0 64 64" fill="none">
+                        <rect x="8" y="16" width="48" height="36" rx="4" stroke="currentColor" stroke-width="2.5"/>
+                        <path d="M8 40l14-12 10 8 12-10 12 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="44" cy="26" r="4" stroke="currentColor" stroke-width="2.5"/>
+                        <path d="M28 4v8M28 4l-4 4M28 4l4 4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <p class="dropzone__title">Upload a Mango Disease Image</p>
+                    <p class="dropzone__hint">Drag &amp; drop or browse files &nbsp;·&nbsp; JPG, PNG, WebP &nbsp;·&nbsp; Max 10 MB</p>
+                </div>
+                <input type="file" id="file-input" accept=".jpg,.jpeg,.png,.webp,.bmp,.tiff,.tif" hidden />
+            </div>
+
+            <!-- Preview -->
+            <div class="preview-area hidden" id="preview-area">
+                <div class="preview-card">
+                    <img id="preview-img" src="" alt="Uploaded mango preview" />
+                    <button class="btn btn--ghost btn--sm" id="btn-remove" title="Remove image">✕ Remove</button>
+                </div>
+            </div>
+
+            <button class="btn btn--primary btn--lg" id="btn-classify" disabled>
+                <span class="btn__icon">🔬</span>
+                Analyze Disease
+            </button>
+        </section>
+
+        <!-- ══════════════  LOADING  ══════════════ -->
+        <section class="section-card loading-section hidden" id="loading-section">
+            <div class="loader">
+                <div class="loader__spinner-wrap">
+                    <div class="loader__spinner"></div>
+                </div>
+                <p class="loader__text">Analyzing mango image…</p>
+                <p class="loader__subtext">Running AA-ENet inference &amp; generating Grad-CAM visualization</p>
+            </div>
+        </section>
+
+        <!-- ══════════════  ERROR  ══════════════ -->
+        <div class="toast toast--error hidden" id="error-toast">
+            <span class="toast__icon">⚠️</span>
+            <span class="toast__msg" id="error-msg"></span>
+            <button class="toast__close" id="error-close">✕</button>
+        </div>
+
+        <!-- ══════════════  RESULTS  ══════════════ -->
+        <section class="section-card hidden fade-in" id="results-section">
+            <div class="section-header">
+                <div class="section-header__icon">📊</div>
+                <div class="section-header__text">
+                    <h2>Classification Results</h2>
+                    <p>Confidence scores and prediction from AA-ENet model</p>
+                </div>
+            </div>
+
+            <div class="result-hero" id="result-hero">
+                <div class="confidence-ring" id="confidence-ring">
+                    <svg viewBox="0 0 120 120">
+                        <circle class="confidence-ring__bg" cx="60" cy="60" r="50" />
+                        <circle class="confidence-ring__fill" id="ring-fill" cx="60" cy="60" r="50" />
+                    </svg>
+                    <div class="confidence-ring__text">
+                        <span class="confidence-ring__pct" id="result-pct">0%</span>
+                        <span class="confidence-ring__label">confidence</span>
+                    </div>
+                </div>
+                <div class="result-hero__info">
+                    <div class="result-hero__disease" id="result-badge">—</div>
+                    <div class="result-hero__scientific" id="result-scientific"></div>
+                </div>
+            </div>
+
+            <div class="scores-grid" id="scores-grid">
+                <!-- Filled by JS -->
+            </div>
+        </section>
+
+        <!-- ══════════════  GRAD-CAM  ══════════════ -->
+        <section class="section-card hidden fade-in" id="gradcam-section">
+            <div class="section-header">
+                <div class="section-header__icon">🔥</div>
+                <div class="section-header__text">
+                    <h2>Grad-CAM Visualization</h2>
+                    <p>Highlighted regions most influential to the classification</p>
+                </div>
+            </div>
+
+            <div class="gradcam-grid">
+                <div class="gradcam-card">
+                    <h3>Original Image</h3>
+                    <img id="gradcam-original" src="" alt="Original image" />
+                </div>
+                <div class="gradcam-card">
+                    <h3>Attention Heatmap</h3>
+                    <img id="gradcam-heatmap" src="" alt="Grad-CAM heatmap overlay" />
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════  REMEDIES  ══════════════ -->
+        <section class="section-card hidden fade-in" id="remedies-section">
+            <div class="section-header">
+                <div class="section-header__icon">💊</div>
+                <div class="section-header__text">
+                    <h2>Diagnosis & Treatment</h2>
+                    <p>Symptoms and recommended remedies for the detected disease</p>
+                </div>
+            </div>
+
+            <div class="remedies-content" id="remedies-content">
+                <!-- Filled by JS -->
+            </div>
+        </section>
+
+        <!-- ══════════════  REPORT  ══════════════ -->
+        <section class="section-card hidden fade-in" id="report-section">
+            <div class="section-header">
+                <div class="section-header__icon">📄</div>
+                <div class="section-header__text">
+                    <h2>Download Report</h2>
+                    <p>Generate a detailed PDF diagnostic report with your findings</p>
+                </div>
+            </div>
+
+            <div class="report-form">
+                <div class="input-group" id="name-input-group">
+                    <label for="report-name">Your Name <span class="required">*</span></label>
+                    <input type="text" id="report-name" placeholder="Enter your full name (required)" maxlength="100" />
+                    <div class="input-error" id="name-error">Name is required to generate the report.</div>
+                </div>
+                <button class="btn btn--accent btn--lg" id="btn-report" disabled>
+                    <span class="btn__icon">⬇️</span>
+                    Download PDF Report
+                </button>
+            </div>
+            <div class="report-loading hidden" id="report-loading">
+                <div class="loader__spinner loader__spinner--sm"></div>
+                <span>Generating report…</span>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <!-- ══════════════  DISEASE ENCYCLOPEDIA  ══════════════ -->
+        <section class="encyclopedia-section fade-in" id="encyclopedia-section">
+            <div class="section-header" style="justify-content: center; text-align: center;">
+                <div class="section-header__icon">📚</div>
+                <div class="section-header__text">
+                    <h2>7 Amrapali Mango Disease Classes</h2>
+                    <p>Our model is trained on 3,500 images (500 per class). Click any card to flip it and reveal symptoms &amp; treatment.</p>
+                </div>
+            </div>
+
+            <div class="disease-grid" id="disease-grid">
+                <!-- Filled by JS on load -->
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        
+    </main>
+
+    <!-- ══════════════  FOOTER  ══════════════ -->
+    <footer class="footer">
+        <div class="footer__brand">🥭 MangoAI</div>
+        <p class="footer__tagline">Amrapali Mango Disease Detection System · <strong>AA-ENet</strong> Model</p>
+        <p class="footer__credits">AIUB R&amp;D ICCA Research Group · Built for agricultural innovation</p>
+        <p class="footer__disclaimer">⚠️ For research and educational purposes. Always consult a qualified agronomist for crop management decisions.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
