@@ -1,4 +1,5 @@
 # AmropaliNet - Streamlit Community Cloud dependencies (streamlit_app.py)
+# streamlit_app.py shows the full website and answers it with the library's REST API in memory.
 #
 # IMPORTANT (Cloud): In Advanced settings, set Python to 3.11 or 3.12.
 # Default Cloud Python (3.13) often cannot install torch and will fail dependency install.
@@ -24,3 +25,8 @@ safetensors==0.5.2
 scikit-learn==1.5.2
 joblib==1.4.2
 threadpoolctl==3.5.0
+# The library REST API, run in memory by streamlit_app.py
+fastapi==0.115.0
+pydantic==2.9.2
+python-multipart==0.0.12
+httpx==0.27.2

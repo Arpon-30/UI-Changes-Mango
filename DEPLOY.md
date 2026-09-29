@@ -19,10 +19,15 @@ Render / Vercel / Netlify / Koyeb free plans do not work: about 512 MB RAM, the 
 
 ## Option S - Streamlit Community Cloud (free, recommended)
 
-`streamlit_app.py` is a Streamlit version of the website built on the same `mango_disease_ai`
-library: Bangla / English, camera or upload, mango check, Grad-CAM + marked area, advice,
-Bangla and English PDF, encyclopedia, developer section and footer. It runs the mango checker
-in a low-memory mode (`MANGO_LOW_MEMORY=1`) so it fits in Streamlit's free ~1 GB RAM.
+`streamlit_app.py` shows **the full website** (`templates/index.html` + `static/`, unchanged:
+same design, animations, Bangla / English, light / dark, camera, garden spread, encyclopedia,
+developer section and footer) full screen inside Streamlit. The page's `/api/...` calls go through
+`static/js/streamlit_bridge.js` to Python, which answers them with the `mango_disease_ai` REST API
+in memory, so results and Bangla / English PDFs are the same as `python run.py`. The mango checker
+runs in a low-memory mode (`MANGO_LOW_MEMORY=1`) so it fits in Streamlit's free ~1 GB RAM.
+
+Only difference: the "Try the API" button opens the library guide, because Streamlit cannot
+host the live `/docs` API page.
 
 1. The GitHub repository must be **public** (or connect your GitHub account and allow private repos).
 2. Go to https://share.streamlit.io and sign in with GitHub.
@@ -31,7 +36,7 @@ in a low-memory mode (`MANGO_LOW_MEMORY=1`) so it fits in Streamlit's free ~1 GB
    - **Repository:** `Arpon-30/UI-Changes-Mango`
    - **Branch:** `main`
    - **Main file path:** `streamlit_app.py`
-   - **App URL:** choose a name, for example `amropalinet` → `https://amropalinet.streamlit.app`
+   - **App URL:** for example `amropali-mango-doctor` → `https://amropali-mango-doctor.streamlit.app`
 5. Open **Advanced settings** → **Python version: 3.11** (or 3.12). Click **Deploy**.
 6. The first build takes about **5-10 minutes** (it installs PyTorch from `requirements.txt`).
    The first scan takes about 1 minute more because the mango checker (CLIP) downloads once.
@@ -42,7 +47,8 @@ Good to know:
 - If it ever says "over its resource limits", click **Reboot app** in the menu
   (bottom right → Manage app).
 - To update: push to `main` on GitHub. Streamlit redeploys by itself.
-- The HTML website (`python run.py`) is still the main version for local use and the options below.
+- Demo result without a photo: add `?demo=1` to the link.
+- Test locally first: `pip install -r requirements.txt` then `streamlit run streamlit_app.py`.
 
 ## Option A - free public link from your laptop (best for demos)
 
