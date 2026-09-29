@@ -1,2 +1,2 @@
-*.pt filter=lfs diff=lfs merge=lfs -text
 *.pth filter=lfs diff=lfs merge=lfs -text
+# AA-ENet_proposed.pt (18 MB) is stored as a normal file so GitHub ZIP downloads include the real model
