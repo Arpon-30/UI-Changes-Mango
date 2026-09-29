@@ -1,541 +1,640 @@
-/* ════════════════════════════════════════════════════════════════
-   MangoAI — Client-side logic
-   Theme toggle, classification, remedies, flip cards, animations
-   ════════════════════════════════════════════════════════════════ */
+/* =====================================================================
+   AmropaliNet - client logic
+   Language + theme, camera/upload, analysis, garden spread, encyclopedia
+   ===================================================================== */
 (() => {
     "use strict";
 
-    // ── DOM refs ────────────────────────────────────────────────
-    const $ = (sel) => document.querySelector(sel);
-    const $$ = (sel) => document.querySelectorAll(sel);
-
-    const dropzone       = $("#dropzone");
-    const fileInput      = $("#file-input");
-    const previewArea    = $("#preview-area");
-    const previewImg     = $("#preview-img");
-    const btnRemove      = $("#btn-remove");
-    const btnClassify    = $("#btn-classify");
-
-    const loadingSection = $("#loading-section");
-    const errorToast     = $("#error-toast");
-    const errorMsg       = $("#error-msg");
-    const errorClose     = $("#error-close");
-
-    const resultsSection = $("#results-section");
-    const resultBadge    = $("#result-badge");
-    const resultPct      = $("#result-pct");
-    const resultScientific = $("#result-scientific");
-    const ringFill       = $("#ring-fill");
-    const scoresGrid     = $("#scores-grid");
-
-    const gradcamSection  = $("#gradcam-section");
-    const gradcamOriginal = $("#gradcam-original");
-    const gradcamHeatmap  = $("#gradcam-heatmap");
-
-    const remediesSection = $("#remedies-section");
-    const remediesContent = $("#remedies-content");
-
-    const reportSection  = $("#report-section");
-    const reportName     = $("#report-name");
-    const nameInputGroup = $("#name-input-group");
-    const btnReport      = $("#btn-report");
-    const reportLoading  = $("#report-loading");
-
-    const diseaseGrid    = $("#disease-grid");
-    const themeToggle    = $("#theme-toggle");
-    const themeIcon      = $("#theme-icon");
-
-    // ── Disease Info Database (mirrored from backend) ──────────
-    const DISEASE_DATA = {
-        "Anthracnose": {
-            emoji: "🍂",
-            scientific: "Colletotrichum gloeosporioides",
-            desc: "A major fungal disease affecting mango leaves, flowers, and fruits. It causes significant post-harvest losses and can devastate entire crops if not managed promptly.",
-            symptoms: [
-                "Dark brown to black irregular spots on leaves",
-                "Water-soaked lesions that enlarge rapidly",
-                "Premature leaf drop and defoliation",
-                "Blossom blight and twig dieback",
-                "Fruit rot that remains latent until ripening"
-            ],
-            remedies: [
-                "Apply copper-based fungicides (Bordeaux mixture)",
-                "Use systemic fungicides like Carbendazim or Mancozeb",
-                "Prune and destroy infected branches and leaves",
-                "Post-harvest: Hot water treatment (50–55°C for 5–10 min)",
-                "Maintain good orchard hygiene and spacing"
-            ]
-        },
-        "Bacterial Canker": {
-            emoji: "🦠",
-            scientific: "Xanthomonas campestris pv. mangiferaeindicae",
-            desc: "A serious bacterial infection that affects all above-ground parts of the mango tree. It causes severe economic losses especially in commercial orchards during wet seasons.",
-            symptoms: [
-                "Water-soaked angular lesions on leaves",
-                "Yellow halo surrounding dark lesions",
-                "Cracking and gummosis on twigs and branches",
-                "Lesions may ooze a yellow bacterial exudate",
-                "Severe defoliation and fruit drop"
-            ],
-            remedies: [
-                "Spray copper oxychloride (0.3%) at 15-day intervals",
-                "Apply Streptomycin sulfate (500 ppm) sprays",
-                "Prune and burn infected plant materials",
-                "Avoid overhead irrigation to reduce humidity",
-                "Apply copper-based bactericides during rainy season"
-            ]
-        },
-        "Healthy": {
-            emoji: "🌿",
-            scientific: "Mangifera indica (Normal)",
-            desc: "The mango leaf shows no signs of disease or infection. The plant appears to be in excellent health with normal leaf coloration, texture, and structure.",
-            symptoms: [
-                "Vibrant green leaf coloration",
-                "Smooth and glossy leaf surface",
-                "No spots, lesions, or discoloration",
-                "Normal leaf shape and size",
-                "Healthy growth pattern"
-            ],
-            remedies: [
-                "Continue regular monitoring of the plant",
-                "Maintain balanced fertilization schedule",
-                "Ensure proper irrigation practices",
-                "Keep orchard clean and well-maintained",
-                "Monitor for early signs of pest or disease"
-            ]
-        },
-        "Powdery Mildew": {
-            emoji: "🌫️",
-            scientific: "Oidium mangiferae",
-            desc: "A common fungal disease that appears as a white powdery coating on mango leaves, flowers, and young fruits. It thrives in dry weather with cool nights and warm days.",
-            symptoms: [
-                "White powdery coating on leaf surfaces",
-                "Affected leaves curl and distort",
-                "Flower panicles covered in white powder",
-                "Premature flower and fruit drop",
-                "Reduced fruit set and yield"
-            ],
-            remedies: [
-                "Spray wettable sulfur (0.2%) or Karathane",
-                "Apply Triadimefon (0.1%) fungicide",
-                "Use sulfur-based fungicides during dry season",
-                "Ensure good orchard ventilation through pruning",
-                "Apply fungicides starting at early flowering stage"
-            ]
-        },
-        "Scab": {
-            emoji: "🔶",
-            scientific: "Elsinoë mangiferae",
-            desc: "A fungal disease causing rough, corky, raised spots on mango leaves, twigs, and fruits. It significantly reduces the market value of affected fruits even when severity is moderate.",
-            symptoms: [
-                "Dark brown to gray corky scab lesions",
-                "Raised, rough-textured spots on leaves",
-                "Distortion of young leaves and shoots",
-                "Small raised grey-to-brownish lesions on fruit",
-                "Leaves may become deformed or crinkled"
-            ],
-            remedies: [
-                "Apply Zineb or Maneb fungicides",
-                "Spray Copper oxychloride at 15-day intervals",
-                "Remove and destroy dead leaves and twigs",
-                "Apply copper-based fungicides from flower bud emergence",
-                "Continue treatment until fruit reaches half size"
-            ]
-        },
-        "Sooty Mould": {
-            emoji: "🖤",
-            scientific: "Capnodium mangiferae",
-            desc: "A secondary fungal disease that grows on honeydew excreted by sap-sucking insects. While not directly infecting plant tissue, it blocks sunlight and reduces photosynthesis significantly.",
-            symptoms: [
-                "Black sooty coating covering leaf surfaces",
-                "Coating easily wiped off revealing green leaf",
-                "Presence of scale insects or aphids nearby",
-                "Reduced photosynthesis and plant vigor",
-                "Black velvety coating on twigs and fruits"
-            ],
-            remedies: [
-                "Control sap-sucking insects first (insecticides/neem oil)",
-                "Spray starch solution to remove sooty coating",
-                "Prune heavily infected, dense branches",
-                "Apply systemic insecticides for hoppers/mealybugs",
-                "Maintain good air circulation in the orchard"
-            ]
-        },
-        "Stem End Rot": {
-            emoji: "⚫",
-            scientific: "Lasiodiplodia theobromae",
-            desc: "A devastating post-harvest fungal disease that begins at the stem end of harvested mango fruits. It can cause up to 60% post-harvest losses if proper handling and treatment protocols are not followed.",
-            symptoms: [
-                "Dark brown to black rotting starting at stem end",
-                "Soft, water-soaked lesion spreading rapidly",
-                "White to gray fungal growth on rotted area",
-                "Pulp becomes soft and brown",
-                "Rapid deterioration after harvest"
-            ],
-            remedies: [
-                "Hot water treatment (52°C for 5 min) post-harvest",
-                "Apply Prochloraz (0.05%) fungicide dip",
-                "Avoid harvesting immature fruit",
-                "Pre-harvest sprays of carbendazim",
-                "Post-harvest hot water dips with/without fungicides"
-            ]
-        }
-    };
-
-    // ── State ───────────────────────────────────────────────────
-    let currentFile = null;
-    let lastClassification = null;
-
-    // ── Helpers ─────────────────────────────────────────────────
+    const I18N = window.MANGO_I18N;
+    const DISEASES = window.MANGO_DISEASES;
+    const BY_KEY = Object.fromEntries(DISEASES.map((d) => [d.key, d]));
+    const root = document.documentElement;
+    const $ = (s, el = document) => el.querySelector(s);
+    const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
     const show = (el) => el.classList.remove("hidden");
     const hide = (el) => el.classList.add("hidden");
+    const store = {
+        get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+        set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* private mode */ } }
+    };
+    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const DEMO = new URLSearchParams(location.search).has("demo");
+
+    /* ---------------- Language ---------------- */
+    let lang = root.getAttribute("lang") === "bn" ? "bn" : "en";
+    const t = (key) => (I18N[lang] && I18N[lang][key]) || I18N.en[key] || key;
+    const L = (obj) => (obj && (obj[lang] || obj.en)) || "";
+    const BN_DIGITS = "০১২৩৪৫৬৭৮৯";
+    const num = (s) => (lang === "bn" ? String(s).replace(/\d/g, (d) => BN_DIGITS[d]) : String(s));
+    const pct = (x, dp = 1) => num((x * 100).toFixed(dp)) + "%";
+
+    function applyI18n() {
+        root.setAttribute("lang", lang);
+        document.title = t("meta.title");
+        $$("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
+        $$("[data-i18n-attr]").forEach((el) => {
+            el.dataset.i18nAttr.split(";").forEach((pair) => {
+                const [attr, key] = pair.split(":");
+                if (attr && key) el.setAttribute(attr.trim(), t(key.trim()));
+            });
+        });
+        $$("[data-lang]").forEach((b) => {
+            const on = b.dataset.lang === lang;
+            b.classList.toggle("is-on", on);
+            b.setAttribute("aria-pressed", String(on));
+        });
+        // Dynamic parts re-render in the new language
+        renderCards();
+        renderGardenTabs();
+        renderGardenInfo();
+        if (lastResult) renderResult(lastResult, false);
+        if (sheet.open && sheetKey) fillSheet(sheetKey);
+    }
+
+    function setLang(next) {
+        if (next === lang) return;
+        lang = next;
+        store.set("mangoai-lang", lang);
+        applyI18n();
+    }
+    $$("[data-lang]").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));
+
+    /* ---------------- Theme ---------------- */
+    function setTheme(theme, save = true) {
+        root.setAttribute("data-theme", theme);
+        $$("[data-theme-set]").forEach((b) => {
+            const on = b.dataset.themeSet === theme;
+            b.classList.toggle("is-on", on);
+            b.setAttribute("aria-pressed", String(on));
+        });
+        const meta = $('meta[name="theme-color"]');
+        if (meta) meta.setAttribute("content", theme === "dark" ? "#0F1D13" : "#2E7D32");
+        if (save) store.set("mangoai-theme", theme);
+    }
+    $$("[data-theme-set]").forEach((b) => b.addEventListener("click", () => setTheme(b.dataset.themeSet)));
+    setTheme(root.getAttribute("data-theme") === "dark" ? "dark" : "light", false);
+
+    /* ---------------- Header, menu, active link ---------------- */
+    const header = $("#header");
+    const nav = $("#nav");
+    const menuBtn = $("#menu-btn");
+    const fab = $(".fab");
+
+    function closeMenu() {
+        nav.classList.remove("is-open");
+        menuBtn.setAttribute("aria-expanded", "false");
+    }
+    menuBtn.addEventListener("click", () => {
+        const open = !nav.classList.contains("is-open");
+        nav.classList.toggle("is-open", open);
+        menuBtn.setAttribute("aria-expanded", String(open));
+    });
+    $$(".nav__link").forEach((a) => a.addEventListener("click", closeMenu));
+    document.addEventListener("click", (e) => {
+        if (nav.classList.contains("is-open") && !nav.contains(e.target) && !menuBtn.contains(e.target)) closeMenu();
+    });
+
+    let ticking = false;
+    window.addEventListener("scroll", () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+            header.classList.toggle("is-scrolled", window.scrollY > 8);
+            ticking = false;
+        });
+    }, { passive: true });
+
+    const navLinks = $$(".nav__link");
+    const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const id = entry.target.id;
+            navLinks.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === "#" + id));
+            fab.classList.toggle("is-hidden", id === "detect" || id === "home");
+        });
+    }, { rootMargin: "-45% 0px -50% 0px" });
+    $$("main > section[id]").forEach((s) => sectionObserver.observe(s));
+
+    /* ---------------- Reveal on scroll ---------------- */
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("is-in");
+                revealObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12 });
+    $$(".reveal").forEach((el) => revealObserver.observe(el));
+
+    /* ---------------- Toast ---------------- */
+    const toast = $("#toast");
+    const toastMsg = $("#toast-msg");
+    let toastTimer = null;
+    function showError(key) {
+        toastMsg.textContent = t(key);
+        toastMsg.dataset.key = key;
+        show(toast);
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => hide(toast), 7000);
+    }
+    $("#toast-close").addEventListener("click", () => hide(toast));
+
+    /* ---------------- Upload / camera ---------------- */
+    const scanner = $("#scanner");
+    const drop = $("#drop");
+    const preview = $("#preview");
+    const previewImg = $("#preview-img");
+    const inputCamera = $("#input-camera");
+    const inputGallery = $("#input-gallery");
+    const btnCheck = $("#btn-check");
+    const loading = $("#loading");
+    const results = $("#results");
 
     const MAX_SIZE = 10 * 1024 * 1024;
-    const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp", "image/bmp", "image/tiff"]);
+    const SERVER_TYPES = ["image/jpeg", "image/png", "image/webp", "image/bmp", "image/tiff"];
+    const MAX_SIDE = 1600;
 
-    function validateFile(file) {
-        if (!file) return "No file selected.";
-        if (!ALLOWED.has(file.type)) return "Unsupported file type. Please use JPG, PNG, or WebP.";
-        if (file.size > MAX_SIZE) return `File too large (${(file.size / 1024 / 1024).toFixed(1)} MB). Max is 10 MB.`;
-        return null;
+    let currentFile = null;
+    let previewUrl = null;
+    let lastResult = null;
+
+    function openPicker(kind) {
+        const input = kind === "camera" ? inputCamera : inputGallery;
+        input.value = "";
+        input.click();
     }
+    $$("[data-action]").forEach((b) => b.addEventListener("click", () => {
+        if (sheet.open) sheet.close();
+        openPicker(b.dataset.action);
+        document.getElementById("detect").scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
+    }));
+    [inputCamera, inputGallery].forEach((inp) => inp.addEventListener("change", () => {
+        if (inp.files && inp.files[0]) handleFile(inp.files[0]);
+    }));
 
-    function showError(msg) {
-        errorMsg.textContent = msg;
-        show(errorToast);
-        errorToast.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-
-    function clearResults() {
-        hide(resultsSection);
-        hide(gradcamSection);
-        hide(remediesSection);
-        hide(reportSection);
-        hide(errorToast);
-        lastClassification = null;
-    }
-
-    // ── Theme Toggle ────────────────────────────────────────────
-    function initTheme() {
-        const saved = localStorage.getItem("mangoai-theme");
-        const theme = saved || "dark";
-        document.documentElement.setAttribute("data-theme", theme);
-        themeIcon.textContent = theme === "dark" ? "🌙" : "☀️";
-    }
-
-    function toggleTheme() {
-        const current = document.documentElement.getAttribute("data-theme");
-        const next = current === "dark" ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", next);
-        localStorage.setItem("mangoai-theme", next);
-        themeIcon.textContent = next === "dark" ? "🌙" : "☀️";
-    }
-
-    themeToggle.addEventListener("click", toggleTheme);
-    themeToggle.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleTheme(); }
-    });
-    initTheme();
-
-    // ── Disease Encyclopedia Cards ──────────────────────────────
-    function buildDiseaseCards() {
-        diseaseGrid.innerHTML = "";
-        for (const [name, data] of Object.entries(DISEASE_DATA)) {
-            const card = document.createElement("div");
-            card.className = "flip-card fade-in";
-            card.innerHTML = `
-                <div class="flip-card__inner">
-                    <div class="flip-card__front">
-                        <div class="flip-card__emoji">${data.emoji}</div>
-                        <div class="flip-card__name">${name}</div>
-                        <div class="flip-card__scientific">${data.scientific}</div>
-                        <p class="flip-card__desc">${data.desc}</p>
-                        <div class="flip-card__hint">Click to see symptoms & treatment →</div>
-                    </div>
-                    <div class="flip-card__back">
-                        <div class="flip-card__back-title">${data.emoji} ${name}</div>
-                        <div class="flip-card__back-subtitle symptoms">⚠️ Symptoms</div>
-                        <ul class="flip-card__back-list">
-                            ${data.symptoms.map(s => `<li><span class="bullet">•</span>${s}</li>`).join("")}
-                        </ul>
-                        <div class="flip-card__back-subtitle treatment">✅ Treatment</div>
-                        <ul class="flip-card__back-list">
-                            ${data.remedies.map(r => `<li><span class="bullet">✓</span>${r}</li>`).join("")}
-                        </ul>
-                    </div>
-                </div>
-            `;
-            card.addEventListener("click", () => card.classList.toggle("is-flipped"));
-            diseaseGrid.appendChild(card);
-        }
-    }
-    buildDiseaseCards();
-
-    // ── File selection ──────────────────────────────────────────
-    function handleFile(file) {
-        const err = validateFile(file);
-        if (err) { showError(err); return; }
-
-        currentFile = file;
-        clearResults();
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            previewImg.src = e.target.result;
-            show(previewArea);
-            hide(dropzone);
-            btnClassify.disabled = false;
-        };
-        reader.readAsDataURL(file);
-    }
-
-    // ── Drag & Drop ─────────────────────────────────────────────
-    dropzone.addEventListener("click", () => fileInput.click());
-    dropzone.addEventListener("dragenter", (e) => { e.preventDefault(); dropzone.classList.add("drag-over"); });
-    dropzone.addEventListener("dragover", (e) => { e.preventDefault(); dropzone.classList.add("drag-over"); });
-    dropzone.addEventListener("dragleave", () => dropzone.classList.remove("drag-over"));
-    dropzone.addEventListener("drop", (e) => {
+    // Drag and drop (desktop)
+    ["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("is-over"); }));
+    ["dragleave", "dragend"].forEach((ev) => drop.addEventListener(ev, () => drop.classList.remove("is-over")));
+    drop.addEventListener("drop", (e) => {
         e.preventDefault();
-        dropzone.classList.remove("drag-over");
-        const file = e.dataTransfer.files[0];
-        if (file) handleFile(file);
+        drop.classList.remove("is-over");
+        const f = e.dataTransfer && e.dataTransfer.files[0];
+        if (f) handleFile(f);
     });
 
-    fileInput.addEventListener("change", () => {
-        if (fileInput.files[0]) handleFile(fileInput.files[0]);
-    });
+    // Resize big phone photos in the browser: faster upload, stays under 10 MB
+    function loadImage(file) {
+        return new Promise((resolve, reject) => {
+            const url = URL.createObjectURL(file);
+            const img = new Image();
+            img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+            img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("decode")); };
+            img.src = url;
+        });
+    }
 
-    // ── Remove image ────────────────────────────────────────────
-    btnRemove.addEventListener("click", () => {
-        currentFile = null;
-        fileInput.value = "";
-        previewImg.src = "";
-        hide(previewArea);
-        show(dropzone);
-        btnClassify.disabled = true;
-        clearResults();
-    });
-
-    // ── Error close ─────────────────────────────────────────────
-    errorClose.addEventListener("click", () => hide(errorToast));
-
-    // ── Classify ────────────────────────────────────────────────
-    btnClassify.addEventListener("click", async () => {
-        if (!currentFile) return;
-
-        clearResults();
-        hide(errorToast);
-        show(loadingSection);
-        btnClassify.disabled = true;
-
-        const form = new FormData();
-        form.append("image", currentFile);
-
+    async function prepareFile(file) {
+        let img;
         try {
-            const res = await fetch("/api/classify", { method: "POST", body: form });
-            const data = await res.json();
+            img = await loadImage(file);
+        } catch (e) {
+            // Browser cannot decode (e.g. TIFF): send as-is if the server accepts it
+            if (SERVER_TYPES.includes(file.type) && file.size <= MAX_SIZE) return file;
+            throw new Error(SERVER_TYPES.includes(file.type) ? "err.size" : "err.type");
+        }
+        const side = Math.max(img.naturalWidth, img.naturalHeight);
+        if (side <= MAX_SIDE && file.size <= 2 * 1024 * 1024 && SERVER_TYPES.includes(file.type)) return file;
 
-            hide(loadingSection);
+        const scale = Math.min(1, MAX_SIDE / side);
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.naturalWidth * scale);
+        canvas.height = Math.round(img.naturalHeight * scale);
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        const blob = await new Promise((r) => canvas.toBlob(r, "image/jpeg", 0.9));
+        if (!blob) throw new Error("err.bad");
+        const name = (file.name || "mango").replace(/\.[^.]+$/, "") + ".jpg";
+        return new File([blob], name, { type: "image/jpeg" });
+    }
 
-            if (!res.ok) {
-                showError(data.error || "Classification failed.");
-                btnClassify.disabled = false;
-                return;
+    async function handleFile(file) {
+        if (!file.type.startsWith("image/")) return showError("err.type");
+        if (file.size > 40 * 1024 * 1024) return showError("err.size");
+        hide(toast);
+        try {
+            currentFile = await prepareFile(file);
+        } catch (e) {
+            return showError(e.message.startsWith("err.") ? e.message : "err.bad");
+        }
+        if (currentFile.size > MAX_SIZE) { currentFile = null; return showError("err.size"); }
+
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        previewUrl = URL.createObjectURL(currentFile);
+        previewImg.src = previewUrl;
+        lastResult = null;
+        hide(results);
+        hide(drop);
+        show(preview);
+        btnCheck.disabled = false;
+        btnCheck.focus({ preventScroll: true });
+    }
+
+    function resetScanner() {
+        currentFile = null;
+        lastResult = null;
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        previewUrl = null;
+        previewImg.removeAttribute("src");
+        hide(preview);
+        hide(results);
+        show(drop);
+    }
+    $("#btn-change").addEventListener("click", () => { resetScanner(); openPicker("gallery"); });
+    $("#btn-again").addEventListener("click", () => {
+        resetScanner();
+        scanner.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "center" });
+    });
+
+    /* ---------------- Analyze ---------------- */
+    function setBusy(busy) {
+        scanner.classList.toggle("is-busy", busy);
+        btnCheck.disabled = busy;
+        $("#btn-change").disabled = busy;
+        (busy ? show : hide)(loading);
+    }
+
+    function demoResult() {
+        const order = ["Anthracnose", "Scab", "Bacterial Canker", "Stem End Rot", "Powdery Mildew", "Sooty Mould", "Healthy"];
+        const scores = [0.9342, 0.0271, 0.0158, 0.0107, 0.0064, 0.0038, 0.002];
+        return {
+            demo: true,
+            predicted_class: order[0],
+            confidence: scores[0],
+            all_scores: order.map((c, i) => ({ class: c, score: scores[i] })),
+            original_base64: null,
+            gradcam_base64: null
+        };
+    }
+
+    btnCheck.addEventListener("click", async () => {
+        if (!currentFile) return;
+        setBusy(true);
+        hide(toast);
+        try {
+            let data;
+            if (DEMO) {
+                await new Promise((r) => setTimeout(r, 1600));
+                data = demoResult();
+            } else {
+                const form = new FormData();
+                form.append("image", currentFile);
+                form.append("include_gradcam", "true");
+                const res = await fetch("/api/analyze", { method: "POST", body: form });
+                if (!res.ok) {
+                    setBusy(false);
+                    return showError(res.status === 422 ? "err.notmango" : res.status === 400 ? "err.bad" : "err.server");
+                }
+                data = await res.json();
+                if (!data.is_mango) { setBusy(false); return showError("err.notmango"); }
             }
-
-            lastClassification = data;
-            renderResults(data);
-            btnClassify.disabled = false;
-
-        } catch (err) {
-            hide(loadingSection);
-            showError("Network error — please try again.");
-            btnClassify.disabled = false;
+            setBusy(false);
+            lastResult = data;
+            renderResult(data, true);
+        } catch (e) {
+            setBusy(false);
+            showError(navigator.onLine === false ? "err.network" : (e instanceof TypeError ? "err.network" : "err.server"));
         }
     });
 
-    // ── Render results ──────────────────────────────────────────
-    function renderResults(data) {
-        const cls = data.classification;
-        const gcam = data.gradcam;
-        const diseaseInfo = data.disease_info || DISEASE_DATA[cls.predicted_class] || {};
+    function renderResult(data, animate) {
+        const d = BY_KEY[data.predicted_class] || BY_KEY.Healthy;
+        const healthy = d.key === "Healthy";
+        const conf = Number(data.confidence) || 0;
 
-        // Result hero
-        resultBadge.textContent = cls.predicted_class;
-        const pctVal = (cls.confidence * 100).toFixed(2);
-        resultPct.textContent = pctVal + "%";
+        $("#demo-note").classList.toggle("hidden", !data.demo);
+        const verdict = $("#verdict");
+        verdict.classList.toggle("is-sick", !healthy);
 
-        // Scientific name
-        const sciName = diseaseInfo.scientific_name || (DISEASE_DATA[cls.predicted_class] || {}).scientific || "";
-        resultScientific.textContent = sciName;
+        $("#verdict-title").innerHTML = healthy
+            ? esc(t("res.healthy")) + " 🌿"
+            : esc(t("res.sick")) + " <em>" + esc(L(d.name)) + "</em>";
+        $("#verdict-sci").textContent = d.sci;
+        $("#verdict-meta").innerHTML =
+            `<span class="pill pill--${d.risk}">${esc(t("res.risk"))}: ${esc(t("risk." + d.risk))}</span>` +
+            d.parts.map((p) => `<span class="pill">${esc(t("part." + p))}</span>`).join("");
+        $("#verdict-warn").classList.toggle("hidden", conf >= 0.7);
+        $("#ring-pct").textContent = pct(conf, 0);
 
-        // Confidence ring animation
-        const circumference = 2 * Math.PI * 50; // r=50
-        const offset = circumference * (1 - cls.confidence);
-        ringFill.style.strokeDasharray = circumference;
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                ringFill.style.strokeDashoffset = offset;
-            });
-        });
-
-        show(resultsSection);
-
-        // Scores
-        scoresGrid.innerHTML = "";
-        cls.all_scores.forEach((s, i) => {
-            const pct = (s.score * 100).toFixed(2);
-            const row = document.createElement("div");
-            row.className = "score-row";
-            row.innerHTML = `
-                <span class="score-row__name ${i === 0 ? "is-top" : ""}">${s.class}</span>
-                <div class="score-bar">
-                    <div class="score-bar__fill" style="width:0%"></div>
-                </div>
-                <span class="score-row__pct">${pct}%</span>
-            `;
-            scoresGrid.appendChild(row);
-
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    row.querySelector(".score-bar__fill").style.width = pct + "%";
-                });
-            });
-        });
-
-        // Grad-CAM
-        gradcamOriginal.src = "data:image/png;base64," + gcam.original_b64;
-        gradcamHeatmap.src = "data:image/png;base64," + gcam.heatmap_b64;
-        show(gradcamSection);
-
-        // Remedies
-        renderRemedies(cls.predicted_class, diseaseInfo);
-
-        // Report section
-        show(reportSection);
-
-        // Trigger fade-in for newly visible sections
-        triggerFadeIn();
-
-        // Scroll to results
-        resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    // ── Render Remedies ─────────────────────────────────────────
-    function renderRemedies(diseaseName, info) {
-        const localData = DISEASE_DATA[diseaseName] || {};
-        const symptoms = info.symptoms || localData.symptoms || [];
-        const remedies = info.remedies || localData.remedies || [];
-
-        if (symptoms.length === 0 && remedies.length === 0) {
-            hide(remediesSection);
-            return;
+        const ring = $("#ring-fill");
+        const C = 2 * Math.PI * 50;
+        ring.style.strokeDasharray = C;
+        if (animate) {
+            ring.style.strokeDashoffset = C;
+            requestAnimationFrame(() => requestAnimationFrame(() => { ring.style.strokeDashoffset = C * (1 - conf); }));
+        } else {
+            ring.style.strokeDashoffset = C * (1 - conf);
         }
 
-        remediesContent.innerHTML = `
-            <div class="remedies-column">
-                <h3 class="symptoms-title">⚠️ Symptoms</h3>
-                <ul class="remedies-list">
-                    ${symptoms.map(s => `<li><span class="icon">•</span><span>${s}</span></li>`).join("")}
-                </ul>
-            </div>
-            <div class="remedies-column">
-                <h3 class="treatment-title">✅ Recommended Treatment</h3>
-                <ul class="remedies-list">
-                    ${remedies.map(r => `<li><span class="icon">✓</span><span>${r}</span></li>`).join("")}
-                </ul>
-            </div>
-        `;
-        show(remediesSection);
+        $("#todo-list").innerHTML = L(d.remedies).map((r) => `<li>${esc(num(r))}</li>`).join("");
+        $("#signs-list").innerHTML = L(d.symptoms).map((s) => `<li>${esc(s)}</li>`).join("");
+
+        const scores = $("#scores");
+        scores.innerHTML = (data.all_scores || []).map((s, i) => {
+            const dd = BY_KEY[s.class];
+            return `<div class="score${i === 0 ? " is-top" : ""}">
+                <span>${esc(dd ? L(dd.name) : s.class)}</span><span>${pct(s.score, 1)}</span>
+                <div class="score__bar"><i data-w="${(s.score * 100).toFixed(2)}"></i></div>
+            </div>`;
+        }).join("");
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            $$(".score__bar i", scores).forEach((b) => { b.style.width = b.dataset.w + "%"; });
+        }));
+
+        const heat = $("#heat");
+        const orig = data.original_base64 ? "data:image/png;base64," + data.original_base64 : previewUrl;
+        const cam = data.gradcam_base64 ? "data:image/png;base64," + data.gradcam_base64 : null;
+        $("#img-original").src = orig || "";
+        if (cam) $("#img-heat").src = cam;
+        $("#img-heat").closest("figure").classList.toggle("hidden", !cam);
+        $(".heat__note", heat).classList.toggle("hidden", !cam);
+        heat.classList.toggle("hidden", !orig && !cam);
+        $("#img-original").alt = t("res.photo");
+        $("#img-heat").alt = t("res.heat");
+
+        $("#btn-to-garden").onclick = () => selectGarden(d.key, true);
+
+        show(results);
+        if (animate) {
+            results.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
+            results.focus({ preventScroll: true });
+        }
     }
 
-    // ── Report name input → enable button ───────────────────────
+    /* ---------------- Report ---------------- */
+    const reportForm = $("#report-form");
+    const reportName = $("#report-name");
+    const reportErr = $("#report-err");
+    const reportBusy = $("#report-busy");
+    const btnReport = $("#btn-report");
+
     reportName.addEventListener("input", () => {
-        const hasName = reportName.value.trim().length > 0;
-        btnReport.disabled = !hasName;
-        if (hasName) {
-            nameInputGroup.classList.remove("has-error");
-        }
+        if (reportName.value.trim()) { reportForm.classList.remove("has-error"); hide(reportErr); }
     });
 
-    // ── Report download ─────────────────────────────────────────
-    btnReport.addEventListener("click", async () => {
-        if (!currentFile || !lastClassification) return;
+    reportForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
         const name = reportName.value.trim();
         if (!name) {
-            nameInputGroup.classList.add("has-error");
+            reportForm.classList.add("has-error");
+            show(reportErr);
             reportName.focus();
             return;
         }
+        if (!currentFile) return;
+        if (lastResult && lastResult.demo) return showError("rep.demo");
 
-        show(reportLoading);
+        show(reportBusy);
         btnReport.disabled = true;
-
-        const form = new FormData();
-        form.append("image", currentFile);
-        form.append("user_name", name);
-
         try {
+            const form = new FormData();
+            form.append("image", currentFile);
+            form.append("user_name", name);
             const res = await fetch("/api/report", { method: "POST", body: form });
-
             if (!res.ok) {
-                const data = await res.json();
-                showError(data.error || "Report generation failed.");
-                hide(reportLoading);
-                btnReport.disabled = false;
-                return;
+                showError(res.status === 422 ? "err.notmango" : res.status === 400 ? "err.bad" : "err.server");
+            } else {
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "AmropaliNet_Report_" + name.replace(/[^\p{L}\p{N}_-]+/gu, "_") + ".pdf";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 2000);
             }
-
-            // Trigger download
-            const blob = await res.blob();
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `AmropaliNet_Report_${name.replace(/\s+/g, "_")}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(url);
-
-            hide(reportLoading);
-            btnReport.disabled = name.length === 0;
-
         } catch (err) {
-            showError("Network error — could not download the report.");
-            hide(reportLoading);
+            showError("err.network");
+        } finally {
+            hide(reportBusy);
             btnReport.disabled = false;
         }
     });
 
-    // ── Intersection Observer for fade-in ───────────────────────
-    function triggerFadeIn() {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add("is-visible");
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1 });
+    /* ---------------- Garden impact ---------------- */
+    const orchard = $("#orchard");
+    const treesG = $("#orchard-trees");
+    const particlesG = $("#orchard-particles");
+    const stages = $("#stages");
+    const TREE_X = [60, 180, 300, 420, 540];
+    let gardenKey = "Anthracnose";
+    let gardenTimers = [];
+    let gardenPlayed = false;
 
-        $$(".fade-in").forEach((el) => {
-            if (!el.classList.contains("is-visible")) {
-                observer.observe(el);
+    const SVGNS = "http://www.w3.org/2000/svg";
+    treesG.innerHTML = TREE_X.map((x) => `
+        <g class="g-tree">
+            <rect x="${x - 6}" y="150" width="12" height="46" rx="4" fill="#7B5237"/>
+            <circle class="halo" cx="${x}" cy="118" r="46"/>
+            <circle class="crown" cx="${x}" cy="120" r="40"/>
+            <circle class="crown crown--b" cx="${x - 16}" cy="104" r="22"/>
+            <circle class="crown crown--b" cx="${x + 18}" cy="108" r="20"/>
+            <ellipse cx="${x - 14}" cy="138" rx="6" ry="8" fill="#FFB300"/>
+            <ellipse cx="${x + 16}" cy="132" rx="6" ry="8" fill="#FFB300"/>
+            <g class="spots">
+                <circle cx="${x - 8}" cy="112" r="6"/><circle cx="${x + 14}" cy="122" r="5"/><circle cx="${x - 20}" cy="126" r="4.5"/>
+            </g>
+            <path class="shine" d="M${x + 30} 82 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z" fill="#FFD54F"/>
+        </g>`).join("");
+    const treeEls = $$(".g-tree", treesG);
+
+    function clearGarden() {
+        gardenTimers.forEach(clearTimeout);
+        gardenTimers = [];
+        particlesG.innerHTML = "";
+        treeEls.forEach((el) => el.classList.remove("is-sick", "is-safe"));
+        $$("li", stages).forEach((li) => li.classList.remove("is-on"));
+    }
+
+    function hop(from, to, delay) {
+        for (let k = 0; k < 3; k++) {
+            gardenTimers.push(setTimeout(() => {
+                const c = document.createElementNS(SVGNS, "circle");
+                c.setAttribute("class", "particle");
+                c.setAttribute("cx", TREE_X[from]);
+                c.setAttribute("cy", 110 + k * 8);
+                c.setAttribute("r", 3.2);
+                c.style.setProperty("--dx", (TREE_X[to] - TREE_X[from]) + "px");
+                particlesG.appendChild(c);
+                c.addEventListener("animationend", () => c.remove());
+            }, delay + k * 220));
+        }
+    }
+
+    function at(ms, fn) { gardenTimers.push(setTimeout(fn, reducedMotion ? 0 : ms)); }
+
+    function playGarden() {
+        clearGarden();
+        const d = BY_KEY[gardenKey];
+        orchard.style.setProperty("--tone", d.tone);
+        orchard.setAttribute("aria-label", L(d.name) + " - " + L(d.spread));
+        const healthy = d.key === "Healthy";
+        stages.classList.toggle("is-healthy", healthy);
+        if (healthy) {
+            treeEls.forEach((el, i) => at(200 + i * 180, () => el.classList.add("is-safe")));
+            return;
+        }
+        const stageLi = $$("li", stages);
+        at(250, () => { treeEls[2].classList.add("is-sick"); stageLi[0].classList.add("is-on"); });
+        if (!reducedMotion) { hop(2, 1, 1000); hop(2, 3, 1000); }
+        at(2300, () => { treeEls[1].classList.add("is-sick"); treeEls[3].classList.add("is-sick"); stageLi[1].classList.add("is-on"); });
+        if (!reducedMotion) { hop(1, 0, 3000); hop(3, 4, 3000); }
+        at(4300, () => { treeEls[0].classList.add("is-sick"); treeEls[4].classList.add("is-sick"); stageLi[2].classList.add("is-on"); });
+    }
+
+    function renderGardenTabs() {
+        const tabs = $("#garden-tabs");
+        tabs.innerHTML = DISEASES.map((d) => `
+            <button class="tab" type="button" role="tab" data-key="${esc(d.key)}" aria-selected="${d.key === gardenKey}">
+                ${d.emoji} ${esc(L(d.name))}
+            </button>`).join("");
+        $$(".tab", tabs).forEach((b) => b.addEventListener("click", () => selectGarden(b.dataset.key, false)));
+    }
+
+    function renderGardenInfo() {
+        const d = BY_KEY[gardenKey];
+        const parts = d.parts.length
+            ? d.parts.map((p) => `<span class="pill">${esc(t("part." + p))}</span>`).join("")
+            : `<span class="pill pill--none">${esc(t("risk.none"))}</span>`;
+        $("#garden-info").innerHTML = `
+            <h3><span class="emoji" aria-hidden="true">${d.emoji}</span>${esc(L(d.name))}</h3>
+            <span class="pill pill--${d.risk}">${esc(t("res.risk"))}: ${esc(t("risk." + d.risk))}</span>
+            <div class="info-row"><h4>${esc(t("garden.parts"))}</h4><div class="parts">${parts}</div></div>
+            <div class="info-row"><h4>${esc(t("garden.spread"))}</h4><p>${esc(L(d.spread))}</p></div>
+            <div class="info-row"><h4>${esc(t("garden.season"))}</h4><p>${esc(num(L(d.season)))}</p></div>
+            <div class="info-row"><h4>${esc(t("garden.look"))}</h4><ul>${L(d.symptoms).slice(0, 3).map((s) => `<li>${esc(s)}</li>`).join("")}</ul></div>`;
+        const info = $("#garden-info");
+        info.style.animation = "none";
+        void info.offsetWidth;
+        info.style.animation = "";
+    }
+
+    function selectGarden(key, scroll) {
+        gardenKey = key;
+        $$("#garden-tabs .tab").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.key === key)));
+        renderGardenInfo();
+        playGarden();
+        gardenPlayed = true;
+        if (scroll) document.getElementById("garden").scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
+    }
+    $("#btn-replay").addEventListener("click", playGarden);
+
+    new IntersectionObserver((entries, obs) => {
+        if (entries[0].isIntersecting) {
+            if (!gardenPlayed) { playGarden(); gardenPlayed = true; }
+            obs.disconnect();
+        }
+    }, { threshold: 0.35 }).observe(orchard);
+
+    /* ---------------- Encyclopedia ---------------- */
+    const cards = $("#cards");
+    let filter = "all";
+
+    function renderCards() {
+        cards.innerHTML = DISEASES.map((d) => `
+            <button class="card" type="button" data-key="${esc(d.key)}" style="--tone:${d.tone}">
+                <span class="card__emoji" aria-hidden="true">${d.emoji}</span>
+                <span class="card__name">${esc(L(d.name))}</span>
+                <span class="card__sci">${esc(d.sci)}</span>
+                <span class="card__short">${esc(L(d.short))}</span>
+                <span class="card__foot">
+                    <span class="pill pill--${d.risk}">${esc(t("risk." + d.risk))}</span>
+                    <span class="card__more">${esc(t("dis.open"))} <i aria-hidden="true">→</i></span>
+                </span>
+            </button>`).join("");
+        $$(".card", cards).forEach((c) => c.addEventListener("click", () => openSheet(c.dataset.key)));
+        applyFilter(false);
+    }
+
+    function applyFilter(animate) {
+        let i = 0;
+        $$(".card", cards).forEach((c) => {
+            const d = BY_KEY[c.dataset.key];
+            const match = filter === "all" || d.parts.includes(filter);
+            c.classList.toggle("is-dim", !match);
+            c.classList.remove("pop");
+            if (match && animate) {
+                c.style.animationDelay = (i++ * 50) + "ms";
+                void c.offsetWidth;
+                c.classList.add("pop");
             }
         });
     }
-
-    // Initialize fade-in on page load
-    triggerFadeIn();
-
-    // ── Smooth scroll for nav links ─────────────────────────────
-    $$(".navbar__link[href^='#']").forEach((link) => {
-        link.addEventListener("click", (e) => {
-            e.preventDefault();
-            const target = document.querySelector(link.getAttribute("href"));
-            if (target) {
-                target.scrollIntoView({ behavior: "smooth", block: "start" });
-            }
+    $$(".filter").forEach((f) => f.addEventListener("click", () => {
+        filter = f.dataset.filter;
+        $$(".filter").forEach((x) => {
+            x.classList.toggle("is-active", x === f);
+            x.setAttribute("aria-pressed", String(x === f));
         });
+        applyFilter(true);
+    }));
+
+    /* ---------------- Disease detail sheet ---------------- */
+    const sheet = $("#sheet");
+    const sheetBody = $("#sheet-body");
+    let sheetKey = null;
+    let sheetOpener = null;
+
+    function fillSheet(key) {
+        const d = BY_KEY[key];
+        const list = (arr, tag = "ul") => `<${tag}>${arr.map((x) => `<li>${esc(num(x))}</li>`).join("")}</${tag}>`;
+        sheetBody.innerHTML = `
+            <div class="sheet__hero" style="--tone:${d.tone}">
+                <button class="sheet__close" type="button" aria-label="${esc(t("dis.close"))}">✕</button>
+                <div class="card__emoji" style="--tone:${d.tone}" aria-hidden="true">${d.emoji}</div>
+                <h3 id="sheet-title">${esc(L(d.name))}</h3>
+                <p class="card__sci">${esc(d.sci)}</p>
+                <div class="verdict__meta" style="margin-top:10px">
+                    <span class="pill pill--${d.risk}">${esc(t("res.risk"))}: ${esc(t("risk." + d.risk))}</span>
+                    ${d.parts.map((p) => `<span class="pill">${esc(t("part." + p))}</span>`).join("")}
+                </div>
+            </div>
+            <div class="sheet__body">
+                <p class="sheet__desc">${esc(L(d.desc))}</p>
+                <div class="sheet__grid">
+                    <div class="sheet__block"><h4>👀 ${esc(t("dis.symptoms"))}</h4>${list(L(d.symptoms))}</div>
+                    <div class="sheet__block"><h4>🌬️ ${esc(t("dis.spread"))}</h4><p>${esc(L(d.spread))}</p></div>
+                </div>
+                <div class="sheet__block"><h4>✅ ${esc(t("dis.treatment"))}</h4>${list(L(d.remedies), "ol")}</div>
+                <div class="sheet__block"><h4>🛡️ ${esc(t("dis.prevent"))}</h4>${list(L(d.prevent))}</div>
+            </div>
+            <div class="sheet__cta">
+                <button class="btn btn--mango" type="button" data-sheet-scan><span aria-hidden="true">📷</span><span>${esc(t("dis.scan"))}</span></button>
+            </div>`;
+        $(".sheet__close", sheetBody).addEventListener("click", () => sheet.close());
+        $("[data-sheet-scan]", sheetBody).addEventListener("click", () => {
+            sheet.close();
+            openPicker("camera");
+            document.getElementById("detect").scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
+        });
+    }
+
+    function openSheet(key) {
+        sheetKey = key;
+        sheetOpener = document.activeElement;
+        fillSheet(key);
+        if (typeof sheet.showModal === "function") sheet.showModal();
+        else sheet.setAttribute("open", "");
+        sheetBody.scrollTop = 0;
+        document.body.style.overflow = "hidden";
+    }
+    sheet.addEventListener("close", () => {
+        document.body.style.overflow = "";
+        sheetKey = null;
+        if (sheetOpener && sheetOpener.focus) sheetOpener.focus({ preventScroll: true });
     });
+    sheet.addEventListener("click", (e) => { if (e.target === sheet) sheet.close(); });
+
+    /* ---------------- Init ---------------- */
+    applyI18n();
 })();

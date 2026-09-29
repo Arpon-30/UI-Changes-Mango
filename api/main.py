@@ -18,7 +18,8 @@ from pathlib import Path
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, Response, HTMLResponse
+from fastapi.responses import FileResponse, Response
+from fastapi.staticfiles import StaticFiles
 
 from api.schemas import AnalyzeResponse, DiseaseListResponse, HealthResponse
 
@@ -50,6 +51,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Serve the web frontend (templates/index.html + static/ assets)
+_ROOT = Path(__file__).resolve().parent.parent
+app.mount("/static", StaticFiles(directory=_ROOT / "static"), name="static")
+
 
 # ── Helper ────────────────────────────────────────────────────────────────────
 def _read_upload(file: UploadFile) -> bytes:
@@ -70,49 +75,10 @@ def _read_upload(file: UploadFile) -> bytes:
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────
 
-@app.get("/", response_class=HTMLResponse, include_in_schema=False)
+@app.get("/", include_in_schema=False)
 async def root():
-    """Welcome page with links to API docs."""
-    return """
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Mango Disease AI API</title>
-        <style>
-            body { font-family: 'Segoe UI', sans-serif; background: #0d1117; color: #e6edf3;
-                   display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
-            .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px;
-                    padding: 40px 50px; max-width: 520px; text-align: center; }
-            h1 { color: #3fb950; margin-bottom: 8px; font-size: 1.8rem; }
-            p  { color: #8b949e; line-height: 1.6; }
-            .badge { display: inline-block; background: #1f6feb; color: #fff;
-                     border-radius: 6px; padding: 4px 10px; font-size: 0.8rem; margin: 4px; }
-            a.btn { display: inline-block; margin-top: 20px; padding: 12px 28px;
-                    background: #3fb950; color: #0d1117; border-radius: 8px;
-                    font-weight: bold; text-decoration: none; font-size: 1rem; }
-            a.btn:hover { background: #2ea043; }
-            a.btn2 { background: #238636; margin-left: 10px; color: #fff; }
-        </style>
-    </head>
-    <body>
-        <div class="card">
-            <h1>🥭 Mango Disease AI</h1>
-            <p>AI-powered Amropali mango disease detection API.<br>
-               Detect 7 diseases with Grad-CAM heatmaps and PDF reports.</p>
-            <div>
-                <span class="badge">AA-ENet Model</span>
-                <span class="badge">CLIP Validation</span>
-                <span class="badge">Grad-CAM++</span>
-                <span class="badge">PDF Reports</span>
-            </div>
-            <br>
-            <a class="btn" href="/docs">📖 Interactive API Docs</a>
-            <a class="btn btn2" href="/api/health">❤️ Health Check</a>
-        </div>
-    </body>
-    </html>
-    """
+    """Serve the AmropaliNet web app."""
+    return FileResponse(_ROOT / "templates" / "index.html")
 
 
 @app.get(
