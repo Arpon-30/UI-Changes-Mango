@@ -31,7 +31,6 @@ COPY mango_disease_ai/ ./mango_disease_ai/
 COPY api/ ./api/
 COPY templates/ ./templates/
 COPY static/ ./static/
-COPY AA-ENet_proposed.pt ./
 
 # ── Ownership ──────────────────────────────────────────────────────────────
 RUN chown -R appuser:appuser /app
@@ -40,7 +39,6 @@ USER appuser
 # ── Hugging Face Spaces cache directory ───────────────────────────────────
 ENV HF_HOME=/app/.cache/huggingface
 ENV TRANSFORMERS_CACHE=/app/.cache/huggingface
-ENV MANGO_MODEL_PATH=/app/AA-ENet_proposed.pt
 
 # ── Expose port 7860 (Hugging Face Spaces default) ────────────────────────
 EXPOSE 7860

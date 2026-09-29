@@ -1,228 +1,114 @@
 # mango-disease-ai 🥭
 
-> AI-powered Amropali mango disease detection — classify 7 diseases, visualize with Grad-CAM, and generate PDF reports.
+> AI-powered Amrapali mango disease detection - reject non-mango photos, classify 7 diseases, mark the affected area with Grad-CAM, and create PDF reports in English or Bangla.
 
-[![PyPI version](https://badge.fury.io/py/mango-disease-ai.svg)](https://badge.fury.io/py/mango-disease-ai)
+[![PyPI version](https://badge.fury.io/py/mango-disease-ai.svg)](https://pypi.org/project/mango-disease-ai/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
----
+`mango-disease-ai` is the engine behind **AmropaliNet**, a web app that helps Bangladeshi mango farmers detect disease from one photo. It runs the **AA-ENet** model (EfficientNet-B0 + CBAM + Transformer, trained on 3,500 Amrapali images) and ships the trained weights inside the package.
 
-## What It Does
+| Feature | |
+|---|---|
+| 🥭 Mango check | Rejects photos that are not a mango (CLIP zero-shot + a second model check) |
+| 🔍 7 classes | Anthracnose, Bacterial Canker, Healthy, Powdery Mildew, Scab, Sooty Mould, Stem End Rot |
+| 🔥 Grad-CAM | Heatmap of where the model looked |
+| 🎯 Affected area | Likely affected area outlined on the photo, with its share of the image |
+| 📄 PDF report | One page, **English or Bangla** |
+| 🌐 REST API | `mango-api` starts a ready-made server with Swagger docs |
 
-`mango-disease-ai` is a Python package built on the **AA-ENet** model — a lightweight CNN–Transformer hybrid developed by the **AIUB R&D ICCA Research Group** — that detects 7 Amropali mango diseases from images.
-
-| Feature | Description |
-|---------|-------------|
-| 🔍 **Disease Classification** | Detects 7 diseases with confidence scores |
-| 🧠 **Mango Validation** | Auto-rejects non-mango images using CLIP |
-| 🌡️ **Grad-CAM Heatmap** | Shows exactly where the AI focused on the image |
-| 📄 **PDF Report** | Generates a professional diagnosis report |
-| 🌐 **Public REST API** | Callable from mobile apps, web apps, Postman |
-
-### Detectable Diseases
-
-1. **Anthracnose** — *Colletotrichum gloeosporioides*
-2. **Bacterial Canker** — *Xanthomonas campestris pv. mangiferaeindicae*
-3. **Healthy** — No disease detected
-4. **Powdery Mildew** — *Oidium mangiferae*
-5. **Scab** — *Elsinoë mangiferae*
-6. **Sooty Mould** — *Capnodium mangiferae*
-7. **Stem End Rot** — *Lasiodiplodia theobromae*
-
----
-
-## Installation
+## Install
 
 ```bash
-pip install mango-disease-ai
+pip install mango-disease-ai            # Python library
+pip install "mango-disease-ai[api]"     # + REST API server (FastAPI)
 ```
 
-> **Note:** The first run will automatically download the CLIP model (~600 MB) from HuggingFace Hub. Subsequent runs use the cached version.
+The first analysis downloads the CLIP mango checker (~600 MB) from Hugging Face once; later runs use the cache.
 
----
-
-## Quick Start
-
-### Analyze an image
-
-```python
-from mango_disease_ai import analyze
-
-# Works with file path, PIL Image, bytes, or file-like objects
-result = analyze("mango_leaf.jpg")
-
-print(result["predicted_class"])    # e.g. "Anthracnose"
-print(result["confidence"])         # e.g. 0.9312  (93.12%)
-print(result["is_mango"])           # True
-
-# Disease details
-info = result["disease_info"]
-print(info["scientific_name"])      # "Colletotrichum gloeosporioides"
-print(info["symptoms"])             # list of symptom strings
-print(info["remedies"])             # list of treatment strings
-
-# All 7 class scores
-for score in result["all_scores"]:
-    print(f"{score['class']:20s} {score['score']:.4f}")
-```
-
-### Generate a PDF report
+## Python quick start
 
 ```python
 from mango_disease_ai import analyze, generate_pdf
 
-result = analyze("mango_leaf.jpg")
+result = analyze("mango.jpg")          # path, bytes, PIL.Image or file object
 
-pdf_bytes = generate_pdf(result, user_name="Dr. Arpon")
-with open("diagnosis_report.pdf", "wb") as f:
-    f.write(pdf_bytes)
+if not result["is_mango"]:
+    print("Not a mango photo")
+else:
+    print(result["predicted_class"], f"{result['confidence']:.1%}")   # Anthracnose 95.4%
+    print("Affected area:", result["affected_percent"], "%")          # None for Healthy
+    for step in result["disease_info"]["remedies"]:
+        print("-", step)
+
+    # PDF report in English or Bangla
+    open("report_en.pdf", "wb").write(generate_pdf(result, user_name="Arpon", lang="en"))
+    open("report_bn.pdf", "wb").write(generate_pdf(result, user_name="আরপন", lang="bn"))
 ```
 
-### Display the Grad-CAM heatmap
+Fast mode (no heatmap): `analyze("mango.jpg", include_gradcam=False)`.
 
-```python
-import base64
-from mango_disease_ai import analyze
+### Result fields
 
-result = analyze("mango_leaf.jpg")
+| Key | Meaning |
+|---|---|
+| `is_mango`, `mango_confidence` | Mango check result |
+| `predicted_class`, `confidence` | Top class and its probability |
+| `all_scores` | All 7 classes, highest first: `[{"class": ..., "score": ...}]` |
+| `disease_info` | `scientific_name`, `description`, `symptoms`, `remedies` |
+| `original_base64` | Photo (JPEG, base64, 448x448) |
+| `gradcam_base64` | Grad-CAM heatmap overlay (JPEG, base64) |
+| `marked_base64` | Photo with the likely affected area outlined (JPEG, base64; `None` for Healthy) |
+| `affected_percent` | Share of the photo inside the outline, % (AI estimate) |
 
-# Decode the Grad-CAM base64 PNG and save
-heatmap_bytes = base64.b64decode(result["gradcam_base64"])
-with open("heatmap.png", "wb") as f:
-    f.write(heatmap_bytes)
-```
-
-### Fast mode (no Grad-CAM — ~2× faster)
-
-```python
-from mango_disease_ai import analyze
-
-result = analyze("mango_leaf.jpg", include_gradcam=False)
-# gradcam_base64 and original_base64 will be None
-```
-
-### Works with PIL Images
-
-```python
-from PIL import Image
-from mango_disease_ai import analyze
-
-pil_img = Image.open("mango.jpg")
-result = analyze(pil_img)
-```
-
----
-
-## Return Value
-
-`analyze()` returns a dictionary:
-
-```python
-{
-    "is_mango": True,               # bool — was it validated as a mango?
-    "mango_confidence": 0.97,       # float — CLIP mango detection score
-    "predicted_class": "Anthracnose",
-    "confidence": 0.9312,           # top class confidence (0.0–1.0)
-    "all_scores": [
-        {"class": "Anthracnose", "score": 0.9312},
-        {"class": "Healthy",     "score": 0.0412},
-        # ... all 7 classes
-    ],
-    "disease_info": {
-        "scientific_name": "Colletotrichum gloeosporioides",
-        "description": "...",
-        "symptoms": ["Dark brown spots...", ...],
-        "remedies":  ["Apply copper-based fungicides...", ...]
-    },
-    "gradcam_base64": "iVBORw0KGgo...",   # base64 PNG string
-    "original_base64": "iVBORw0KGgo...",  # base64 PNG string
-}
-```
-
-If `is_mango` is `False`, all other fields except `mango_confidence` will be `None` or empty.
-
----
-
-## Public REST API
-
-A public internet API is also available at **Hugging Face Spaces**.
-Any mobile app or web app can call it via HTTP — no Python needed.
-
-### Endpoints
-
-| Method | URL | Description |
-|--------|-----|-------------|
-| GET | `/api/health` | Server health check |
-| GET | `/api/diseases` | List all 7 diseases |
-| POST | `/api/analyze` | Analyze image → JSON result |
-| POST | `/api/report` | Analyze image → PDF download |
-
-### Example (Python requests)
-
-```python
-import requests
-
-with open("mango_leaf.jpg", "rb") as f:
-    response = requests.post(
-        "https://YOUR-SPACE.hf.space/api/analyze",
-        files={"image": f},
-    )
-
-result = response.json()
-print(result["predicted_class"])
-print(result["confidence"])
-```
-
-### Example (curl)
+## REST API
 
 ```bash
-curl -X POST "https://YOUR-SPACE.hf.space/api/analyze" \
-     -F "image=@mango_leaf.jpg"
+mango-api                 # or: python -m mango_disease_ai.server  (--port 8080)
 ```
 
-### Interactive API Docs
+Open http://localhost:8000/docs to try every endpoint.
 
-Visit `https://YOUR-SPACE.hf.space/docs` for the full interactive documentation (Swagger UI).
+| Method | Path | What it does |
+|---|---|---|
+| GET | `/api/health` | Server + model status |
+| GET | `/api/diseases` | Info for all 7 classes |
+| POST | `/api/analyze` | `image` (+ `include_gradcam`) -> diagnosis JSON |
+| POST | `/api/report` | `image`, `user_name`, `lang=en\|bn` -> PDF |
 
----
-
-## Model Architecture
-
-**AA-ENet** (Amropali Attention-Enhanced Network):
-
-```
-Input Image (224×224)
-       │
-EfficientNet-B0 Backbone (pretrained)
-       │
-1×1 Conv Reduction → 192 channels
-       │
-CBAM Attention (Channel + Spatial)
-       │
-Transformer Encoder (1 layer, 4 heads) + [CLS] token
-       │
-GAP + CLS concatenation → Dropout → Linear
-       │
-7-class softmax output
+```bash
+curl -F "image=@mango.jpg" http://localhost:8000/api/analyze
+curl -F "image=@mango.jpg" -F "user_name=Arpon" -F "lang=bn" http://localhost:8000/api/report -o report_bn.pdf
 ```
 
-- **Parameters**: ~5.8M
-- **Training data**: 3,500 Amropali mango images (500 per class)
-- **Inference time**: ~1–2 seconds (CPU)
-- **Input**: 224×224, ImageNet normalization
+```javascript
+const form = new FormData();
+form.append("image", fileInput.files[0]);
+const res = await fetch("http://localhost:8000/api/analyze", { method: "POST", body: form });
+const data = await res.json();
+if (!res.ok) console.log(data.detail.code);   // e.g. "not_mango"
+else console.log(data.predicted_class, data.confidence);
+```
 
----
+Errors return `{"detail": {"code": ..., "message": ...}}`:
+`400` bad_type / too_large / empty / bad_image / no_name / bad_lang ·
+`422` not_mango (+ `mango_confidence`) ·
+`503` model_missing / mango_check_unavailable / bn_pdf_unavailable ·
+`500` analysis_failed / report_failed.
 
-## License
+## What's new in 0.2.0
 
-MIT License — see [LICENSE](LICENSE) file.
+- Likely affected area outlined on the photo (`marked_base64`, `affected_percent`)
+- PDF report in Bangla (`lang="bn"`) as well as English, with a new one-page design
+- Stricter mango check (18 CLIP labels + second model check)
+- Clear error codes, model status in `/api/health`, models load at server start
+- Sharper 448 px images (JPEG)
 
-## Attribution
+## Team
 
-**Research Group**: AIUB R&D ICCA  
-**Institution**: American International University-Bangladesh  
-**Model**: AA-ENet (EfficientNet-B0 + CBAM + Transformer Encoder)  
-**Dataset**: 3,500 Amropali mango images
+AIUB Student Group - Arpon, Oni, Md. Ibtihazzaman · Supervised by Dr. Md. Saef Ullah Miah
+Contact: arponamit.55@gmail.com · https://github.com/Arpon-30
 
-If you use this in research, please cite our work.
+For guidance only. Always consult a qualified agronomist for crop management decisions.
+
+License: MIT. The bundled Hind Siliguri font is under the SIL Open Font License (`mango_disease_ai/fonts/OFL.txt`).
