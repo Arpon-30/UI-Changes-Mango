@@ -259,6 +259,85 @@ FUTURE = [
     ("More mango varieties and leaf diseases; Bangla voice guidance.", "আরও আমের জাত ও পাতার রোগ; বাংলা ভয়েস নির্দেশনা।"),
 ]
 
+STACK = [
+    ("Programming languages / প্রোগ্রামিং ভাষা", [
+        ("Python 3.10+", "AI model, image analysis, REST API server, PDF reports, documentation builder",
+         "এআই মডেল, ছবি বিশ্লেষণ, REST API সার্ভার, পিডিএফ রিপোর্ট, ডকুমেন্টেশন তৈরি", "mango_disease_ai/*.py, api/main.py, run.py"),
+        ("JavaScript", "Website logic: camera and upload, language and theme switch, results, animations, PDF download",
+         "ওয়েবসাইটের কাজ: ক্যামেরা ও আপলোড, ভাষা ও থিম বদল, ফলাফল, অ্যানিমেশন, পিডিএফ ডাউনলোড", "static/js/main.js, i18n.js, diseases.js"),
+        ("HTML5", "Structure of the web page and all sections", "ওয়েব পেজ ও সব অংশের কাঠামো", "templates/index.html"),
+        ("CSS3", "Design, colours, light and dark mode, animations, mobile layout", "ডিজাইন, রং, লাইট ও ডার্ক মোড, অ্যানিমেশন, মোবাইল লেআউট", "static/css/style.css"),
+        ("SVG", "Hero illustration (tree, farmer, mangoes), garden map, icons", "হিরো ছবি (গাছ, কৃষক, আম), বাগানের মানচিত্র, আইকন", "templates/index.html, main.js"),
+        ("JSON", "Bangla disease text for the PDF, API responses", "পিডিএফের জন্য বাংলা রোগের তথ্য, API উত্তর", "mango_disease_ai/disease_info_bn.json"),
+    ]),
+    ("AI and machine learning / এআই ও মেশিন লার্নিং", [
+        ("PyTorch 2.5", "Runs the AI model on a normal CPU (no GPU needed)", "সাধারণ CPU-তে এআই মডেল চালায় (GPU লাগে না)", "mango_disease_ai/model.py, inference.py"),
+        ("AA-ENet (our model)", "EfficientNet-B0 + CBAM attention + Transformer encoder; 7 classes; ~5.8M parameters",
+         "EfficientNet-B0 + CBAM অ্যাটেনশন + Transformer এনকোডার; ৭টি শ্রেণি; প্রায় ৫৮ লাখ প্যারামিটার", "mango_disease_ai/model.py, AA-ENet_proposed.pt"),
+        ("timm", "Provides the EfficientNet-B0 backbone", "EfficientNet-B0 মূল কাঠামো দেয়", "mango_disease_ai/model.py"),
+        ("CLIP (Hugging Face transformers)", "Zero-shot mango check with 18 labels", "১৮টি লেবেল দিয়ে আম যাচাই", "mango_disease_ai/inference.py"),
+        ("Grad-CAM++ (own code)", "Heatmap and red outline of the likely affected area", "হিটম্যাপ ও সম্ভাব্য আক্রান্ত অংশের লাল দাগ", "mango_disease_ai/inference.py"),
+        ("OpenCV, SciPy, NumPy, Pillow", "Resize photos, colour the heatmap, find and draw outlines", "ছবি ছোট করা, হিটম্যাপে রং, দাগ খোঁজা ও আঁকা", "mango_disease_ai/inference.py, core.py"),
+    ]),
+    ("Backend server / ব্যাকএন্ড সার্ভার", [
+        ("FastAPI", "REST API: /api/analyze, /api/report, /api/health, /api/diseases + /docs page",
+         "REST API: /api/analyze, /api/report, /api/health, /api/diseases + /docs পেজ", "mango_disease_ai/server.py, api/main.py"),
+        ("Uvicorn", "Web server that runs the API and the website", "API ও ওয়েবসাইট চালানোর ওয়েব সার্ভার", "run.py, mango-api command"),
+        ("Pydantic", "Checks API input and output", "API এর ইনপুট ও আউটপুট যাচাই", "mango_disease_ai/server.py"),
+        ("python-multipart", "Receives uploaded photos", "আপলোড করা ছবি গ্রহণ", "mango_disease_ai/server.py"),
+    ]),
+    ("PDF and fonts / পিডিএফ ও ফন্ট", [
+        ("fpdf2", "Creates the diagnosis report and this documentation", "রোগ নির্ণয় রিপোর্ট ও এই ডকুমেন্টেশন তৈরি", "mango_disease_ai/report_engine.py, docs/build_documentation.py"),
+        ("uharfbuzz (HarfBuzz)", "Joins Bangla letters correctly in PDFs", "পিডিএফে বাংলা যুক্তাক্ষর সঠিকভাবে জোড়া লাগায়", "mango_disease_ai/report_engine.py"),
+        ("Hind Siliguri font (OFL)", "Bangla text on the website and in PDFs", "ওয়েবসাইট ও পিডিএফে বাংলা লেখা", "mango_disease_ai/fonts/, Google Fonts"),
+        ("Poppins font", "English text on the website", "ওয়েবসাইটে ইংরেজি লেখা", "templates/index.html (Google Fonts)"),
+    ]),
+    ("Frontend features / ফ্রন্টএন্ড", [
+        ("No framework (vanilla JS)", "No React and no build step - loads fast on low-cost phones", "React বা বিল্ড ধাপ নেই - কম দামের ফোনেও দ্রুত চলে", "static/js/main.js"),
+        ("Own i18n (Bangla / English)", "Instant language switch, no translation service; browser auto-translate disabled",
+         "তাৎক্ষণিক ভাষা বদল, অনুবাদ সেবা ছাড়া; ব্রাউজারের স্বয়ংক্রিয় অনুবাদ বন্ধ", "static/js/i18n.js"),
+        ("HTML camera capture + Canvas", "Opens the phone camera; resizes big photos before upload", "ফোনের ক্যামেরা খোলে; আপলোডের আগে বড় ছবি ছোট করে", "templates/index.html, main.js"),
+        ("localStorage", "Remembers language and light/dark choice", "ভাষা ও লাইট/ডার্ক পছন্দ মনে রাখে", "static/js/main.js"),
+    ]),
+    ("Packaging and deployment / প্যাকেজিং ও ডিপ্লয়মেন্ট", [
+        ("PyPI", "Publishes the library mango-disease-ai for developers", "ডেভেলপারদের জন্য mango-disease-ai লাইব্রেরি প্রকাশ", "pyproject.toml, README_PACKAGE.md"),
+        ("setuptools, build, twine", "Build and upload the library", "লাইব্রেরি তৈরি ও আপলোড", "pyproject.toml, PUBLISH_GUIDE.md"),
+        ("Docker (python:3.10-slim)", "Container for hosting, e.g. Hugging Face Spaces", "হোস্টিংয়ের জন্য কন্টেইনার, যেমন Hugging Face Spaces", "Dockerfile"),
+        ("Git + GitHub", "Version control and sharing", "ভার্সন নিয়ন্ত্রণ ও শেয়ার", "github.com/Arpon-30/UI-Changes-Mango"),
+    ]),
+    ("Development and testing / ডেভেলপমেন্ট ও টেস্টিং", [
+        ("VS Code + Anaconda", "Editor and Python environment (tf_new, Python 3.10)", "এডিটর ও পাইথন পরিবেশ (tf_new, Python 3.10)", "run.py, .vscode"),
+        ("Jupyter Notebook", "Model training and research", "মডেল প্রশিক্ষণ ও গবেষণা", "last-try-mango.ipynb"),
+        ("Playwright (Chromium)", "Automatic browser tests on phone and desktop sizes, both languages", "ফোন ও ডেস্কটপ আকারে, দুই ভাষায় স্বয়ংক্রিয় ব্রাউজার টেস্ট", "test scripts (development)"),
+    ]),
+]
+
+FILE_MAP = [
+    ("run.py", "One-click start: installs small missing packages, opens the website", "এক ক্লিকে চালু: ছোট অনুপস্থিত প্যাকেজ ইনস্টল করে, ওয়েবসাইট খোলে"),
+    ("api/main.py", "Website server = library API + web pages", "ওয়েবসাইট সার্ভার = লাইব্রেরির API + ওয়েব পেজ"),
+    ("mango_disease_ai/server.py", "The REST API (also the mango-api command)", "REST API (mango-api কমান্ডও এটি)"),
+    ("mango_disease_ai/core.py", "analyze(): mango check -> diagnosis -> Grad-CAM", "analyze(): আম যাচাই -> রোগ নির্ণয় -> Grad-CAM"),
+    ("mango_disease_ai/model.py", "AA-ENet architecture, model loading, disease data", "AA-ENet কাঠামো, মডেল লোড, রোগের তথ্য"),
+    ("mango_disease_ai/inference.py", "CLIP mango check, classification, heatmap, affected area", "CLIP আম যাচাই, শ্রেণিবিন্যাস, হিটম্যাপ, আক্রান্ত অংশ"),
+    ("mango_disease_ai/report_engine.py", "PDF report in English or Bangla", "ইংরেজি বা বাংলা পিডিএফ রিপোর্ট"),
+    ("mango_disease_ai/AA-ENet_proposed.pt", "Trained model weights (18 MB)", "প্রশিক্ষিত মডেলের ওজন (১৮ MB)"),
+    ("templates/index.html", "The web page", "ওয়েব পেজ"),
+    ("static/css/style.css", "Design and animations", "ডিজাইন ও অ্যানিমেশন"),
+    ("static/js/main.js", "Website logic", "ওয়েবসাইটের কাজ"),
+    ("static/js/i18n.js, diseases.js", "All Bangla / English text and disease data", "সব বাংলা / ইংরেজি লেখা ও রোগের তথ্য"),
+    ("static/img/", "Real dataset photos and real model outputs", "আসল ডেটাসেটের ছবি ও মডেলের আসল আউটপুট"),
+    ("docs/", "This documentation and its builder", "এই ডকুমেন্টেশন ও তা তৈরির স্ক্রিপ্ট"),
+]
+
+ARCH = [
+    ("Phone browser", "HTML + CSS + JavaScript"),
+    ("REST API", "FastAPI + Uvicorn"),
+    ("Mango check", "CLIP"),
+    ("Diagnosis", "AA-ENet (PyTorch)"),
+    ("Explanation", "Grad-CAM++ + OpenCV"),
+    ("Report", "fpdf2 + HarfBuzz"),
+]
+
 PY_CODE = """pip install mango-disease-ai
 
 from mango_disease_ai import analyze, generate_pdf
@@ -319,6 +398,34 @@ class Doc(FPDF):
                 else:
                     lines.append(cur)
                     cur = word
+            lines.append(cur)
+        return lines
+
+    def wrap_path(self, text, width):
+        """Like wrap(), but long paths/URLs without spaces are split after '/' (current font)."""
+        pieces = []
+        for token in str(text).split():
+            if self.get_string_width(token) <= width:
+                pieces.append(token)
+                continue
+            part = ""
+            for chunk in token.replace("/", "/\u0000").split("\u0000"):
+                if part and self.get_string_width(part + chunk) > width:
+                    pieces.append(part)
+                    part = chunk
+                else:
+                    part += chunk
+            if part:
+                pieces.append(part)
+        lines, cur = [], ""
+        for piece in pieces:
+            cand = f"{cur} {piece}".strip()
+            if not cur or self.get_string_width(cand) <= width:
+                cur = cand
+            else:
+                lines.append(cur)
+                cur = piece
+        if cur:
             lines.append(cur)
         return lines
 
@@ -438,6 +545,79 @@ class Doc(FPDF):
             self.text_block(en, size=10, x=M + 8, w=W - 9, gap=0)
             self.text_block(bn, size=10.2, color=SOFT, x=M + 8, w=W - 9, gap=2.5)
 
+    def stack_table(self, title, rows):
+        """rows: (technology, what_en, what_bn, where). Three columns."""
+        c1, c3 = 40, 50
+        c2 = W - c1 - c3
+        self.sub(title, size=11)
+        # header
+        self.need(8)
+        y = self.y_pos
+        self.set_fill_color(*GREEN_DARK)
+        self.rect(M, y, W, 6.5, style="F")
+        self.f(8.5, True)
+        self.set_text_color(255, 255, 255)
+        for x, w, label in ((M, c1, "Technology / প্রযুক্তি"), (M + c1, c2, "What it does / কী কাজ করে"),
+                            (M + c1 + c2, c3, "Where used / কোথায়")):
+            self.set_xy(x + 2, y + 0.4)
+            self.cell(w - 4, 5.6, label)
+        self.y_pos = y + 6.5
+        for i, (tech, en, bn, where) in enumerate(rows):
+            self.f(9)
+            n1 = len(self.wrap(tech, c1 - 4))
+            n2 = len(self.wrap(en, c2 - 4)) + len(self.wrap(bn, c2 - 4))
+            self.set_font("Courier", "", 7.6)
+            n3 = len(self.wrap_path(where, c3 - 4))
+            h = max(n1 * 4.6, n2 * 4.5, n3 * 3.9) + 3
+            if self.y_pos + h > BOTTOM:
+                self.add_page()
+            y = self.y_pos
+            self.set_fill_color(*(TINT if i % 2 == 0 else (255, 255, 255)))
+            self.set_draw_color(*BORDER)
+            self.rect(M, y, W, h, style="DF")
+            self.y_pos = y + 1.5
+            self.text_block(tech, size=9, bold=True, color=GREEN_DARK, x=M + 2, w=c1 - 4, gap=0)
+            self.y_pos = y + 1.5
+            self.text_block(en, size=8.6, color=INK, x=M + c1 + 2, w=c2 - 4, gap=0)
+            self.text_block(bn, size=8.8, color=SOFT, x=M + c1 + 2, w=c2 - 4, gap=0)
+            self.set_font("Courier", "", 7.6)
+            self.set_text_color(*SOFT)
+            yy = y + 1.5
+            for line in self.wrap_path(where, c3 - 4):
+                self.set_xy(M + c1 + c2 + 2, yy)
+                self.cell(c3 - 4, 3.9, line)
+                yy += 3.9
+            self.y_pos = y + h
+        self.y_pos += 5
+
+    def arch_flow(self, steps):
+        n = len(steps)
+        gap = 3.5
+        bw = (W - gap * (n - 1)) / n
+        self.need(26)
+        y = self.y_pos
+        for i, (name, tech) in enumerate(steps):
+            x = M + i * (bw + gap)
+            self.set_fill_color(*(GREEN if i % 2 == 0 else MANGO))
+            self.rect(x, y, bw, 20, style="F", round_corners=True, corner_radius=2.5)
+            self.f(8.8, True)
+            self.set_text_color(255, 255, 255)
+            self.set_xy(x, y + 2.5)
+            self.cell(bw, 5, name, align="C")
+            self.f(7.4)
+            lines = self.wrap(tech, bw - 3)
+            yy = y + 8.5
+            for line in lines:
+                self.set_xy(x, yy)
+                self.cell(bw, 4, line, align="C")
+                yy += 4
+            if i < n - 1:
+                self.set_draw_color(*INK)
+                self.set_line_width(0.5)
+                self.line(x + bw + 0.4, y + 10, x + bw + gap - 0.6, y + 10)
+                self.set_line_width(0.2)
+        self.y_pos = y + 26
+
     def code(self, text, title):
         lines = text.split("\n")
         h = 9 + len(lines) * 4.6 + 4
@@ -537,12 +717,12 @@ def build() -> Path:
            "Our solution / আমাদের সমাধান", "How we save and help recover the environment / পরিবেশ রক্ষা ও পুনরুদ্ধার",
            "Is it connected to the environment? / পরিবেশের সাথে সংযোগ", "Features / ফিচার", "Main novelty / মূল নতুনত্ব",
            "For farmers and normal users / সাধারণ ব্যবহারকারী", "For developers / ডেভেলপার", "How it works / কিভাবে কাজ করে",
-           "Limitations and next steps / সীমাবদ্ধতা ও পরবর্তী ধাপ"]
+           "Tech stack and where it is used / প্রযুক্তি ও ব্যবহার", "Limitations and next steps / সীমাবদ্ধতা ও পরবর্তী ধাপ"]
     ytoc = d.y_pos
     bottoms = []
-    for col, items in enumerate((toc[:6], toc[6:])):
+    for col, items in enumerate((toc[:7], toc[7:])):
         d.y_pos = ytoc
-        for i, t in enumerate(items, 1 + col * 6):
+        for i, t in enumerate(items, 1 + col * 7):
             d.text_block(f"{i}. {t}", size=9.5, color=INK, x=M + col * (W / 2), w=W / 2 - 4, gap=0.6)
         bottoms.append(d.y_pos)
     d.y_pos = max(bottoms) + 4
@@ -658,7 +838,43 @@ def build() -> Path:
     d.section("How it works", "কিভাবে কাজ করে")
     d.card_pairs(PIPELINE, numbered=True)
 
-    # ── 12 Limits + future ───────────────────────────────────────────────
+    # ── 12 Tech stack ─────────────────────────────────────────────────────
+    d.section("Tech stack and where it is used", "প্রযুক্তি ও কোথায় ব্যবহার হয়েছে")
+    d.bilingual(
+        "Every technology in AmropaliNet, what it does and the exact file where it is used. The whole system is "
+        "open source and runs on an ordinary laptop - no GPU and no paid cloud service are needed.",
+        "আম্রপালিনেটের প্রতিটি প্রযুক্তি, তার কাজ এবং ঠিক কোন ফাইলে ব্যবহার হয়েছে। পুরো সিস্টেম ওপেন সোর্স এবং সাধারণ "
+        "ল্যাপটপেই চলে - GPU বা পেইড ক্লাউড সেবা লাগে না।")
+    d.sub("Architecture  /  গঠন")
+    d.arch_flow(ARCH)
+    for title, rows in STACK:
+        d.stack_table(title, rows)
+    d.sub("Project folder map  /  প্রকল্পের ফোল্ডার মানচিত্র")
+    for path, en, bn in FILE_MAP:
+        d.f(9)
+        h = max(len(d.wrap(en, W - 76)) * 4.5 + len(d.wrap(bn, W - 76)) * 4.6, 5) + 2.5
+        d.need(h)
+        y = d.y_pos
+        d.set_font("Courier", "B", 8.2)
+        d.set_text_color(*GREEN_DARK)
+        yy = y
+        for line in d.wrap_path(path, 70):
+            d.set_xy(M, yy)
+            d.cell(72, 4.5, line)
+            yy += 4.5
+        d.y_pos = y
+        d.text_block(en, size=9, x=M + 74, w=W - 76, gap=0)
+        d.text_block(bn, size=9.2, color=SOFT, x=M + 74, w=W - 76, gap=0)
+        d.set_draw_color(*BORDER)
+        d.line(M, y + h - 1, M + W, y + h - 1)
+        d.y_pos = y + h
+    d.y_pos += 3
+    d.sub("One line for slides  /  স্লাইডের জন্য এক লাইনে", size=10.5)
+    d.text_block("Python · PyTorch · AA-ENet (EfficientNet-B0 + CBAM + Transformer) · CLIP · Grad-CAM++ · FastAPI · "
+                 "HTML / CSS / JavaScript · fpdf2 + HarfBuzz (Bangla PDF) · PyPI library · Docker",
+                 size=10, bold=True, color=INK, gap=4)
+
+    # ── 13 Limits + future ───────────────────────────────────────────────
     d.section("Limitations and next steps", "সীমাবদ্ধতা ও পরবর্তী ধাপ")
     d.sub("Honest limitations  /  সীমাবদ্ধতা")
     d.bullets(LIMITS)
