@@ -66,4 +66,6 @@ def generate_pdf(result: dict, user_name: str = "User") -> bytes:
         heatmap_b64=result["gradcam_base64"],
         classification=classification,
         disease_info=result.get("disease_info", {}),
+        marked_b64=result.get("marked_base64"),
+        affected_percent=result.get("affected_percent"),
     )
