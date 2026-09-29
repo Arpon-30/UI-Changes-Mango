@@ -1,22 +1,51 @@
-# Deploy AmropaliNet live for free - Hugging Face Spaces
+# Deploy AmropaliNet live
 
-**Why Hugging Face Spaces?** It is free, gives a public `https://` link (the phone camera
-needs https), and its free CPU machine has **16 GB RAM** - enough for PyTorch + AA-ENet + CLIP.
-Most other free hosts (Render, Vercel, Netlify, PythonAnywhere) give 512 MB RAM or cannot run
-PyTorch, so the app would crash there.
+> **Important (checked September 2026):** since July 2026, Hugging Face **no longer lets free
+> accounts create Docker Spaces**. You need the **PRO plan ($9/month)**. Free accounts only get
+> static Spaces (no server, so the AI cannot run) or ZeroGPU Gradio Spaces.
 
-The project is already prepared: `Dockerfile` (port 7860) and the settings block at the top
-of `README.md`.
+## Which option?
+
+| Option | Cost | Card? | Online 24/7? |
+|---|---|---|---|
+| A. Your laptop + Cloudflare Tunnel (below) | Free | No | Only while the laptop runs |
+| B. GitHub Codespaces | Free (monthly hours) | No | Only while running |
+| C. Oracle Cloud Always Free VM (24 GB RAM) | Free | Yes (verification) | Yes |
+| D. Google Cloud Run | Free within limits | Yes | Yes (cold start) |
+| E. Hugging Face Spaces PRO (steps below) | $9 / month | Yes | Yes |
+
+Render / Vercel / Netlify / Koyeb free plans do not work: about 512 MB RAM, the AI needs about 2 GB.
+
+**Streamlit Community Cloud** (free) can only run the old `streamlit_app.py`, not the new
+website (HTML + FastAPI). Its free apps get about 1 GB RAM, and PyTorch + AA-ENet + the CLIP
+mango checker need more, so the app is likely to stop with "over its resource limits".
+
+## Option A - free public link from your laptop (best for demos)
+
+1. Start the app: `python run.py` (it runs on http://localhost:8000).
+2. Download `cloudflared` for Windows: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
+3. In a second terminal:
+   ```powershell
+   cloudflared tunnel --url http://localhost:8000
+   ```
+4. It prints a link like `https://something-random.trycloudflare.com` - open it on any phone.
+   The camera works because the link is https. The link changes each time you start it and
+   works only while both terminals are open.
+
+## Option E - Hugging Face Spaces (PRO, $9/month)
+
+The project is already prepared for this: `Dockerfile` (port 7860) and the settings block at the
+top of `README.md`. With PRO, choose **CPU basic** hardware (2 vCPU, 16 GB RAM).
 
 ## Step 1 - Create a Hugging Face account
-Sign up at https://huggingface.co/join (free) and verify your email.
+Sign up at https://huggingface.co/join, verify your email, and subscribe to **PRO** at https://huggingface.co/pricing.
 
 ## Step 2 - Create a Space
 1. Go to https://huggingface.co/new-space
 2. **Space name:** `AmropaliNet`
 3. **License:** MIT
 4. **SDK:** choose **Docker** → template **Blank**
-5. **Hardware:** **CPU basic - 2 vCPU · 16 GB · FREE**
+5. **Hardware:** **CPU basic - 2 vCPU · 16 GB** (needs a PRO account for Docker Spaces)
 6. **Visibility:** Public
 7. Click **Create Space**
 

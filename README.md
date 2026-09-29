@@ -29,9 +29,9 @@ python -m pip install -r api/requirements.txt   # first time
 python run.py                                     # opens http://localhost:8000
 ```
 
-## Deploy for free
+## Deploy
 
-See [`DEPLOY.md`](DEPLOY.md) - Hugging Face Spaces (Docker, free CPU).
+See [`DEPLOY.md`](DEPLOY.md) - free public link from your laptop (Cloudflare Tunnel), or Hugging Face Spaces (PRO).
 
 ## Team
 
