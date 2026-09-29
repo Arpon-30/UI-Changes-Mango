@@ -77,6 +77,14 @@ def build_site() -> str:
         '    <script src="static/js/i18n.js" defer></script>',
         "index.html",
     )
+    # Streamlit Cloud draws its own badge in the bottom-right corner: keep the phone
+    # "Scan" button above it
+    html = _replace(
+        html,
+        "</head>",
+        "    <style>.fab { bottom: calc(76px + env(safe-area-inset-bottom)); }</style>\n</head>",
+        "index.html",
+    )
     (out / "index.html").write_text(html, encoding="utf-8")
 
     main_js = out / "static" / "js" / "main.js"
