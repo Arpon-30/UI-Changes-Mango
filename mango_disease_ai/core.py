@@ -92,17 +92,9 @@ def analyze(
     """
     from PIL import Image as _PILImage
 
-    # ── Validate model weights ───────────────────────────────────────────────
-    if not _MODEL_PATH.exists():
-        raise FileNotFoundError(
-            f"Model weights not found at: {_MODEL_PATH}\n"
-            "If you installed via pip, the weights should be bundled.\n"
-            "You can also set the MANGO_MODEL_PATH environment variable."
-        )
-
-    # Temporarily patch the MODEL_PATH that model.py reads from
-    # so it finds the weights inside the package directory.
-    os.environ["MANGO_MODEL_PATH_OVERRIDE"] = str(_MODEL_PATH)
+    # ── Validate model weights (clear error for missing / LFS placeholder) ───
+    from mango_disease_ai.model import resolve_model_path
+    resolve_model_path()
 
     # ── Convert input to PIL Image ───────────────────────────────────────────
     if isinstance(image, _PILImage.Image):

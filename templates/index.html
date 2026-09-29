@@ -230,6 +230,10 @@
                     </ol>
 
                     <div class="scanner" id="scanner">
+                        <div class="status hidden" id="model-status" role="status" aria-live="polite">
+                            <span class="status__icon" id="status-icon" aria-hidden="true"></span>
+                            <div><strong id="status-title"></strong><small id="status-detail"></small></div>
+                        </div>
                         <!-- Empty state -->
                         <div class="drop" id="drop">
                             <div class="drop__art" aria-hidden="true">
@@ -281,6 +285,22 @@
                 </div>
 
                 <!-- Results -->
+                <!-- Not a mango -->
+                <div class="nomango hidden" id="nomango" tabindex="-1" role="alert">
+                    <div class="nomango__photo"><img id="nomango-img" alt="" /><span class="nomango__x" aria-hidden="true">✕</span></div>
+                    <div class="nomango__text">
+                        <span class="kicker" data-i18n="res.kicker"></span>
+                        <h3 data-i18n="nm.title"></h3>
+                        <p id="nomango-sub"></p>
+                        <ul>
+                            <li data-i18n="nm.t1"></li>
+                            <li data-i18n="nm.t2"></li>
+                            <li data-i18n="nm.t3"></li>
+                        </ul>
+                        <button class="btn btn--mango btn--lg" type="button" id="btn-nomango-again"><span aria-hidden="true">📷</span><span data-i18n="nm.btn"></span></button>
+                    </div>
+                </div>
+
                 <div class="results hidden" id="results" tabindex="-1">
                     <p class="demo-note hidden" id="demo-note" data-i18n="res.demo"></p>
 
@@ -298,6 +318,28 @@
                             <p class="verdict__sci" id="verdict-sci"></p>
                             <div class="verdict__meta" id="verdict-meta"></div>
                             <p class="verdict__warn hidden" id="verdict-warn" data-i18n="res.lowconf"></p>
+                            <div class="verdict__actions">
+                                <a class="btn btn--mango" href="#report" id="btn-to-report"><span aria-hidden="true">📄</span><span data-i18n="res.pdf"></span></a>
+                                <a class="btn btn--outline" href="#heat-card"><span aria-hidden="true">🔥</span><span data-i18n="res.seeheat"></span></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="insight">
+                        <div class="insight__card" id="heat-card">
+                            <h4><span aria-hidden="true">🔥</span> <span data-i18n="res.heattitle"></span></h4>
+                            <div class="heat" id="heat">
+                                <figure><img id="img-original" alt="" /><figcaption data-i18n="res.photo"></figcaption></figure>
+                                <figure><img id="img-heat" alt="" /><figcaption data-i18n="res.heat"></figcaption></figure>
+                            </div>
+                            <div class="heat__legend" id="heat-legend">
+                                <span data-i18n="res.low"></span><i aria-hidden="true"></i><span data-i18n="res.high"></span>
+                            </div>
+                            <p class="heat__note" data-i18n="res.heatnote"></p>
+                        </div>
+                        <div class="insight__card">
+                            <h4><span aria-hidden="true">📊</span> <span data-i18n="res.scores"></span></h4>
+                            <div class="scores" id="scores"></div>
                         </div>
                     </div>
 
@@ -317,25 +359,11 @@
                         <button class="btn btn--outline" type="button" id="btn-again"><span aria-hidden="true">📷</span><span data-i18n="res.again"></span></button>
                     </div>
 
-                    <details class="expert">
-                        <summary><span data-i18n="res.expert"></span></summary>
-                        <div class="expert__body">
-                            <div>
-                                <h5 data-i18n="res.scores"></h5>
-                                <div class="scores" id="scores"></div>
-                            </div>
-                            <div class="heat" id="heat">
-                                <figure><img id="img-original" alt="" /><figcaption data-i18n="res.photo"></figcaption></figure>
-                                <figure><img id="img-heat" alt="" /><figcaption data-i18n="res.heat"></figcaption></figure>
-                                <p class="heat__note" data-i18n="res.heatnote"></p>
-                            </div>
-                        </div>
-                    </details>
-
                     <div class="report" id="report">
                         <div class="report__text">
                             <h4><span aria-hidden="true">📄</span> <span data-i18n="rep.title"></span></h4>
                             <p data-i18n="rep.sub"></p>
+                            <p class="report__hint" data-i18n="rep.hint"></p>
                         </div>
                         <form class="report__form" id="report-form" novalidate>
                             <label for="report-name" data-i18n="rep.name"></label>
@@ -505,7 +533,7 @@
     <!-- Toast -->
     <div class="toast hidden" id="toast" role="alert">
         <span class="toast__icon" aria-hidden="true">⚠️</span>
-        <span class="toast__msg" id="toast-msg"></span>
+        <span class="toast__msg"><span id="toast-msg"></span><small class="toast__detail" id="toast-detail"></small></span>
         <button class="toast__close" type="button" id="toast-close" data-i18n-attr="aria-label:err.close">✕</button>
     </div>
 

@@ -8,8 +8,14 @@ from pydantic import BaseModel, Field
 
 
 class HealthResponse(BaseModel):
+    model_config = {"protected_namespaces": ()}
+
     status: str = Field(..., example="ok")
-    version: str = Field(..., example="0.1.0")
+    version: str = Field(..., example="0.2.0")
+    model: str = Field("loading", description="AA-ENet status: loading / ok / error", example="ok")
+    model_error: Optional[str] = Field(None, description="Why the AA-ENet model could not be loaded")
+    mango_check: str = Field("loading", description="CLIP mango checker status: loading / ok / error", example="ok")
+    mango_check_error: Optional[str] = Field(None, description="Why the CLIP mango checker could not be loaded")
 
 
 class ClassScore(BaseModel):
