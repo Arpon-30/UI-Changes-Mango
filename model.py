@@ -28,7 +28,56 @@ CLASSES = [
 ]
 NUM_CLASSES = len(CLASSES)
 
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "AA-ENet_proposed.pt")
+MODEL_FILENAME = "AA-ENet_proposed.pt"
+MODEL_PATH = os.path.join(os.path.dirname(__file__), MODEL_FILENAME)
+
+
+class ModelNotReadyError(RuntimeError):
+    """The AA-ENet weights file is missing or is only a Git LFS placeholder."""
+
+
+def _is_lfs_pointer(path: str) -> bool:
+    """A Git LFS placeholder is a ~130-byte text file instead of the real weights."""
+    try:
+        if os.path.getsize(path) > 1024:
+            return False
+        with open(path, "rb") as fh:
+            return fh.read(40).startswith(b"version https://git-lfs")
+    except OSError:
+        return False
+
+
+def resolve_model_path() -> str:
+    """
+    Find the real AA-ENet weights. Checks, in order: $MANGO_MODEL_PATH,
+    this module's folder, the project root and the current folder.
+    Skips Git LFS placeholders (what a GitHub ZIP download contains).
+    """
+    here = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        os.environ.get("MANGO_MODEL_PATH"),
+        os.path.join(here, MODEL_FILENAME),
+        os.path.join(os.path.dirname(here), MODEL_FILENAME),
+        os.path.join(os.getcwd(), MODEL_FILENAME),
+    ]
+    placeholders = []
+    for path in candidates:
+        if not path or not os.path.isfile(path):
+            continue
+        if _is_lfs_pointer(path):
+            placeholders.append(path)
+            continue
+        return path
+    if placeholders:
+        raise ModelNotReadyError(
+            f"{MODEL_FILENAME} is only a Git LFS placeholder (a few bytes, not the real 18 MB model): "
+            f"{placeholders[0]}. Run `git lfs pull`, or download the real file from GitHub and "
+            "put it in the project folder, then restart."
+        )
+    raise ModelNotReadyError(
+        f"{MODEL_FILENAME} was not found. Put the 18 MB model file in the project folder "
+        "(next to run.py) and restart."
+    )
 MANGO_DETECTOR_MODEL_ID = "openai/clip-vit-base-patch32"
 
 # ── Disease information database ─────────────────────────────────────────────
@@ -266,7 +315,7 @@ def load_model(device="cpu"):
         return _cached_model
 
     model = AAENet(NUM_CLASSES, dropout=0.276633)
-    state = torch.load(MODEL_PATH, map_location=device, weights_only=True)
+    state = torch.load(resolve_model_path(), map_location=device, weights_only=True)
     model.load_state_dict(state)
     model.to(device).eval()
     _cached_model = model
