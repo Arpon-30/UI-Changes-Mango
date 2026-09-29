@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="light" translate="no" class="notranslate">
 <head>
     <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>AmropaliNet - Mango Disease Doctor</title>
     <meta name="description" content="Take one photo of an Amrapali mango. AmropaliNet finds 7 diseases in seconds, shows how they spread in the garden and tells farmers exactly what to do - in Bangla and English." />
@@ -460,8 +461,14 @@
                             <label for="report-name" data-i18n="rep.name"></label>
                             <div class="report__row">
                                 <input type="text" id="report-name" maxlength="100" autocomplete="name" data-i18n-attr="placeholder:rep.ph" />
-                                <button class="btn btn--mango" type="submit" id="btn-report">
-                                    <span aria-hidden="true">⬇️</span><span data-i18n="rep.btn"></span>
+                            </div>
+                            <p class="report__choose" data-i18n="rep.choose"></p>
+                            <div class="report__langs">
+                                <button class="btn btn--mango" type="submit" data-pdf-lang="bn" lang="bn">
+                                    <span aria-hidden="true">⬇️</span><span data-i18n="rep.bn"></span>
+                                </button>
+                                <button class="btn btn--primary" type="submit" data-pdf-lang="en">
+                                    <span aria-hidden="true">⬇️</span><span data-i18n="rep.en"></span>
                                 </button>
                             </div>
                             <p class="field-error hidden" id="report-err" data-i18n="rep.err"></p>

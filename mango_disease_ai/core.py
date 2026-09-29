@@ -135,6 +135,22 @@ def analyze(
     # ── Step 2: Disease classification ───────────────────────────────────────
     classification = classify_image(pil_img)
     pred_class = classification["predicted_class"]
+
+    # Second safety check: both models unsure -> most likely not a mango photo
+    from mango_disease_ai.inference import UNSURE_MANGO_CONFIDENCE, UNSURE_MODEL_CONFIDENCE
+    if classification["confidence"] < UNSURE_MODEL_CONFIDENCE and mango_conf < UNSURE_MANGO_CONFIDENCE:
+        return {
+            "is_mango": False,
+            "mango_confidence": mango_conf,
+            "predicted_class": None,
+            "confidence": None,
+            "all_scores": [],
+            "disease_info": {},
+            "gradcam_base64": None,
+            "original_base64": None,
+            "marked_base64": None,
+            "affected_percent": None,
+        }
     disease_info = DISEASE_INFO.get(pred_class, {})
 
     # ── Step 3: Grad-CAM heatmap ─────────────────────────────────────────────
