@@ -87,51 +87,32 @@ TEXT = {
         "p2_sub": "One photo, the right diagnosis, less chemical and less waste - a healthier environment",
         "solution_h": "Solution",
         "solution": [
-            "AmropaliNet is a free Bangla and English AI mango doctor that replaces \"just in case\" spraying with "
-            "precise, evidence-based treatment.",
-            "We built a dataset of 3,500 real Amrapali images - 500 for each of 7 classes (six diseases and healthy) - "
-            "split 70/15/15 for training, validation and testing. On it we trained our proposed model, AA-ENet: an "
-            "EfficientNet-B0 backbone with CBAM attention, which focuses on the lesion instead of the background, and a "
-            "Transformer encoder, which links spots across the whole fruit. AA-ENet reaches 96.8% test accuracy "
-            "(F1 0.968, 96.6% in cross-validation) with only 4.57 million parameters: the same accuracy as Xception with "
-            "4.6 times fewer parameters, and higher than VGG16, which is 29 times larger.",
-            "A farmer photographs a mango with any phone. A two-step mango check (CLIP plus a confidence gate) rejects "
-            "other photos, AA-ENet names the disease in seconds, and Grad-CAM outlines the affected area, so the farmer "
-            "sees the evidence before acting.",
+            "AmropaliNet is a free AI mango doctor, in Bangla and English, that changes every orchard decision from \"spray just in case\" to \"treat only what is sick\". Its aim: fewer chemicals in nature, less food thrown away and healthier orchards.",
+            "A farmer takes one photo of a mango with any phone. The app first checks that the photo really shows a mango, then names the disease or confirms that the fruit is healthy, and marks the affected area so the farmer can see the problem with their own eyes. Then it gives clear, practical steps.",
         ],
-        "lead": "How each diagnosis protects the environment:",
+        "lead": "Our environmental solution works in five ways:",
         "points": [
-            "No disease, no spray: a healthy result ends the calendar spray for that tree (SDG 12.4).",
-            "No wrong spray: sooty mould grows on honeydew from sap-sucking insects, so fungicide alone only pollutes; "
-            "the app advises controlling the insects, with neem oil first because it is gentler on bees (SDG 6.3, SDG 15.5).",
-            "Only sick trees, non-chemical steps first: pruning, orchard hygiene and hot-water treatment after harvest "
-            "reduce the chemicals farm families handle (SDG 3.9).",
-            "Early detection stops spread, saving fruit and the water, land and emissions behind it (SDG 12.3, SDG 13).",
-            "Green AI: the 18 MB model runs on an ordinary CPU, with no GPU servers and little energy per diagnosis.",
+            "Stop needless spraying: a healthy result means no spray, breaking the habit of calendar spraying and keeping chemicals out of soil, ponds and groundwater (SDG 6, SDG 12).",
+            "Stop wrong spraying: each disease gets its own treatment. Sooty mould, for example, grows on honeydew from sap-sucking insects, so a fungicide alone only pollutes; the app advises controlling the insects instead.",
+            "Protect pollinators: non-chemical steps come first - pruning, orchard hygiene and neem oil, which is gentler on bees - keeping flowering orchards safe for pollinators (SDG 15).",
+            "Cut food waste: early detection stops disease spreading from tree to tree, and hot-water treatment after harvest reduces rot in storage, saving the water, land and energy behind every mango (SDG 12, SDG 13).",
+            "Protect people and income: less spraying means less chemical exposure for farm families (SDG 3), while lower costs and saved harvests steady their income and food supply (SDG 1, SDG 2).",
         ],
-        "end": "The engine is the open Python library mango-disease-ai, so extension services can bring it to every "
-               "orchard. Detect early. Spray less. Waste less.",
+        "end": "It works on low-cost phones and helps extension workers reach many orchards. Every photo becomes one better decision, and season after season those decisions give soil, water and wildlife room to recover. Detect early. Spray less. Waste less.",
         "chain_h": "How everything connects: from one photo to the SDGs",
         "chain": [
             ("One photo", "any phone, Bangla or English", []),
-            ("Right diagnosis", "mango check, AA-ENet 96.8%, affected area", []),
+            ("Right diagnosis", "mango check, disease name, affected area", []),
             ("Targeted treatment", "only sick trees, non-chemical first", [12, 3]),
             ("Less chemical, less waste", "fewer sprays, less fruit lost", [12, 13, 2]),
             ("Healthier ecosystem", "clean water and soil, safe bees, stable income", [6, 15, 1]),
         ],
         "facts": [
-            ("3,500", "images, 7 classes x 500"),
-            ("96.8%", "test accuracy, F1 0.968"),
-            ("4.57 M", "parameters, 18 MB model"),
-            ("CPU", "no GPU, result in seconds"),
+            ("1 photo", "is all a farmer needs"),
+            ("7", "results: 6 diseases or healthy"),
+            ("0 sprays", "when the mango is healthy"),
+            ("Free", "Bangla and English, any phone"),
         ],
-        "compare_h": "Same accuracy, far smaller model = less energy per diagnosis",
-        "compare": [
-            ("AA-ENet (ours)", 4.57, "96.8%"),
-            ("Xception", 20.82, "96.8%"),
-            ("VGG16", 134.29, "95.6%"),
-        ],
-        "params": "{} M parameters",
         "sdg_h": "SDGs AmropaliNet advances:",
         "words": "{} words",
         "footer": "AmropaliNet - AIUB Student Group (Arpon, Oni, Md. Ibtihazzaman) - "
@@ -183,51 +164,32 @@ TEXT = {
         "p2_sub": "একটি ছবি, সঠিক রোগ নির্ণয়, কম রাসায়নিক ও কম অপচয় - সুস্থ পরিবেশ",
         "solution_h": "সমাধান",
         "solution": [
-            "আম্রপালিনেট একটি বিনামূল্যের বাংলা ও ইংরেজি এআই আম ডাক্তার, যা \"যদি লাগে\" ভেবে স্প্রের বদলে "
-            "প্রমাণভিত্তিক, নির্ভুল চিকিৎসা আনে।",
-            "আমরা ৩,৫০০টি আসল আম্রপালি ছবির একটি ডেটাসেট তৈরি করেছি - ৭টি শ্রেণির (ছয়টি রোগ ও সুস্থ) প্রতিটিতে ৫০০টি - "
-            "যা প্রশিক্ষণ, যাচাই ও পরীক্ষার জন্য ৭০/১৫/১৫ ভাগে ভাগ করা। এর উপর আমরা আমাদের প্রস্তাবিত মডেল AA-ENet "
-            "প্রশিক্ষণ দিয়েছি: EfficientNet-B0 ভিত্তি, CBAM অ্যাটেনশন যা পটভূমির বদলে দাগের উপর মনোযোগ দেয়, এবং "
-            "Transformer এনকোডার যা পুরো ফলের দাগগুলোকে যুক্ত করে দেখে। মাত্র ৪.৫৭ মিলিয়ন প্যারামিটারে AA-ENet "
-            "পরীক্ষায় ৯৬.৮% নির্ভুলতা দেয় (F1 ০.৯৬৮, ক্রস-ভ্যালিডেশনে ৯৬.৬%): Xception-এর সমান নির্ভুলতা, কিন্তু "
-            "৪.৬ গুণ কম প্যারামিটারে, এবং ২৯ গুণ বড় VGG16-এর চেয়েও বেশি।",
-            "কৃষক যেকোনো ফোনে আমের ছবি তোলেন। দুই ধাপের আম যাচাই (CLIP ও নিশ্চয়তা যাচাই) অন্য ছবি বাদ দেয়, "
-            "AA-ENet কয়েক সেকেন্ডে রোগের নাম বলে, আর Grad-CAM আক্রান্ত অংশ চিহ্নিত করে - তাই কৃষক ব্যবস্থা নেওয়ার "
-            "আগে প্রমাণ দেখতে পান।",
+            "আম্রপালিনেট একটি বিনামূল্যের, বাংলা ও ইংরেজি ভাষার এআই আম ডাক্তার, যা বাগানের প্রতিটি সিদ্ধান্তকে \"যদি লাগে তাই স্প্রে\" থেকে \"শুধু যা অসুস্থ, তারই চিকিৎসা\"-তে বদলে দেয়। এর লক্ষ্য: প্রকৃতিতে কম রাসায়নিক, কম খাদ্য অপচয় ও আরও সুস্থ বাগান।",
+            "কৃষক যেকোনো ফোনে আমের একটি ছবি তোলেন। অ্যাপটি প্রথমে যাচাই করে ছবিটি সত্যিই আমের কি না, তারপর রোগের নাম বলে অথবা জানায় যে আমটি সুস্থ, এবং আক্রান্ত অংশ চিহ্নিত করে, যাতে কৃষক নিজের চোখে সমস্যাটি দেখতে পান। এরপর পরিষ্কার ও কাজে লাগার মতো পরামর্শ দেয়।",
         ],
-        "lead": "প্রতিটি রোগ নির্ণয় যেভাবে পরিবেশ রক্ষা করে:",
+        "lead": "আমাদের পরিবেশগত সমাধান পাঁচভাবে কাজ করে:",
         "points": [
-            "রোগ নেই, স্প্রে নেই: সুস্থ ফলাফল সেই গাছে ক্যালেন্ডার মেনে স্প্রে বন্ধ করে (SDG 12.4)।",
-            "ভুল স্প্রে নেই: সুটি মোল্ড জন্মায় রস-চোষা পোকার মধুরসে, তাই শুধু ছত্রাকনাশক কেবল দূষণ বাড়ায়; অ্যাপ আগে "
-            "পোকা দমনের পরামর্শ দেয়, প্রথমে নিম তেল, কারণ তা মৌমাছির জন্য কম ক্ষতিকর (SDG 6.3, SDG 15.5)।",
-            "শুধু অসুস্থ গাছ, আগে রাসায়নিক ছাড়া উপায়: ডাল ছাঁটাই, বাগান পরিষ্কার রাখা ও ফল পাড়ার পর গরম পানিতে শোধন "
-            "কৃষক পরিবারের রাসায়নিক সংস্পর্শ কমায় (SDG 3.9)।",
-            "আগেভাগে শনাক্ত করলে রোগ ছড়ায় না, ফল বাঁচে, সাথে বাঁচে এর পেছনের পানি, জমি ও নির্গমন (SDG 12.3, SDG 13)।",
-            "সবুজ এআই: ১৮ মেগাবাইটের মডেল সাধারণ সিপিইউতে চলে - জিপিইউ সার্ভার লাগে না, প্রতি নির্ণয়ে খুব কম বিদ্যুৎ খরচ।",
+            "অপ্রয়োজনীয় স্প্রে বন্ধ: সুস্থ ফলাফল মানে কোনো স্প্রে নয়, ফলে ক্যালেন্ডার মেনে স্প্রের অভ্যাস ভাঙে এবং মাটি, পুকুর ও ভূগর্ভস্থ পানি রাসায়নিকমুক্ত থাকে (SDG 6, SDG 12)।",
+            "ভুল স্প্রে বন্ধ: প্রতিটি রোগের নিজস্ব চিকিৎসা আছে। যেমন সুটি মোল্ড জন্মায় রস-চোষা পোকার মধুরসে, তাই শুধু ছত্রাকনাশক কেবল দূষণ বাড়ায়; অ্যাপ বরং পোকা দমনের পরামর্শ দেয়।",
+            "পরাগায়নকারী রক্ষা: আগে রাসায়নিক ছাড়া উপায় - ডাল ছাঁটাই, বাগান পরিষ্কার রাখা এবং মৌমাছির জন্য কম ক্ষতিকর নিম তেল - ফলে মুকুলের সময় বাগান পরাগায়নকারীদের জন্য নিরাপদ থাকে (SDG 15)।",
+            "খাদ্য অপচয় কমানো: আগেভাগে শনাক্ত করলে রোগ গাছ থেকে গাছে ছড়ায় না, আর ফল পাড়ার পর গরম পানিতে শোধন গুদামে পচন কমায় - বাঁচে প্রতিটি আমের পেছনের পানি, জমি ও শক্তি (SDG 12, SDG 13)।",
+            "মানুষ ও আয় রক্ষা: কম স্প্রে মানে কৃষক পরিবারের কম রাসায়নিক সংস্পর্শ (SDG 3), আর কম খরচ ও রক্ষা পাওয়া ফসল তাঁদের আয় ও খাদ্যের জোগান স্থির রাখে (SDG 1, SDG 2)।",
         ],
-        "end": "ইঞ্জিনটি ওপেন পাইথন লাইব্রেরি mango-disease-ai হিসেবে প্রকাশিত, তাই কৃষি সম্প্রসারণ সেবা একে প্রতিটি "
-               "বাগানে পৌঁছে দিতে পারে। আগে শনাক্ত করুন। কম স্প্রে করুন। কম অপচয় করুন।",
+        "end": "এটি কম দামের ফোনেও চলে এবং কৃষি সম্প্রসারণ কর্মীদের অনেক বাগানে পৌঁছাতে সাহায্য করে। প্রতিটি ছবি একটি ভালো সিদ্ধান্তে পরিণত হয়, আর মৌসুমের পর মৌসুম সেই সিদ্ধান্তগুলো মাটি, পানি ও বন্যপ্রাণীকে আবার সুস্থ হয়ে ওঠার সুযোগ দেয়। আগে শনাক্ত করুন। কম স্প্রে করুন। কম অপচয় করুন।",
         "chain_h": "সবকিছু কীভাবে যুক্ত: একটি ছবি থেকে SDG পর্যন্ত",
         "chain": [
             ("একটি ছবি", "যেকোনো ফোন, বাংলা বা ইংরেজি", []),
-            ("সঠিক রোগ নির্ণয়", "আম যাচাই, AA-ENet ৯৬.৮%, আক্রান্ত অংশ", []),
+            ("সঠিক রোগ নির্ণয়", "আম যাচাই, রোগের নাম, আক্রান্ত অংশ", []),
             ("লক্ষ্যভিত্তিক চিকিৎসা", "শুধু অসুস্থ গাছ, আগে রাসায়নিকমুক্ত উপায়", [12, 3]),
             ("কম রাসায়নিক, কম অপচয়", "কম স্প্রে, কম ফল নষ্ট", [12, 13, 2]),
             ("সুস্থ বাস্তুতন্ত্র", "পরিষ্কার পানি ও মাটি, নিরাপদ মৌমাছি, স্থির আয়", [6, 15, 1]),
         ],
         "facts": [
-            ("৩,৫০০", "ছবি, ৭ শ্রেণি x ৫০০"),
-            ("৯৬.৮%", "পরীক্ষায় নির্ভুলতা, F1 ০.৯৬৮"),
-            ("৪.৫৭ M", "প্যারামিটার, ১৮ MB মডেল"),
-            ("CPU", "জিপিইউ লাগে না, কয়েক সেকেন্ডে ফল"),
+            ("১টি ছবি", "কৃষকের শুধু এটুকুই লাগে"),
+            ("৭", "ফলাফল: ৬টি রোগ বা সুস্থ"),
+            ("০ স্প্রে", "আম সুস্থ হলে"),
+            ("বিনামূল্যে", "বাংলা ও ইংরেজি, যেকোনো ফোন"),
         ],
-        "compare_h": "একই নির্ভুলতা, অনেক ছোট মডেল = প্রতি নির্ণয়ে কম বিদ্যুৎ",
-        "compare": [
-            ("AA-ENet (আমাদের)", 4.57, "৯৬.৮%"),
-            ("Xception", 20.82, "৯৬.৮%"),
-            ("VGG16", 134.29, "৯৫.৬%"),
-        ],
-        "params": "{} M প্যারামিটার",
         "sdg_h": "আম্রপালিনেট যে SDG-গুলো এগিয়ে নেয়:",
         "words": "{} শব্দ",
         "footer": "AmropaliNet - AIUB Student Group (Arpon, Oni, Md. Ibtihazzaman) - "
@@ -493,29 +455,6 @@ class Doc(FPDF):
             self.cell(fw, 5, small, align="C")
         self.set_y(y + 16)
 
-        # model size vs accuracy (bar length = parameters, from the training notebook)
-        y = self.get_y()
-        self.font(9.2, True, GREEN)
-        self.set_xy(self.M, y)
-        self.cell(0, 5, t["compare_h"])
-        y += 6
-        name_w, tail_w = 34, 44
-        bar_max = self.W - name_w - tail_w
-        biggest = max(p for _, p, _ in t["compare"])
-        for i, (name, params, acc) in enumerate(t["compare"]):
-            ours = i == 0
-            self.font(8.4, ours, DARK if ours else SOFT)
-            self.set_xy(self.M, y)
-            self.cell(name_w, 4.6, name)
-            bw = max(bar_max * params / biggest, 1.5)
-            self.set_fill_color(*(GREEN if ours else (190, 205, 185)))
-            self.rect(self.M + name_w, y + 0.8, bw, 3, "F", round_corners=True, corner_radius=1.2)
-            self.set_xy(self.M + name_w + bw + 2, y)
-            self.font(8.2, ours, GREEN if ours else SOFT)
-            self.cell(tail_w, 4.6, f"{t['params'].format(self.num(params))}  |  {acc}")
-            y += 5
-        self.set_y(y + 2.5)
-
         # SDGs advanced
         self.font(9.5, True, GREEN)
         label_w = self.get_string_width(t["sdg_h"]) + 3
@@ -544,6 +483,22 @@ def build(langs, out):
     return out
 
 
+def write_text(out):
+    """Plain text of both statements, for pasting into forms (copying Bangla out of a PDF breaks letters)."""
+    parts = []
+    for lang, name in (("en", "ENGLISH"), ("bn", "BANGLA")):
+        t = TEXT[lang]
+        parts.append(f"===== {name} =====\n")
+        parts.append(f"{t['problem_h']} ({t['words'].format(problem_words(t))})\n")
+        parts.append("\n\n".join(t["problem"] + [t["root"]]) + "\n\n")
+        parts.append(f"{t['solution_h']} ({t['words'].format(solution_words(t))})\n")
+        parts.append("\n\n".join(t["solution"]) + "\n\n" + t["lead"] + "\n")
+        parts.append("".join(f"- {p}\n" for p in t["points"]))
+        parts.append("\n" + t["end"] + "\n\n")
+    out.write_text("".join(parts), encoding="utf-8")
+    return out
+
+
 if __name__ == "__main__":
     for lang in ("en", "bn"):
         t = TEXT[lang]
@@ -552,3 +507,4 @@ if __name__ == "__main__":
                         (("en",), "AmropaliNet_Problem_Solution_EN.pdf"),
                         (("bn",), "AmropaliNet_Problem_Solution_BN.pdf")):
         print("Saved", build(langs, DOCS / name))
+    print("Saved", write_text(DOCS / "AmropaliNet_Problem_Solution.txt"))

@@ -1,0 +1,52 @@
+===== ENGLISH =====
+Problem Statement (272 words)
+Amrapali is Bangladesh's favourite everyday mango and the main source of income for thousands of farming families in Rajshahi, Chapainawabganj, Naogaon and the hill districts. Every season it is attacked by six common diseases: anthracnose, bacterial canker, powdery mildew, scab, sooty mould and stem-end rot.
+
+Most farmers cannot tell these diseases apart, and an agricultural officer is rarely at hand when the first spots appear. The usual answer is blanket, calendar spraying: the whole orchard is sprayed with several fungicides and insecticides "just in case", again and again from flowering to harvest.
+
+This turns a farming problem into an environmental one. Surplus chemicals wash into soil, ponds and groundwater, harming aquatic life and village drinking water (SDG 6). Spraying at flowering kills the bees and other pollinators that mango trees need to set fruit, and repeated doses breed resistant pathogens (SDG 15). Farm workers and their families breathe and handle these chemicals, often without protection (SDG 3).
+
+The second problem is waste. When disease is noticed late, it has already spread, and infected fruit rots on the tree, in storage or in transport. Every discarded mango wastes the water, land, fertiliser, fuel and labour used to grow it, and rotting fruit releases greenhouse gases (SDG 12, SDG 13). Lost harvests and wasted chemical costs push small farmers towards poverty and shrink the local food supply (SDG 1, SDG 2).
+
+The root cause is one missing piece of knowledge at the right moment: which disease is this, and what is the smallest treatment that works? Without it, farmers overspray, lose fruit and damage the ecosystem their orchards depend on - season after season.
+
+Solution (292 words)
+AmropaliNet is a free AI mango doctor, in Bangla and English, that changes every orchard decision from "spray just in case" to "treat only what is sick". Its aim: fewer chemicals in nature, less food thrown away and healthier orchards.
+
+A farmer takes one photo of a mango with any phone. The app first checks that the photo really shows a mango, then names the disease or confirms that the fruit is healthy, and marks the affected area so the farmer can see the problem with their own eyes. Then it gives clear, practical steps.
+
+Our environmental solution works in five ways:
+- Stop needless spraying: a healthy result means no spray, breaking the habit of calendar spraying and keeping chemicals out of soil, ponds and groundwater (SDG 6, SDG 12).
+- Stop wrong spraying: each disease gets its own treatment. Sooty mould, for example, grows on honeydew from sap-sucking insects, so a fungicide alone only pollutes; the app advises controlling the insects instead.
+- Protect pollinators: non-chemical steps come first - pruning, orchard hygiene and neem oil, which is gentler on bees - keeping flowering orchards safe for pollinators (SDG 15).
+- Cut food waste: early detection stops disease spreading from tree to tree, and hot-water treatment after harvest reduces rot in storage, saving the water, land and energy behind every mango (SDG 12, SDG 13).
+- Protect people and income: less spraying means less chemical exposure for farm families (SDG 3), while lower costs and saved harvests steady their income and food supply (SDG 1, SDG 2).
+
+It works on low-cost phones and helps extension workers reach many orchards. Every photo becomes one better decision, and season after season those decisions give soil, water and wildlife room to recover. Detect early. Spray less. Waste less.
+
+===== BANGLA =====
+সমস্যা বিবৃতি (261 শব্দ)
+আম্রপালি বাংলাদেশের সবচেয়ে প্রিয় দৈনন্দিন আম এবং রাজশাহী, চাঁপাইনবাবগঞ্জ, নওগাঁ ও পার্বত্য জেলার হাজারো কৃষক পরিবারের আয়ের প্রধান উৎস। প্রতি মৌসুমে এই আমে ছয়টি সাধারণ রোগ আক্রমণ করে: অ্যানথ্রাকনোজ, ব্যাকটেরিয়াল ক্যাঙ্কার, পাউডারি মিলডিউ, স্ক্যাব, সুটি মোল্ড ও বোঁটা পচা।
+
+বেশিরভাগ কৃষক রোগগুলো আলাদা করে চিনতে পারেন না, আর প্রথম দাগ দেখা দেওয়ার সময় কৃষি কর্মকর্তাকে কাছে পাওয়া যায় না। তাই সাধারণ সমাধান হয় ক্যালেন্ডার মেনে ঢালাও স্প্রে: "যদি লাগে" ভেবে পুরো বাগানে একাধিক ছত্রাকনাশক ও কীটনাশক ছিটানো হয়, মুকুল থেকে ফল পাড়া পর্যন্ত বারবার।
+
+এভাবেই একটি কৃষি সমস্যা পরিবেশের সমস্যায় পরিণত হয়। বাড়তি রাসায়নিক মাটি, পুকুর ও ভূগর্ভস্থ পানিতে মিশে জলজ প্রাণী ও গ্রামের খাবার পানির ক্ষতি করে (SDG 6)। মুকুলের সময় স্প্রে করলে ফল ধরাতে প্রয়োজনীয় মৌমাছি ও অন্যান্য পরাগায়নকারী মারা যায়, আর বারবার প্রয়োগে রোগজীবাণু ওষুধ-প্রতিরোধী হয়ে ওঠে (SDG 15)। কৃষক ও তাঁদের পরিবার প্রায়ই কোনো সুরক্ষা ছাড়াই এই রাসায়নিক শ্বাসে নেন ও হাতে ধরেন (SDG 3)।
+
+দ্বিতীয় সমস্যা অপচয়। দেরিতে রোগ ধরা পড়লে তা ততক্ষণে ছড়িয়ে যায়, আর আক্রান্ত ফল গাছে, গুদামে বা পরিবহনে পচে যায়। প্রতিটি ফেলে দেওয়া আম মানে তা ফলাতে খরচ হওয়া পানি, জমি, সার, জ্বালানি ও শ্রমের অপচয়, আর পচা ফল থেকে গ্রিনহাউস গ্যাস নির্গত হয় (SDG 12, SDG 13)। হারানো ফসল ও অপ্রয়োজনীয় রাসায়নিকের খরচ ক্ষুদ্র কৃষককে দারিদ্র্যের দিকে ঠেলে দেয় এবং স্থানীয় খাদ্যের জোগান কমায় (SDG 1, SDG 2)।
+
+মূল কারণ হলো সঠিক সময়ে একটি জরুরি তথ্যের অভাব: এটি কোন রোগ, আর কাজ করবে এমন সবচেয়ে ছোট চিকিৎসা কোনটি? এই তথ্য ছাড়া কৃষক বাড়তি স্প্রে করেন, ফল হারান এবং যে প্রকৃতির উপর তাঁর বাগান নির্ভর করে, মৌসুমের পর মৌসুম সেটিরই ক্ষতি করেন।
+
+সমাধান (286 শব্দ)
+আম্রপালিনেট একটি বিনামূল্যের, বাংলা ও ইংরেজি ভাষার এআই আম ডাক্তার, যা বাগানের প্রতিটি সিদ্ধান্তকে "যদি লাগে তাই স্প্রে" থেকে "শুধু যা অসুস্থ, তারই চিকিৎসা"-তে বদলে দেয়। এর লক্ষ্য: প্রকৃতিতে কম রাসায়নিক, কম খাদ্য অপচয় ও আরও সুস্থ বাগান।
+
+কৃষক যেকোনো ফোনে আমের একটি ছবি তোলেন। অ্যাপটি প্রথমে যাচাই করে ছবিটি সত্যিই আমের কি না, তারপর রোগের নাম বলে অথবা জানায় যে আমটি সুস্থ, এবং আক্রান্ত অংশ চিহ্নিত করে, যাতে কৃষক নিজের চোখে সমস্যাটি দেখতে পান। এরপর পরিষ্কার ও কাজে লাগার মতো পরামর্শ দেয়।
+
+আমাদের পরিবেশগত সমাধান পাঁচভাবে কাজ করে:
+- অপ্রয়োজনীয় স্প্রে বন্ধ: সুস্থ ফলাফল মানে কোনো স্প্রে নয়, ফলে ক্যালেন্ডার মেনে স্প্রের অভ্যাস ভাঙে এবং মাটি, পুকুর ও ভূগর্ভস্থ পানি রাসায়নিকমুক্ত থাকে (SDG 6, SDG 12)।
+- ভুল স্প্রে বন্ধ: প্রতিটি রোগের নিজস্ব চিকিৎসা আছে। যেমন সুটি মোল্ড জন্মায় রস-চোষা পোকার মধুরসে, তাই শুধু ছত্রাকনাশক কেবল দূষণ বাড়ায়; অ্যাপ বরং পোকা দমনের পরামর্শ দেয়।
+- পরাগায়নকারী রক্ষা: আগে রাসায়নিক ছাড়া উপায় - ডাল ছাঁটাই, বাগান পরিষ্কার রাখা এবং মৌমাছির জন্য কম ক্ষতিকর নিম তেল - ফলে মুকুলের সময় বাগান পরাগায়নকারীদের জন্য নিরাপদ থাকে (SDG 15)।
+- খাদ্য অপচয় কমানো: আগেভাগে শনাক্ত করলে রোগ গাছ থেকে গাছে ছড়ায় না, আর ফল পাড়ার পর গরম পানিতে শোধন গুদামে পচন কমায় - বাঁচে প্রতিটি আমের পেছনের পানি, জমি ও শক্তি (SDG 12, SDG 13)।
+- মানুষ ও আয় রক্ষা: কম স্প্রে মানে কৃষক পরিবারের কম রাসায়নিক সংস্পর্শ (SDG 3), আর কম খরচ ও রক্ষা পাওয়া ফসল তাঁদের আয় ও খাদ্যের জোগান স্থির রাখে (SDG 1, SDG 2)।
+
+এটি কম দামের ফোনেও চলে এবং কৃষি সম্প্রসারণ কর্মীদের অনেক বাগানে পৌঁছাতে সাহায্য করে। প্রতিটি ছবি একটি ভালো সিদ্ধান্তে পরিণত হয়, আর মৌসুমের পর মৌসুম সেই সিদ্ধান্তগুলো মাটি, পানি ও বন্যপ্রাণীকে আবার সুস্থ হয়ে ওঠার সুযোগ দেয়। আগে শনাক্ত করুন। কম স্প্রে করুন। কম অপচয় করুন।
+
