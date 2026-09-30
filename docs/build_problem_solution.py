@@ -87,44 +87,51 @@ TEXT = {
         "p2_sub": "One photo, the right diagnosis, less chemical and less waste - a healthier environment",
         "solution_h": "Solution",
         "solution": [
-            "AmropaliNet puts an expert mango doctor in every farmer's pocket, so that treatment decisions are based on "
-            "evidence, not fear.",
-            "The farmer takes one photo of a mango with any phone. A CLIP-based check first confirms that the photo "
-            "really shows a mango, so a wrong picture never leads to wrong advice. Our AA-ENet model (EfficientNet-B0 "
-            "with CBAM attention and a Transformer encoder), trained on 3,500 real Amrapali images, then identifies the "
-            "disease - or confirms the fruit is healthy - in seconds. Grad-CAM marks the affected area, so the farmer "
-            "can see why the AI decided and trust the result.",
-            "Advice comes in simple Bangla or English: treat only the sick trees, with the right product at the right "
-            "time, and start with non-chemical steps such as pruning, orchard hygiene, neem oil and hot-water treatment "
-            "after harvest. A healthy result means no spray at all. A one-page PDF report can be shown to an "
-            "agricultural officer or buyer.",
+            "AmropaliNet is a free Bangla and English AI mango doctor that replaces \"just in case\" spraying with "
+            "precise, evidence-based treatment.",
+            "We built a dataset of 3,500 real Amrapali images - 500 for each of 7 classes (six diseases and healthy) - "
+            "split 70/15/15 for training, validation and testing. On it we trained our proposed model, AA-ENet: an "
+            "EfficientNet-B0 backbone with CBAM attention, which focuses on the lesion instead of the background, and a "
+            "Transformer encoder, which links spots across the whole fruit. AA-ENet reaches 96.8% test accuracy "
+            "(F1 0.968, 96.6% in cross-validation) with only 4.57 million parameters: the same accuracy as Xception with "
+            "4.6 times fewer parameters, and higher than VGG16, which is 29 times larger.",
+            "A farmer photographs a mango with any phone. A two-step mango check (CLIP plus a confidence gate) rejects "
+            "other photos, AA-ENet names the disease in seconds, and Grad-CAM outlines the affected area, so the farmer "
+            "sees the evidence before acting.",
         ],
-        "lead": "Each decision is small, but together they change the orchard environment:",
+        "lead": "How each diagnosis protects the environment:",
         "points": [
-            "Targeted treatment replaces blanket spraying, cutting the chemical load on soil and water (SDG 6, SDG 12).",
-            "Fewer sprays at flowering protect bees and orchard biodiversity (SDG 15).",
-            "Less exposure protects the health of farming families (SDG 3).",
-            "Early detection stops spread, so less fruit - and the water, land and emissions behind it - is wasted "
-            "(SDG 12, SDG 13).",
-            "Lower costs and saved harvests mean steadier income and more local food (SDG 1, SDG 2).",
+            "No disease, no spray: a healthy result ends the calendar spray for that tree (SDG 12.4).",
+            "No wrong spray: sooty mould grows on honeydew from sap-sucking insects, so fungicide alone only pollutes; "
+            "the app advises controlling the insects, with neem oil first because it is gentler on bees (SDG 6.3, SDG 15.5).",
+            "Only sick trees, non-chemical steps first: pruning, orchard hygiene and hot-water treatment after harvest "
+            "reduce the chemicals farm families handle (SDG 3.9).",
+            "Early detection stops spread, saving fruit and the water, land and emissions behind it (SDG 12.3, SDG 13).",
+            "Green AI: the 18 MB model runs on an ordinary CPU, with no GPU servers and little energy per diagnosis.",
         ],
-        "end": "AmropaliNet runs free in any browser, works on low-cost phones and is published as the open Python "
-               "library mango-disease-ai, so agricultural services and other developers can build on it. "
-               "Detect early. Spray less. Waste less.",
+        "end": "The engine is the open Python library mango-disease-ai, so extension services can bring it to every "
+               "orchard. Detect early. Spray less. Waste less.",
         "chain_h": "How everything connects: from one photo to the SDGs",
         "chain": [
             ("One photo", "any phone, Bangla or English", []),
-            ("Right diagnosis", "mango check, AA-ENet, affected area", []),
+            ("Right diagnosis", "mango check, AA-ENet 96.8%, affected area", []),
             ("Targeted treatment", "only sick trees, non-chemical first", [12, 3]),
             ("Less chemical, less waste", "fewer sprays, less fruit lost", [12, 13, 2]),
             ("Healthier ecosystem", "clean water and soil, safe bees, stable income", [6, 15, 1]),
         ],
         "facts": [
-            ("7", "classes (6 diseases + healthy)"),
-            ("3,500", "real Amrapali training images"),
-            ("2", "languages: Bangla and English"),
-            ("Free", "in any browser, open library"),
+            ("3,500", "images, 7 classes x 500"),
+            ("96.8%", "test accuracy, F1 0.968"),
+            ("4.57 M", "parameters, 18 MB model"),
+            ("CPU", "no GPU, result in seconds"),
         ],
+        "compare_h": "Same accuracy, far smaller model = less energy per diagnosis",
+        "compare": [
+            ("AA-ENet (ours)", 4.57, "96.8%"),
+            ("Xception", 20.82, "96.8%"),
+            ("VGG16", 134.29, "95.6%"),
+        ],
+        "params": "{} M parameters",
         "sdg_h": "SDGs AmropaliNet advances:",
         "words": "{} words",
         "footer": "AmropaliNet - AIUB Student Group (Arpon, Oni, Md. Ibtihazzaman) - "
@@ -176,43 +183,51 @@ TEXT = {
         "p2_sub": "একটি ছবি, সঠিক রোগ নির্ণয়, কম রাসায়নিক ও কম অপচয় - সুস্থ পরিবেশ",
         "solution_h": "সমাধান",
         "solution": [
-            "আম্রপালিনেট প্রতিটি কৃষকের পকেটে একজন দক্ষ আম ডাক্তার পৌঁছে দেয়, যাতে চিকিৎসার সিদ্ধান্ত ভয় থেকে নয়, "
-            "প্রমাণ থেকে আসে।",
-            "কৃষক যেকোনো ফোনে আমের একটি ছবি তোলেন। প্রথমে CLIP-ভিত্তিক যাচাই নিশ্চিত করে যে ছবিটি সত্যিই আমের, তাই "
-            "ভুল ছবি থেকে কখনো ভুল পরামর্শ আসে না। এরপর ৩,৫০০টি আসল আম্রপালি ছবিতে প্রশিক্ষিত আমাদের AA-ENet মডেল "
-            "(EfficientNet-B0, CBAM অ্যাটেনশন ও Transformer এনকোডার) কয়েক সেকেন্ডে রোগ শনাক্ত করে, অথবা জানায় যে "
-            "আমটি সুস্থ। Grad-CAM আক্রান্ত অংশ চিহ্নিত করে, ফলে কৃষক দেখতে পান এআই কেন এই সিদ্ধান্ত দিল এবং "
-            "ফলাফলে ভরসা করতে পারেন।",
-            "পরামর্শ আসে সহজ বাংলা বা ইংরেজিতে: শুধু অসুস্থ গাছে, সঠিক সময়ে সঠিক ওষুধ দিন, আর শুরু করুন রাসায়নিক "
-            "ছাড়া উপায় দিয়ে, যেমন ডাল ছাঁটাই, বাগান পরিষ্কার রাখা, নিম তেল এবং ফল পাড়ার পর গরম পানিতে শোধন। সুস্থ "
-            "ফলাফল মানে কোনো স্প্রেই লাগবে না। এক পাতার পিডিএফ রিপোর্ট কৃষি কর্মকর্তা বা ক্রেতাকে দেখানো যায়।",
+            "আম্রপালিনেট একটি বিনামূল্যের বাংলা ও ইংরেজি এআই আম ডাক্তার, যা \"যদি লাগে\" ভেবে স্প্রের বদলে "
+            "প্রমাণভিত্তিক, নির্ভুল চিকিৎসা আনে।",
+            "আমরা ৩,৫০০টি আসল আম্রপালি ছবির একটি ডেটাসেট তৈরি করেছি - ৭টি শ্রেণির (ছয়টি রোগ ও সুস্থ) প্রতিটিতে ৫০০টি - "
+            "যা প্রশিক্ষণ, যাচাই ও পরীক্ষার জন্য ৭০/১৫/১৫ ভাগে ভাগ করা। এর উপর আমরা আমাদের প্রস্তাবিত মডেল AA-ENet "
+            "প্রশিক্ষণ দিয়েছি: EfficientNet-B0 ভিত্তি, CBAM অ্যাটেনশন যা পটভূমির বদলে দাগের উপর মনোযোগ দেয়, এবং "
+            "Transformer এনকোডার যা পুরো ফলের দাগগুলোকে যুক্ত করে দেখে। মাত্র ৪.৫৭ মিলিয়ন প্যারামিটারে AA-ENet "
+            "পরীক্ষায় ৯৬.৮% নির্ভুলতা দেয় (F1 ০.৯৬৮, ক্রস-ভ্যালিডেশনে ৯৬.৬%): Xception-এর সমান নির্ভুলতা, কিন্তু "
+            "৪.৬ গুণ কম প্যারামিটারে, এবং ২৯ গুণ বড় VGG16-এর চেয়েও বেশি।",
+            "কৃষক যেকোনো ফোনে আমের ছবি তোলেন। দুই ধাপের আম যাচাই (CLIP ও নিশ্চয়তা যাচাই) অন্য ছবি বাদ দেয়, "
+            "AA-ENet কয়েক সেকেন্ডে রোগের নাম বলে, আর Grad-CAM আক্রান্ত অংশ চিহ্নিত করে - তাই কৃষক ব্যবস্থা নেওয়ার "
+            "আগে প্রমাণ দেখতে পান।",
         ],
-        "lead": "প্রতিটি সিদ্ধান্ত ছোট, কিন্তু সব মিলিয়ে বাগানের পরিবেশ বদলে যায়:",
+        "lead": "প্রতিটি রোগ নির্ণয় যেভাবে পরিবেশ রক্ষা করে:",
         "points": [
-            "ঢালাও স্প্রের বদলে লক্ষ্যভিত্তিক চিকিৎসা মাটি ও পানিতে রাসায়নিকের চাপ কমায় (SDG 6, SDG 12)।",
-            "মুকুলের সময় কম স্প্রে মৌমাছি ও বাগানের জীববৈচিত্র্য রক্ষা করে (SDG 15)।",
-            "রাসায়নিকের সংস্পর্শ কমলে কৃষক পরিবারের স্বাস্থ্য সুরক্ষিত থাকে (SDG 3)।",
-            "আগেভাগে শনাক্ত করলে রোগ ছড়ায় না, তাই কম ফল নষ্ট হয় - সাথে বাঁচে এর পেছনের পানি, জমি ও নির্গমন "
-            "(SDG 12, SDG 13)।",
-            "কম খরচ ও রক্ষা পাওয়া ফসল মানে স্থির আয় ও বেশি স্থানীয় খাদ্য (SDG 1, SDG 2)।",
+            "রোগ নেই, স্প্রে নেই: সুস্থ ফলাফল সেই গাছে ক্যালেন্ডার মেনে স্প্রে বন্ধ করে (SDG 12.4)।",
+            "ভুল স্প্রে নেই: সুটি মোল্ড জন্মায় রস-চোষা পোকার মধুরসে, তাই শুধু ছত্রাকনাশক কেবল দূষণ বাড়ায়; অ্যাপ আগে "
+            "পোকা দমনের পরামর্শ দেয়, প্রথমে নিম তেল, কারণ তা মৌমাছির জন্য কম ক্ষতিকর (SDG 6.3, SDG 15.5)।",
+            "শুধু অসুস্থ গাছ, আগে রাসায়নিক ছাড়া উপায়: ডাল ছাঁটাই, বাগান পরিষ্কার রাখা ও ফল পাড়ার পর গরম পানিতে শোধন "
+            "কৃষক পরিবারের রাসায়নিক সংস্পর্শ কমায় (SDG 3.9)।",
+            "আগেভাগে শনাক্ত করলে রোগ ছড়ায় না, ফল বাঁচে, সাথে বাঁচে এর পেছনের পানি, জমি ও নির্গমন (SDG 12.3, SDG 13)।",
+            "সবুজ এআই: ১৮ মেগাবাইটের মডেল সাধারণ সিপিইউতে চলে - জিপিইউ সার্ভার লাগে না, প্রতি নির্ণয়ে খুব কম বিদ্যুৎ খরচ।",
         ],
-        "end": "আম্রপালিনেট যেকোনো ব্রাউজারে বিনামূল্যে চলে, কম দামের ফোনেও কাজ করে এবং ওপেন পাইথন লাইব্রেরি "
-               "mango-disease-ai হিসেবে প্রকাশিত, তাই কৃষি সেবা ও অন্য ডেভেলপাররাও এর উপর কাজ করতে পারেন। "
-               "আগে শনাক্ত করুন। কম স্প্রে করুন। কম অপচয় করুন।",
+        "end": "ইঞ্জিনটি ওপেন পাইথন লাইব্রেরি mango-disease-ai হিসেবে প্রকাশিত, তাই কৃষি সম্প্রসারণ সেবা একে প্রতিটি "
+               "বাগানে পৌঁছে দিতে পারে। আগে শনাক্ত করুন। কম স্প্রে করুন। কম অপচয় করুন।",
         "chain_h": "সবকিছু কীভাবে যুক্ত: একটি ছবি থেকে SDG পর্যন্ত",
         "chain": [
             ("একটি ছবি", "যেকোনো ফোন, বাংলা বা ইংরেজি", []),
-            ("সঠিক রোগ নির্ণয়", "আম যাচাই, AA-ENet, আক্রান্ত অংশ", []),
+            ("সঠিক রোগ নির্ণয়", "আম যাচাই, AA-ENet ৯৬.৮%, আক্রান্ত অংশ", []),
             ("লক্ষ্যভিত্তিক চিকিৎসা", "শুধু অসুস্থ গাছ, আগে রাসায়নিকমুক্ত উপায়", [12, 3]),
             ("কম রাসায়নিক, কম অপচয়", "কম স্প্রে, কম ফল নষ্ট", [12, 13, 2]),
             ("সুস্থ বাস্তুতন্ত্র", "পরিষ্কার পানি ও মাটি, নিরাপদ মৌমাছি, স্থির আয়", [6, 15, 1]),
         ],
         "facts": [
-            ("৭", "শ্রেণি (৬টি রোগ + সুস্থ)"),
-            ("৩,৫০০", "আসল আম্রপালি প্রশিক্ষণ ছবি"),
-            ("২", "ভাষা: বাংলা ও ইংরেজি"),
-            ("বিনামূল্যে", "যেকোনো ব্রাউজারে, ওপেন লাইব্রেরি"),
+            ("৩,৫০০", "ছবি, ৭ শ্রেণি x ৫০০"),
+            ("৯৬.৮%", "পরীক্ষায় নির্ভুলতা, F1 ০.৯৬৮"),
+            ("৪.৫৭ M", "প্যারামিটার, ১৮ MB মডেল"),
+            ("CPU", "জিপিইউ লাগে না, কয়েক সেকেন্ডে ফল"),
         ],
+        "compare_h": "একই নির্ভুলতা, অনেক ছোট মডেল = প্রতি নির্ণয়ে কম বিদ্যুৎ",
+        "compare": [
+            ("AA-ENet (আমাদের)", 4.57, "৯৬.৮%"),
+            ("Xception", 20.82, "৯৬.৮%"),
+            ("VGG16", 134.29, "৯৫.৬%"),
+        ],
+        "params": "{} M প্যারামিটার",
         "sdg_h": "আম্রপালিনেট যে SDG-গুলো এগিয়ে নেয়:",
         "words": "{} শব্দ",
         "footer": "AmropaliNet - AIUB Student Group (Arpon, Oni, Md. Ibtihazzaman) - "
@@ -417,7 +432,7 @@ class Doc(FPDF):
         self.band(t["p2_kicker"], t["p2_title"], t["p2_sub"])
         self.heading(t["solution_h"], solution_words(t))
         for p in t["solution"]:
-            self.para(p)
+            self.para(p, gap=1.8)
         self.para(t["lead"], bold=True, color=GREEN, gap=1.2)
         for item in t["points"]:
             y = self.get_y()
@@ -426,7 +441,7 @@ class Doc(FPDF):
             self.font(10.4)
             self.set_y(self.lines_at(item, self.M + 5, y, self.W - 5, 5.05) + 0.8)
         self.set_y(self.get_y() + 1.4)
-        self.para(t["end"], gap=4)
+        self.para(t["end"], gap=3)
 
         # impact chain
         self.heading(t["chain_h"])
@@ -434,7 +449,7 @@ class Doc(FPDF):
         n = len(t["chain"])
         gap = 4.2
         bw = (self.W - gap * (n - 1)) / n
-        bh = 33
+        bh = 27
         for i, (title, sub, goals) in enumerate(t["chain"]):
             x = self.M + i * (bw + gap)
             last = i == n - 1
@@ -461,7 +476,7 @@ class Doc(FPDF):
                 if bx + need > x + bw + 0.1:
                     bx, by = x, by + 5.6
                 bx += self.sdg_badge(bx, by, g, h=4.6) + 1
-        self.set_y(y + bh + 15)
+        self.set_y(y + bh + 13.5)
 
         # key facts
         fw = (self.W - 3 * 3) / 4
@@ -469,28 +484,51 @@ class Doc(FPDF):
         for i, (big, small) in enumerate(t["facts"]):
             x = self.M + i * (fw + 3)
             self.set_fill_color(*TINT)
-            self.rect(x, y, fw, 15, "F", round_corners=True, corner_radius=2.5)
-            self.set_xy(x, y + 1.6)
+            self.rect(x, y, fw, 13.5, "F", round_corners=True, corner_radius=2.5)
+            self.set_xy(x, y + 1)
             self.font(13, True, MANGO)
             self.cell(fw, 6.5, big, align="C")
-            self.set_xy(x, y + 8)
+            self.set_xy(x, y + 7.2)
             self.font(7.8, False, SOFT)
             self.cell(fw, 5, small, align="C")
-        self.set_y(y + 19)
+        self.set_y(y + 16)
+
+        # model size vs accuracy (bar length = parameters, from the training notebook)
+        y = self.get_y()
+        self.font(9.2, True, GREEN)
+        self.set_xy(self.M, y)
+        self.cell(0, 5, t["compare_h"])
+        y += 6
+        name_w, tail_w = 34, 44
+        bar_max = self.W - name_w - tail_w
+        biggest = max(p for _, p, _ in t["compare"])
+        for i, (name, params, acc) in enumerate(t["compare"]):
+            ours = i == 0
+            self.font(8.4, ours, DARK if ours else SOFT)
+            self.set_xy(self.M, y)
+            self.cell(name_w, 4.6, name)
+            bw = max(bar_max * params / biggest, 1.5)
+            self.set_fill_color(*(GREEN if ours else (190, 205, 185)))
+            self.rect(self.M + name_w, y + 0.8, bw, 3, "F", round_corners=True, corner_radius=1.2)
+            self.set_xy(self.M + name_w + bw + 2, y)
+            self.font(8.2, ours, GREEN if ours else SOFT)
+            self.cell(tail_w, 4.6, f"{t['params'].format(self.num(params))}  |  {acc}")
+            y += 5
+        self.set_y(y + 2.5)
 
         # SDGs advanced
         self.font(9.5, True, GREEN)
+        label_w = self.get_string_width(t["sdg_h"]) + 3
         self.set_x(self.M)
-        self.cell(0, 6, t["sdg_h"])
-        self.set_y(self.get_y() + 7)
-        x = self.M
+        self.cell(label_w, 6, t["sdg_h"])
+        x = self.M + label_w
         for g in (1, 2, 3, 6, 12, 13, 15):
             self.font(7.8, True)
             color, en, bn = SDG[g]
             need = self.get_string_width(f"SDG {g} {en if self.lang == 'en' else bn}") + 4.5
             if x + need > self.M + self.W:
                 x = self.M
-                self.set_y(self.get_y() + 7.5)
+                self.set_y(self.get_y() + 6.8)
             x += self.sdg_badge(x, self.get_y(), g, h=6, full=True) + 1.8
         self.footer_line(page, total)
 
