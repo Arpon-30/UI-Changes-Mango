@@ -2,7 +2,7 @@
 
 > AI-powered Amrapali mango disease detection - reject non-mango photos, classify 7 diseases, mark the affected area with Grad-CAM, and create PDF reports in English or Bangla.
 
-[![PyPI version](https://badge.fury.io/py/mango-disease-ai.svg)](https://pypi.org/project/mango-disease-ai/)
+[![PyPI version](https://img.shields.io/pypi/v/mango-disease-ai.svg)](https://pypi.org/project/mango-disease-ai/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
