@@ -26,7 +26,7 @@ Amropali (Amrapali) mango fruit from a single photo. It ships the trained **AA-E
 - **7-class disease classification** with a full probability distribution,
 - **Grad-CAM++ explanations** showing the image regions behind each prediction,
 - a **disease encyclopedia** (scientific name, symptoms, remedies),
-- **PDF diagnosis reports** (English; Bangla is added in the development version 0.2.0),
+- **PDF diagnosis reports** in English or Bangla,
 - a **FastAPI REST service** for developers, and
 - **AmropaliNet**, a Streamlit web application for farmers and other non-technical users.
 
@@ -91,7 +91,7 @@ diagnosis.
 | Confidence | Top-1 class plus the probability of every class |
 | Explainability | Grad-CAM++ heatmap of the regions that drove the prediction |
 | Disease guidance | Scientific name, description, symptoms and remedies for each class |
-| PDF report | One-page A4 report with the photo, heatmap, probabilities and guidance (Bangla from 0.2.0) |
+| PDF report | One-page A4 report with the photo, heatmap, probabilities and guidance, in English or Bangla |
 | REST API | FastAPI service with interactive Swagger documentation at `/docs` |
 | Web application | AmropaliNet (Streamlit), bilingual English / Bangla, light / dark theme, camera capture |
 | CPU only | No GPU needed; the model has about 4.6 million parameters |
@@ -295,14 +295,14 @@ The training notebook is [`last-try-mango.ipynb`](last-try-mango.ipynb).
 
 | Version | Where | Notes |
 |---|---|---|
-| **0.1.3** | [PyPI](https://pypi.org/project/mango-disease-ai/0.1.3/), git tag `v0.1.3` | Latest PyPI release (20 Sep 2026). Version described in the SoftwareX article |
-| 0.2.0 (development) | `main` branch | Runs the AmropaliNet web application; adds Bangla PDF reports and affected-area marking. Not yet on PyPI |
+| **0.2.0** | [PyPI](https://pypi.org/project/mango-disease-ai/0.2.0/), git tag [`v0.2.0`](https://github.com/Arpon-30/UI-Changes-Mango/releases/tag/v0.2.0) | Current release, built from this repository. Version described in the SoftwareX article. Runs the AmropaliNet web application |
+| 0.1.0 - 0.1.3 | [PyPI](https://pypi.org/project/mango-disease-ai/#history) | Earlier releases (English PDF only, no affected-area marking) |
 
 See [`CHANGELOG.md`](CHANGELOG.md) for details. To install the exact version described in
 the article:
 
 ```bash
-pip install mango-disease-ai==0.1.3
+pip install mango-disease-ai==0.2.0
 ```
 
 ## 9. Testing
@@ -339,7 +339,7 @@ If you use this software, please cite it. Citation metadata is in
   author  = {Amit, Arpon Paul and Oni, Saiful Islam and Ibtihazzaman, Md and
              Shahriar, SM Fahim and Miah, Md. Saef Ullah},
   title   = {mango-disease-ai: A Python Toolkit for Mango Disease Diagnosis},
-  version = {0.1.3},
+  version = {0.2.0},
   year    = {2026},
   url     = {https://github.com/Arpon-30/UI-Changes-Mango}
 }

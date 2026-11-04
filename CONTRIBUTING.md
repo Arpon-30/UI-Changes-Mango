@@ -31,7 +31,7 @@ For questions you can also email 23-50158-1@student.aiub.edu.
    pytest
    ```
 
-5. Add a line to `CHANGELOG.md` under the unreleased version.
+5. Add a line to `CHANGELOG.md` describing the change.
 6. Open a pull request describing what changed and why.
 
 ## Important notes

@@ -78,7 +78,11 @@ mango-api = "mango_disease_ai.server:main"
 
 [project.urls]
 "Homepage" = "https://github.com/Arpon-30/UI-Changes-Mango"
+"Source" = "https://github.com/Arpon-30/UI-Changes-Mango"
+"Documentation" = "https://github.com/Arpon-30/UI-Changes-Mango#readme"
+"Changelog" = "https://github.com/Arpon-30/UI-Changes-Mango/blob/main/CHANGELOG.md"
 "Bug Tracker" = "https://github.com/Arpon-30/UI-Changes-Mango/issues"
+"Web App" = "https://amropalinet.streamlit.app/"
 "Author" = "https://github.com/Arpon-30"
 
 [tool.setuptools.packages.find]

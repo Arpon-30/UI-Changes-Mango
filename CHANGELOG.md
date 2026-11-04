@@ -3,9 +3,11 @@
 All notable changes to `mango-disease-ai` are listed here. Versions follow
 [Semantic Versioning](https://semver.org/).
 
-## [0.2.0] - unreleased (development version on `main`)
+## [0.2.0] - 2026-11-04
 
-Not yet published on PyPI. This is the version the AmropaliNet web application runs.
+First release built from https://github.com/Arpon-30/UI-Changes-Mango. This is the
+version described in the SoftwareX article and the version the AmropaliNet web
+application runs.
 
 ### Added
 - Bangla PDF reports: `generate_pdf(result, lang="bn")` and the `lang=en|bn` form field
@@ -18,8 +20,7 @@ Not yet published on PyPI. This is the version the AmropaliNet web application r
 
 ## [0.1.3] - 2026-09-20
 
-Latest release on [PyPI](https://pypi.org/project/mango-disease-ai/0.1.3/). This is the
-version described in the SoftwareX article.
+Earlier release on [PyPI](https://pypi.org/project/mango-disease-ai/0.1.3/).
 
 ### Features
 - `analyze()`: CLIP zero-shot mango validation, AA-ENet classification of 7 classes with
