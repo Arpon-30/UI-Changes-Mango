@@ -1,0 +1,45 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "mango-disease-ai: A Python Toolkit for Mango Disease Diagnosis"
+abstract: >-
+  Open-source Python toolkit for Amropali mango fruit disease classification.
+  It combines the AA-ENet model (EfficientNet-B0 + CBAM + Transformer encoder),
+  CLIP-based mango image validation, Grad-CAM++ explanations, disease symptoms and
+  remedies, PDF report generation, a FastAPI REST API and the AmropaliNet Streamlit
+  web application.
+type: software
+version: 0.1.3
+date-released: "2026-09-20"
+license: MIT
+repository-code: "https://github.com/Arpon-30/UI-Changes-Mango"
+url: "https://pypi.org/project/mango-disease-ai/"
+keywords:
+  - mango disease classification
+  - deep learning
+  - CNN
+  - Transformer
+  - explainable AI
+  - Grad-CAM++
+  - Streamlit
+  - agriculture
+authors:
+  - family-names: Amit
+    given-names: Arpon Paul
+    email: 23-50158-1@student.aiub.edu
+    affiliation: "American International University-Bangladesh"
+  - family-names: Oni
+    given-names: Saiful Islam
+    email: 26-94253-3@student.aiub.edu
+    affiliation: "American International University-Bangladesh"
+  - family-names: Ibtihazzaman
+    given-names: Md
+    email: 22-49153-3@student.aiub.edu
+    affiliation: "American International University-Bangladesh"
+  - family-names: Shahriar
+    given-names: SM Fahim
+    email: 23-50114-1@student.aiub.edu
+    affiliation: "American International University-Bangladesh"
+  - family-names: Miah
+    given-names: Md. Saef Ullah
+    email: saef@aiub.edu
+    affiliation: "American International University-Bangladesh"

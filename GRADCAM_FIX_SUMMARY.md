@@ -69,7 +69,6 @@
 
 ### 3. **Documentation** ✓
    - Created `GRADCAM_IMPROVEMENTS.md` with detailed technical explanation
-   - Updated `CLAUDE.md` to reference improvements
 
 ## Visual Improvements
 
