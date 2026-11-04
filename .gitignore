@@ -17,3 +17,7 @@ fruit_classifier.pth
 *Recovery-Codes*
 *.pypirc
 .pypirc
+
+# Files written by the examples
+gradcam_heatmap.jpg
+mango_report.pdf

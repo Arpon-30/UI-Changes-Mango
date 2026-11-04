@@ -301,13 +301,13 @@ STACK = [
     ]),
     ("Packaging and deployment / প্যাকেজিং ও ডিপ্লয়মেন্ট", [
         ("PyPI", "Publishes the library mango-disease-ai for developers", "ডেভেলপারদের জন্য mango-disease-ai লাইব্রেরি প্রকাশ", "pyproject.toml, README_PACKAGE.md"),
-        ("setuptools, build, twine", "Build and upload the library", "লাইব্রেরি তৈরি ও আপলোড", "pyproject.toml, PUBLISH_GUIDE.md"),
+        ("setuptools, build, twine", "Build and upload the library", "লাইব্রেরি তৈরি ও আপলোড", "pyproject.toml, .github/workflows/publish.yml"),
         ("Docker (python:3.10-slim)", "Container for hosting, e.g. Hugging Face Spaces", "হোস্টিংয়ের জন্য কন্টেইনার, যেমন Hugging Face Spaces", "Dockerfile"),
         ("Git + GitHub", "Version control and sharing", "ভার্সন নিয়ন্ত্রণ ও শেয়ার", "github.com/Arpon-30/UI-Changes-Mango"),
     ]),
     ("Development and testing / ডেভেলপমেন্ট ও টেস্টিং", [
         ("VS Code + Anaconda", "Editor and Python environment (tf_new, Python 3.10)", "এডিটর ও পাইথন পরিবেশ (tf_new, Python 3.10)", "run.py, .vscode"),
-        ("Jupyter Notebook", "Model training and research", "মডেল প্রশিক্ষণ ও গবেষণা", "last-try-mango.ipynb"),
+        ("Jupyter Notebook", "Model training and research", "মডেল প্রশিক্ষণ ও গবেষণা", "notebooks/AA-ENet_training.ipynb"),
         ("Playwright (Chromium)", "Automatic browser tests on phone and desktop sizes, both languages", "ফোন ও ডেস্কটপ আকারে, দুই ভাষায় স্বয়ংক্রিয় ব্রাউজার টেস্ট", "test scripts (development)"),
     ]),
 ]

@@ -194,8 +194,8 @@ Main fields of the result dictionary:
 | `original_base64` | Input photo (JPEG, base64) |
 | `gradcam_base64` | Grad-CAM++ heatmap overlay (JPEG, base64) |
 
-More examples: [`how_to_use.py`](how_to_use.py), [`developer_workflow.py`](developer_workflow.py),
-[`demo_run.py`](demo_run.py) and the package guide [`README_PACKAGE.md`](README_PACKAGE.md).
+Ready-to-run scripts are in [`examples/`](examples/) (`python examples/quick_start.py`); see also the
+package guide [`README_PACKAGE.md`](README_PACKAGE.md).
 
 ### 5.2 REST API
 
@@ -260,7 +260,7 @@ Test-set results reported in the accompanying SoftwareX manuscript:
 | EfficientNet-B0 | 4.02 | 96.38 | 0.9644 | 0.9638 | 0.9639 |
 | **AA-ENet (ours)** | **4.57** | **96.76** | **0.9681** | **0.9676** | **0.9676** |
 
-The training notebook is [`last-try-mango.ipynb`](last-try-mango.ipynb).
+The training notebook is [`notebooks/AA-ENet_training.ipynb`](notebooks/AA-ENet_training.ipynb).
 
 ## 7. Repository structure
 
@@ -280,9 +280,9 @@ The training notebook is [`last-try-mango.ipynb`](last-try-mango.ipynb).
 ├── templates/, static/      # AmropaliNet website (HTML, CSS, JavaScript, images)
 ├── run.py                   # One-click local start of the website
 ├── tests/                   # Automated tests (pytest)
-├── docs/                    # Bilingual project documentation (PDF)
-├── how_to_use.py, developer_workflow.py, demo_run.py, use_me.py   # Usage examples
-├── last-try-mango.ipynb     # Model training notebook
+├── docs/                    # Bilingual user documentation (PDF) and its build script
+├── examples/                # Ready-to-run Python and REST API examples
+├── notebooks/               # Model training notebook (AA-ENet)
 ├── pyproject.toml           # Package metadata and dependencies
 ├── Dockerfile               # Container build (Hugging Face Spaces / Docker)
 ├── CITATION.cff             # Citation metadata
