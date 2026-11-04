@@ -254,7 +254,7 @@ WELCOME_HTML = """<!DOCTYPE html>
   <div class="card">
     <div class="emoji">&#129389;</div>
     <h1>Mango Disease AI</h1>
-    <div class="version">v__VERSION__ &bull; AIUB R&amp;D ICCA Research Group</div>
+    <div class="version">v__VERSION__ &bull; American International University-Bangladesh</div>
     <p>AI-powered Amropali mango disease detection API.<br>
        Detect 7 diseases, mark the affected area and get PDF reports in English or Bangla.</p>
     <div class="install">pip install mango-disease-ai[api]<br>mango-api</div>

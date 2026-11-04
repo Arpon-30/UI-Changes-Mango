@@ -3,11 +3,20 @@
 All notable changes to `mango-disease-ai` are listed here. Versions follow
 [Semantic Versioning](https://semver.org/).
 
+## [0.2.1] - 2026-11-04
+
+Version described in the SoftwareX article.
+
+### Changed
+- Affiliation text on the API welcome page, the bundled guide (`/guide`), `LICENSE` and
+  `README.md` now reads American International University-Bangladesh.
+- The bundled guide shows the current version number.
+
+No changes to the model, the analysis results or the API.
+
 ## [0.2.0] - 2026-11-04
 
-First release built from https://github.com/Arpon-30/UI-Changes-Mango. This is the
-version described in the SoftwareX article and the version the AmropaliNet web
-application runs.
+First release built from https://github.com/Arpon-30/UI-Changes-Mango.
 
 ### Added
 - Bangla PDF reports: `generate_pdf(result, lang="bn")` and the `lang=en|bn` form field

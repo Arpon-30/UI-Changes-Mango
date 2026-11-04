@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🥭 Mango Disease AI v0.1.3 — Complete Documentation</title>
+<title>🥭 Mango Disease AI v0.2.1 — Complete Documentation</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -185,7 +185,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
       <a href="#output">Output</a>
       <a href="#architecture">Architecture</a>
     </div>
-    <a href="https://pypi.org/project/mango-disease-ai/" target="_blank" class="btn btn-green">v0.1.3 on PyPI ↗</a>
+    <a href="https://pypi.org/project/mango-disease-ai/" target="_blank" class="btn btn-green">v0.2.1 on PyPI ↗</a>
   </div>
 </nav>
 
@@ -194,7 +194,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
   <div class="hero-bg"></div>
   <div class="hero-grid"></div>
   <div class="hero-content">
-    <div class="hero-badge">🟢 <span>v0.1.3 — Production Ready — Live on PyPI</span></div>
+    <div class="hero-badge">🟢 <span>v0.2.1 — Production Ready — Live on PyPI</span></div>
     <h1 class="hero-title">🥭 <span class="mango">Mango Disease</span><br>AI — Complete Docs</h1>
     <p class="hero-sub">AI-powered Amropali mango disease detection. One command to install, one command to run. Works from any folder, any machine, worldwide.</p>
     <div class="hero-buttons">
@@ -206,7 +206,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
       <div class="stat"><div class="stat-num">7</div><div class="stat-label">Disease Classes</div></div>
       <div class="stat"><div class="stat-num">94.7%</div><div class="stat-label">Top Accuracy</div></div>
       <div class="stat"><div class="stat-num">5</div><div class="stat-label">API Endpoints</div></div>
-      <div class="stat"><div class="stat-num">0.1.3</div><div class="stat-label">Latest Version</div></div>
+      <div class="stat"><div class="stat-num">0.2.1</div><div class="stat-label">Latest Version</div></div>
     </div>
   </div>
 </section>
@@ -253,7 +253,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
             </div>
             <button class="copy-btn" onclick='copyCode("pip install \"mango-disease-ai[api]\"")'>Copy</button>
           </div>
-          <div class="step-expected"><div class="step-expected-label">✅ You will see at the end</div><div class="step-expected-text"><span class="t-success">Successfully installed mango-disease-ai-0.1.3</span></div></div>
+          <div class="step-expected"><div class="step-expected-label">✅ You will see at the end</div><div class="step-expected-text"><span class="t-success">Successfully installed mango-disease-ai-0.2.1</span></div></div>
         </div></div>
       </div>
 
@@ -276,7 +276,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
             </div>
             <button class="copy-btn" onclick='copyCode("python -c \"import mango_disease_ai; print(mango_disease_ai.__version__)\"")'>Copy</button>
           </div>
-          <div class="step-expected"><div class="step-expected-label">✅ You will see</div><div class="step-expected-text"><span class="t-success">0.1.3</span></div></div>
+          <div class="step-expected"><div class="step-expected-label">✅ You will see</div><div class="step-expected-text"><span class="t-success">0.2.1</span></div></div>
         </div></div>
       </div>
 
@@ -307,7 +307,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
             <div class="step-expected-label">✅ You will see</div>
             <div class="step-expected-text">
               <span class="t-success">============================================================</span><br>
-              <span class="t-success">  🥭  Mango Disease AI -- REST API Server v0.1.3</span><br>
+              <span class="t-success">  🥭  Mango Disease AI -- REST API Server v0.2.1</span><br>
               <span class="t-success">============================================================</span><br>
               <span class="t-success">  Starting on  http://0.0.0.0:8000</span><br>
               <span class="t-success">  Welcome page http://localhost:8000</span><br>
@@ -637,7 +637,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
             <div><span class="t-key">import</span> requests</div>
             <div style="margin-top:.6rem"><span class="t-comment"># Health check</span></div>
             <div>r = requests.get(<span class="t-str">"http://localhost:8000/api/health"</span>)</div>
-            <div>print(r.json())  <span class="t-comment"># {"status":"ok","version":"0.1.3"}</span></div>
+            <div>print(r.json())  <span class="t-comment"># {"status":"ok","version":"0.2.1"}</span></div>
             <div style="margin-top:.6rem"><span class="t-comment"># Analyze image</span></div>
             <div><span class="t-key">with</span> open(<span class="t-str">"mango.jpg"</span>, <span class="t-str">"rb"</span>) <span class="t-key">as</span> f:</div>
             <div>&nbsp;&nbsp;r = requests.post(<span class="t-str">"http://localhost:8000/api/analyze"</span>,</div>
@@ -704,7 +704,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
     <div class="section-label">All Endpoints</div>
     <h2 class="section-title">5 API <span style="color:var(--green)">Endpoints</span></h2>
     <div style="display:flex;flex-direction:column;gap:.9rem">
-      <div class="endpoint-card fade-in"><div class="endpoint-header"><span class="method GET">GET</span><span class="endpoint-path">/api/health</span><span style="margin-left:auto;font-size:.78rem;color:var(--muted)">~10ms</span></div><div class="endpoint-desc">Server alive check. Returns OK + version.</div><div class="endpoint-body"><div class="output-box" style="font-size:.8rem"><span class="t-output">{"status": "ok", "version": "0.1.3"}</span></div></div></div>
+      <div class="endpoint-card fade-in"><div class="endpoint-header"><span class="method GET">GET</span><span class="endpoint-path">/api/health</span><span style="margin-left:auto;font-size:.78rem;color:var(--muted)">~10ms</span></div><div class="endpoint-desc">Server alive check. Returns OK + version.</div><div class="endpoint-body"><div class="output-box" style="font-size:.8rem"><span class="t-output">{"status": "ok", "version": "0.2.1"}</span></div></div></div>
       <div class="endpoint-card fade-in"><div class="endpoint-header"><span class="method GET">GET</span><span class="endpoint-path">/api/diseases</span><span style="margin-left:auto;font-size:.78rem;color:var(--muted)">~5ms</span></div><div class="endpoint-desc">All 7 disease classes with scientific name, symptoms, remedies.</div></div>
       <div class="endpoint-card fade-in"><div class="endpoint-header"><span class="method POST">POST</span><span class="endpoint-path">/api/analyze</span><span style="margin-left:auto;font-size:.78rem;color:var(--muted)">~2-8 sec</span></div><div class="endpoint-desc">Upload mango image → full diagnosis JSON. Returns HTTP 422 if not a mango.</div><div class="endpoint-body"><div class="output-box" style="font-size:.77rem"><div>{"is_mango": <span class="t-num">true</span>, "predicted_class": <span class="t-str">"Healthy"</span>, "confidence": <span class="t-num">0.9470</span>,</div><div>&nbsp;"all_scores": [{...}, ...], "disease_info": {...}, "gradcam_base64": <span class="t-str">"..."</span>}</div></div></div></div>
       <div class="endpoint-card fade-in"><div class="endpoint-header"><span class="method POST">POST</span><span class="endpoint-path">/api/report</span><span style="margin-left:auto;font-size:.78rem;color:var(--muted)">~10-15 sec</span></div><div class="endpoint-desc">Upload image + name → download PDF report. Body: <code style="color:var(--green)">image</code> + <code style="color:var(--green)">user_name</code>.</div></div>
@@ -777,7 +777,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
       <div style="display:flex;flex-direction:column;gap:.9rem">
         <div class="card"><div class="card-title">🧠 AA-ENet Model</div><div class="card-desc">Custom EfficientNet-B0 + CBAM + Transformer. Trained on Amropali mango dataset.</div><div class="tags"><span class="tag green">EfficientNet-B0</span><span class="tag blue">CBAM</span><span class="tag purple">Transformer</span></div></div>
         <div class="card"><div class="card-title">🔍 CLIP Validation</div><div class="card-desc">OpenAI CLIP (ViT-B/32) confirms the image is a mango before running diagnosis.</div><div class="tags"><span class="tag purple">CLIP ViT-B/32</span><span class="tag blue">Zero-shot</span></div></div>
-        <div class="card"><div class="card-title">📦 Package Info v0.1.3</div><div class="card-desc">Self-contained: AI model, server, docs all bundled. Works from any folder.</div><div class="tags"><span class="tag green">PyPI</span><span class="tag blue">mango-api</span><span class="tag yellow">fpdf2</span></div></div>
+        <div class="card"><div class="card-title">📦 Package Info v0.2.1</div><div class="card-desc">Self-contained: AI model, server, docs all bundled. Works from any folder.</div><div class="tags"><span class="tag green">PyPI</span><span class="tag blue">mango-api</span><span class="tag yellow">fpdf2</span></div></div>
       </div>
     </div>
   </div>
@@ -819,7 +819,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
 <footer>
   <div class="footer-inner">
     <div class="footer-logo">🥭 <span>MangoAI</span></div>
-    <div class="footer-desc">mango-disease-ai v0.1.3 · AIUB R&D ICCA Research Group · MIT License</div>
+    <div class="footer-desc">mango-disease-ai v0.2.1 · American International University-Bangladesh · MIT License</div>
     <div class="footer-links">
       <a href="https://pypi.org/project/mango-disease-ai/" target="_blank">📦 PyPI</a>
       <a href="http://localhost:8000/docs" target="_blank">📖 Swagger UI</a>
@@ -828,7 +828,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:3rem 2re
       <a href="#api">🌐 REST API</a>
       <a href="#architecture">🏗️ Architecture</a>
     </div>
-    <div class="footer-copy">Made with ❤️ by AIUB R&D ICCA · 2026</div>
+    <div class="footer-copy">Made with ❤️ at AIUB · 2026</div>
   </div>
 </footer>
 

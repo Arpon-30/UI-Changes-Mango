@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mango-disease-ai"
-version = "0.2.0"
+version = "0.2.1"
 description = "AI-powered Amrapali mango disease detection: reject non-mango photos, classify 7 diseases, mark the affected area with Grad-CAM and produce PDF reports in English or Bangla."
 readme = "README_PACKAGE.md"
 license = "MIT"

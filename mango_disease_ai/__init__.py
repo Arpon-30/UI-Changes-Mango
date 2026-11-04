@@ -21,6 +21,6 @@ Quick start
 from mango_disease_ai.core import analyze
 from mango_disease_ai.report import generate_pdf
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 __author__ = "AIUB Student Group (Arpon, Oni, Md. Ibtihazzaman)"
 __all__ = ["analyze", "generate_pdf", "server"]

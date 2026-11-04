@@ -295,14 +295,15 @@ The training notebook is [`notebooks/AA-ENet_training.ipynb`](notebooks/AA-ENet_
 
 | Version | Where | Notes |
 |---|---|---|
-| **0.2.0** | [PyPI](https://pypi.org/project/mango-disease-ai/0.2.0/), git tag [`v0.2.0`](https://github.com/Arpon-30/UI-Changes-Mango/releases/tag/v0.2.0) | Current release, built from this repository. Version described in the SoftwareX article. Runs the AmropaliNet web application |
+| **0.2.1** | [PyPI](https://pypi.org/project/mango-disease-ai/0.2.1/), git tag [`v0.2.1`](https://github.com/Arpon-30/UI-Changes-Mango/releases/tag/v0.2.1) | Current release. Version described in the SoftwareX article. Runs the AmropaliNet web application |
+| 0.2.0 | [PyPI](https://pypi.org/project/mango-disease-ai/0.2.0/), git tag [`v0.2.0`](https://github.com/Arpon-30/UI-Changes-Mango/releases/tag/v0.2.0) | First release built from this repository |
 | 0.1.0 - 0.1.3 | [PyPI](https://pypi.org/project/mango-disease-ai/#history) | Earlier releases (English PDF only, no affected-area marking) |
 
 See [`CHANGELOG.md`](CHANGELOG.md) for details. To install the exact version described in
 the article:
 
 ```bash
-pip install mango-disease-ai==0.2.0
+pip install mango-disease-ai==0.2.1
 ```
 
 ## 9. Testing
@@ -339,7 +340,7 @@ If you use this software, please cite it. Citation metadata is in
   author  = {Amit, Arpon Paul and Oni, Saiful Islam and Ibtihazzaman, Md and
              Shahriar, SM Fahim and Miah, Md. Saef Ullah},
   title   = {mango-disease-ai: A Python Toolkit for Mango Disease Diagnosis},
-  version = {0.2.0},
+  version = {0.2.1},
   year    = {2026},
   url     = {https://github.com/Arpon-30/UI-Changes-Mango}
 }
@@ -376,5 +377,5 @@ licence and is not redistributed here.
 
 ## 15. Acknowledgements
 
-The authors thank American International University-Bangladesh (AIUB) and the AIUB R&D
-ICCA Research Group for supporting this work.
+The authors thank American International University-Bangladesh (AIUB) for supporting this
+work.
