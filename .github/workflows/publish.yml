@@ -1,0 +1,32 @@
+name: Publish to PyPI
+
+# Builds mango-disease-ai from this repository and uploads it to https://pypi.org/project/mango-disease-ai/
+# Needs the repository secret PYPI_API_TOKEN (Settings -> Secrets and variables -> Actions).
+# Run it from the Actions tab ("Run workflow") or by publishing a GitHub Release.
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build package
+        run: |
+          python -m pip install --upgrade build twine
+          python -m build
+          python -m twine check dist/*
+
+      - name: Upload to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: python -m twine upload --skip-existing --non-interactive dist/*
